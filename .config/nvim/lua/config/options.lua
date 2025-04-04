@@ -10,5 +10,7 @@ opt.wrap = false
 vim.opt_local.wrap = true
 vim.b.autoformat = false
 vim.g.autoformat = false
-vim.o.tabstop = 4
-vim.o.shiftwidth = 4
+vim.o.tabstop = 2
+vim.o.softtabstop = 2
+vim.o.shiftwidth = 2
+
