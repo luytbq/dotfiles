@@ -98,6 +98,9 @@ return {
               },
             },
           },
+
+          -- make sure mason installs the server
+          jdtls = {},
         },
         -- you can do any additional lsp server setup here
         -- return true if you don't want this server to be setup with lspconfig
@@ -110,6 +113,10 @@ return {
           -- end,
           -- Specify * to use this function as a fallback for any server
           -- ["*"] = function(server, opts) end,
+
+          jdtls = function()
+            return true -- avoid duplicate servers
+          end,
         },
         autoformat = false,
       }
@@ -269,6 +276,8 @@ return {
       ensure_installed = {
         "stylua",
         "shfmt",
+        "java-debug-adapter",
+        "java-test",
       },
     },
     ---@param opts MasonSettings | {ensure_installed: string[]}
@@ -295,4 +304,5 @@ return {
       end)
     end,
   },
+
 }
