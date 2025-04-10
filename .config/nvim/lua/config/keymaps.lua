@@ -1,30 +1,33 @@
--- Keymaps are automatically loaded on the VeryLazy event
--- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
-
 local map = vim.keymap.set
 -- local del = vim.keymap.del
 
+-- <C-c> also clear search highlights
 map({ "n", "i", "v" }, "<c-c>", "<cmd>noh<cr><esc>")
-map({ "n" }, "<leader>va", "ggVG")
+map({ "n" }, "<leader>va", "<Esc>ggVG")
 
--- Change paste behavior
+-- Execute lua code
+map("n", "<space>x", ":.lua<CR>")
+map("v", "<space>x", ":lua<CR>")
+
+-- Quickfix navigation
+X_QUICKFIX_OPENING = false
+map("n", "<space>1o", -- toggle the quickfix list window
+  function()
+  if not X_QUICKFIX_OPENING then
+    vim.cmd("copen")
+    X_QUICKFIX_OPENING = true
+  else
+    vim.cmd("cclose")
+    X_QUICKFIX_OPENING = false
+  end
+end)
+map("n", "<space>11", "<cmd>cprev<CR>")
+map("n", "<space>12", "<cmd>cnext<CR>")
+
+-- Change paste behavior: keep register after overwrite text
 map({ "v" }, "p", "pgvy")
 
 map("n", "<A-j>", ":m .+1<CR>==") -- move line up(n)
 map("n", "<A-k>", ":m .-2<CR>==") -- move line down(n)
 map("v", "<A-j>", ":m '>+1<CR>gv=gv") -- move line up(v)
 map("v", "<A-k>", ":m '<-2<CR>gv=gv") -- move line down(v)
-
--- gb/gf to go back, forward (Ctrl-o, Ctrl-i)
-map("n", "gb", "<C-o>")
-map("n", "gf", "<C-i>")
-
-map("n", "gtt", function()
-  vim.notify("hello")
-  Snacks.terminal()
-end)
-
--- floating terminal
-map("n", "<leader>ft", function() Snacks.terminal.open() end, { desc = "New terminal" })
-map({ "n", "t" }, "<c-/>", function() Snacks.terminal.toggle() end, { desc = "Toggle terminal" })
-map({ "n", "t" }, "<c-_>", function() Snacks.terminal.toggle() end, { desc = "which_key_ignore" })
