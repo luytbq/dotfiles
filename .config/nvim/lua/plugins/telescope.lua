@@ -15,27 +15,27 @@ return {
       },
     }
 
-    map('v', '<leader>fi', '"gy<cmd>Telescope live_grep<cr><C-r>g', { desc = 'Telescope live grep' })
-    map('n', '<leader>fs', "<cmd>Telescope resume<cr>", { desc = 'Telescope resume' })
-    map('n', '<leader>fb', "<cmd>Telescope buffers<cr>", { desc = 'Telescope buffers' })
-    map('n', '<leader>fh', "<cmd>Telescope help_tags<cr>", { desc = 'Telescope help tags' })
-    map('n', '<leader>fi', function()
-      require('telescope.builtin').live_grep(){}
-    end)
-    map('n', '<leader>ff', function()
-      require('telescope.builtin').find_files{}
-    end)
-    map('n', '<leader>fv', function()
-      require('telescope.builtin').find_files{
-        cwd = vim.fn.stdpath'config'
-      }
-    end)
-    map('n', '<leader>fp', function()
-      require('telescope.builtin').find_files{
-        ---@diagnostic disable-next-line: param-type-mismatch
-        cwd = vim.fs.joinpath(vim.fn.stdpath('data'), 'lazy')
-      }
-    end)
+    local call_builtin_func = function(func, _opts)
+      _opts = _opts or {}
+      return function ()
+        require('telescope.builtin')[func](_opts)
+      end
+    end
+
+    map('n', '<leader>fi', call_builtin_func('live_grep'))
+    map('n', '<leader>fs', call_builtin_func('resume'))
+    map('n', '<leader>fb', call_builtin_func('buffers'))
+    map('n', '<leader>fh', call_builtin_func('help_tags'))
+
+    map('v', '<leader>fi', function()
+      vim.cmd('normal! "vy')
+      local text = vim.fn.getreg('v')
+      call_builtin_func('live_grep', {
+        default_text = text
+      })()
+    end, { noremap = true, silent = true })
+
+    map('n', '<leader>ff', call_builtin_func('find_files'))
 
     require "config.telescope.multigrep".setup()
   end,
