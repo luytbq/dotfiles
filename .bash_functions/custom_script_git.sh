@@ -41,6 +41,7 @@ __do_cherry_pick_n_commit() {
 
   echo "[INFO] Getting the latest $num_commits commit(s) from '$source_branch'..."
   local commits
+  eval "${git_cmd[@]} log '$source_branch' -n '$num_commits' --oneline"
   commits=$("${git_cmd[@]}" log "$source_branch" -n "$num_commits" --format="%H")
 
   if [[ -z "$commits" ]]; then
