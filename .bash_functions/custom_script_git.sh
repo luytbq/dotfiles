@@ -34,14 +34,14 @@ __do_cherry_pick_n_commit() {
   echo "[INFO] Fetching branch '$source_branch'..."
   "${git_cmd[@]}" fetch origin "$source_branch" >/dev/null 2>&1
 
-  if ! "${git_cmd[@]}" rev-parse --verify --quiet origin/"$source_branch" >/dev/null; then
-    echo "[ERROR] Branch 'origin/$source_branch' not found after fetch."
+  if ! "${git_cmd[@]}" rev-parse --verify --quiet "$source_branch" >/dev/null; then
+    echo "[ERROR] Branch '$source_branch' not found after fetch."
     return 1
   fi
 
   echo "[INFO] Getting the latest $num_commits commit(s) from '$source_branch'..."
   local commits
-  commits=$("${git_cmd[@]}" log origin/"$source_branch" -n "$num_commits" --format="%H")
+  commits=$("${git_cmd[@]}" log "$source_branch" -n "$num_commits" --format="%H")
 
   if [[ -z "$commits" ]]; then
     echo "[WARN] No commits found on branch '$source_branch'"
@@ -50,7 +50,7 @@ __do_cherry_pick_n_commit() {
 
   echo "[INFO] Starting cherry-pick..."
 
-  echo "$commits" | tac | while read -r commit; do
+  echo "$commits" | tail -r | while read -r commit; do
     if "${git_cmd[@]}" cherry -v HEAD "$commit" | grep -q "^+"; then
       echo "[SKIP] Commit $commit already applied. Skipping."
     else
