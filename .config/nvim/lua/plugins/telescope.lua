@@ -22,19 +22,11 @@ return {
       end
     end
 
-    map('n', '<leader>fi', call_builtin_func('live_grep'))
-    map('n', '<leader>fs', call_builtin_func('resume'))
+    -- map('n', '<leader>fi', call_builtin_func('live_grep'))
+    map('n', '<leader>fr', call_builtin_func('resume'))
+    map('n', '<leader>fs', call_builtin_func('lsp_document_symbols'))
     map('n', '<leader>fb', call_builtin_func('buffers'))
     map('n', '<leader>fh', call_builtin_func('help_tags'))
-
-    map('v', '<leader>fi', function()
-      vim.cmd('normal! "vy')
-      local text = vim.fn.getreg('v')
-      call_builtin_func('live_grep', {
-        default_text = text
-      })()
-    end, { noremap = true, silent = true })
-
     map('n', '<leader>ff', call_builtin_func('find_files'))
 
     require "config.telescope.multigrep".setup()

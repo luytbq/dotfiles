@@ -9,6 +9,8 @@ local live_multigrep = function(opts)
   opts = opts or {}
   opts.cwd = opts.cwd or vim.uv.cwd()
 
+  local default_text = opts.default_text or ""
+
   local finder = finders.new_async_job {
     command_generator = function(prompt)
       if not prompt or prompt == "" then
@@ -43,11 +45,19 @@ local live_multigrep = function(opts)
     finder = finder,
     previewer = conf.grep_previewer(opts),
     sorter = require("telescope.sorters").empty(),
+    default_text = default_text
   }):find()
 end
 
 M.setup = function()
-  vim.keymap.set("n", "<leader>fg", live_multigrep)
+  vim.keymap.set("n", "<leader>fi", live_multigrep)
+
+  vim.keymap.set('v', '<leader>fi', function()
+    vim.cmd('normal! "vy')
+    local default_text = vim.fn.getreg('v')
+    live_multigrep({default_text = default_text})
+
+  end, { noremap = true, silent = true })
 end
 
 return M
