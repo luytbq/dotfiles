@@ -50,7 +50,7 @@ return {
 
     ls.add_snippets("go", {
       s("iferr", {
-        t("iff err!= nil {"),
+        t("if err!= nil {"),
         t({"", "\t"}),
         i(0),
         t({"", ""}),
