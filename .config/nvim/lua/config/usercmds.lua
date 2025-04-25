@@ -1,4 +1,4 @@
-vim.api.nvim_create_user_command("ChangeTabWidth",
+vim.api.nvim_create_user_command("SetTabStop",
     function(cmd_args)
         local tabWidth = cmd_args.args or 4
         vim.cmd("set tabstop=" .. tabWidth)
