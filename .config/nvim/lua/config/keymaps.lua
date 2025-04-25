@@ -35,3 +35,6 @@ map("v", "<A-k>", ":m '<-2<CR>gv=gv") -- move line down(v)
 -- Tab navigation
 map({"n", "v"}, "[t", "<cmd>tabprev<CR>")
 map({"n", "v"}, "]t", "<cmd>tabnext<CR>")
+
+
+require("config/usercmds")
