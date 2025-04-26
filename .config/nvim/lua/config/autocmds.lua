@@ -15,3 +15,9 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
   end,
 })
 
+-- disable Copilot
+vim.api.nvim_create_autocmd({ "VimEnter" }, {
+  callback = function()
+    vim.cmd("Copilot disable")
+  end,
+})
