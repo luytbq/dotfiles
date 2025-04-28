@@ -6,7 +6,7 @@ map({ "n", "i", "v" }, "<c-c>", "<cmd>noh<cr><esc>")
 map({ "n" }, "<leader>va", "<Esc>ggVG")
 
 -- Execute lua code
-map("n", "<space>x", ":.lua<CR>")
+map("n", "<space>x", ":%lua<CR>")
 map("v", "<space>x", ":lua<CR>")
 
 -- Quickfix navigation
