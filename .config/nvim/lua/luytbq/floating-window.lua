@@ -18,6 +18,8 @@ local create_floating_window = function(opts)
     border = "rounded"
   }
 
+  print('hello')
+
   local buf = vim.api.nvim_create_buf(false, true) -- not-listed and throw-away
   vim.api.nvim_open_win(buf, true, win_config)
 end
