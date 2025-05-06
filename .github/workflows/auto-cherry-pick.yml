@@ -1,0 +1,76 @@
+name: "Dotfiles Cross-Branch Sync"
+
+# Trigger on pushes to either the mac or linux branch
+on:
+  push:
+    branches:
+      - mac
+      - linux
+
+jobs:
+  cherry-pick:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Check out the full repo (all history) so we can switch branches
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0    # Fetch all commits, not a shallow clone
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # 2. Configure Git author for the automated commit
+      - name: Configure Git user
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      # 3. Determine source branch and commit message; set SKIP if needed
+      - name: Determine branch and check skip markers
+        id: check
+        run: |
+          BRANCH=${GITHUB_REF#refs/heads/}
+          echo "Source branch is '$BRANCH'"
+          # Read the latest commit message on this branch
+          MSG="$(git log -1 --pretty=%B)"
+          echo "Commit message: $MSG"
+          # Check for skip markers in the commit message
+          if echo "$MSG" | grep -q "\[do not auto cherry-pick\]"; then
+            echo "SKIP=true" >> $GITHUB_ENV
+            echo "Marked with #do not auto cherry-pick#, skipping."
+          elif echo "$MSG" | grep -q "\[cherry-picked\]"; then
+            echo "SKIP=true" >> $GITHUB_ENV
+            echo "Already marked [cherry-picked], skipping."
+          else
+            echo "SKIP=false" >> $GITHUB_ENV
+          fi
+          # Decide target branch: if pushed to mac, target linux; else target mac
+          if [ "$BRANCH" == "mac" ]; then
+            echo "TARGET=linux" >> $GITHUB_ENV
+          else
+            echo "TARGET=mac" >> $GITHUB_ENV
+          fi
+
+      # 4. Only proceed if not skipped
+      - name: Fetch branches (skip if marked)
+        if: env.SKIP != 'true'
+        run: git fetch origin
+
+      - name: Switch to target branch
+        if: env.SKIP != 'true'
+        run: |
+          echo "Checking out target branch '${{ env.TARGET }}'"
+          # Try checking out the branch; if it doesn't exist locally, create it from origin
+          git checkout "${{ env.TARGET }}" || git checkout -b "${{ env.TARGET }}" "origin/${{ env.TARGET }}"
+          # Pull latest (in case remote has new commits)
+          git pull origin "${{ env.TARGET }}"
+
+      - name: Cherry-pick commit onto target branch
+        if: env.SKIP != 'true'
+        run: |
+          echo "Cherry-picking commit $GITHUB_SHA onto '${{ env.TARGET }}'"
+          git cherry-pick "$GITHUB_SHA"
+          # Amend the commit message to tag it as cherry-picked
+          ORIGINAL_MSG="$(git log -1 --pretty=%B)"
+          git commit --amend -m "[cherry-picked] $ORIGINAL_MSG"
+          # Push the new cherry-picked commit back to the target branch
+          git push origin HEAD:"${{ env.TARGET }}"
