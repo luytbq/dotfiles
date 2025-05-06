@@ -24,6 +24,6 @@ local create_floating_window = function(opts)
   vim.api.nvim_open_win(buf, true, win_config)
 end
 
-vim.keymap.set({"n", "v"}, "<leader>ee", function()
-  create_floating_window()
-end)
+-- vim.keymap.set({"n", "v"}, "<leader>ee", function()
+--   create_floating_window()
+-- end)
