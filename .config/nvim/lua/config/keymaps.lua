@@ -6,12 +6,12 @@ map({ "n", "i", "v" }, "<c-c>", "<cmd>noh<cr><esc>")
 map({ "n" }, "<leader>va", "<Esc>ggVG")
 
 -- Execute lua code
-map("n", "<space>x", ":%lua<CR>")
-map("v", "<space>x", ":lua<CR>")
+map("n", "<leader>x", ":%lua<CR>")
+map("v", "<leader>x", ":lua<CR>")
 
 -- Quickfix navigation
 X_QUICKFIX_OPENING = false
-map("n", "<space>qo", -- toggle the quickfix list window
+map("n", "<leader>qo", -- toggle the quickfix list window
   function()
   if not X_QUICKFIX_OPENING then
     vim.cmd("copen")
