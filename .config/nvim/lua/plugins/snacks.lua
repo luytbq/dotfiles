@@ -2,14 +2,21 @@ return {
   "folke/snacks.nvim",
   ---@type snacks.Config
   opts = {
-    terminal = {
-    },
     picker = {
- 
-    },
-    keys = {
-        {"<c-j>", false},
-        {"<c-k>", false}
+      win = {
+        input = {
+          keys = {
+            ["<c-j>"] = false,
+            ["<c-k>"] = false
+          }
+        },
+        list = {
+          keys = {
+            ["<c-j>"] = false,
+            ["<c-k>"] = false
+          }
+        }
+      },
     }
   },
 }
