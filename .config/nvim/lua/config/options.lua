@@ -10,3 +10,11 @@ opt.wrap = false
 vim.opt_local.wrap = true
 vim.b.autoformat = false
 vim.g.autoformat = false
+
+
+local map = vim.keymap.set
+map("n", "<c-w><c-t>",
+  function()
+    vim.wo.wrap = not vim.wo.wrap
+end)
+map("n", "<c-w><c-t>", "<cmd>set wrap!<CR>")
