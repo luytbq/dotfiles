@@ -5,6 +5,8 @@ return {
 
   dependencies = {
     "rcarriga/nvim-dap-ui",
+    "nvim-neotest/nvim-nio",
+
     -- virtual text for the debugger
     {
       "theHamsta/nvim-dap-virtual-text",
@@ -53,6 +55,8 @@ return {
   end,
 
   config = function()
+    require"dapui".setup()
+
     -- load mason-nvim-dap here, after all adapters have been setup
     if LazyVim.has("mason-nvim-dap.nvim") then
       require("mason-nvim-dap").setup(LazyVim.opts("mason-nvim-dap.nvim"))
@@ -74,6 +78,20 @@ return {
     vscode.json_decode = function(str)
       return vim.json.decode(json.json_strip_comments(str))
     end
+
+    vim.api.nvim_create_user_command("DapOpen",
+      function(cmd_args)
+        require"dapui".open()
+      end,
+      { desc = "DAP UI open"}
+    )
+
+    vim.api.nvim_create_user_command("DapClose",
+      function(cmd_args)
+        require"dapui".close()
+      end,
+      { desc = "DAP UI close"}
+    )
 
   end,
 }
