@@ -242,6 +242,7 @@ return {
 
       if have_mason then
         mlsp.setup({
+          automatic_installation = false,
           ensure_installed = vim.tbl_deep_extend(
             "force",
             ensure_installed,
