@@ -14,9 +14,3 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
     vim.b.autoformat = false
   end,
 })
-
-vim.api.nvim_create_autocmd({ "VimEnter" }, {
-  callback = function()
-    require"snacks".explorer.open()
-  end,
-})
