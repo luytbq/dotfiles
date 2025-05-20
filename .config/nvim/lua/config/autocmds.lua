@@ -15,11 +15,19 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
   end,
 })
 
--- before writing the buffer to file, remove all trailing spaces
+-- before writing buffer, remove all trailing spaces
 vim.api.nvim_create_autocmd("BufWritePre", {
   callback = function()
     local save_cursor = vim.api.nvim_win_get_cursor(0)
     vim.cmd([[%s/\s\+$//e]])
     vim.api.nvim_win_set_cursor(0, save_cursor)
+  end,
+})
+
+-- before writing buffer with specified pattern, re-indent it
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = "*.go",
+  callback = function()
+    vim.cmd("normal! gg=G")
   end,
 })
