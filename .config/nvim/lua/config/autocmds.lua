@@ -17,6 +17,7 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
 
 -- before writing buffer, remove all trailing spaces
 vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = "*.go",
   callback = function()
     local save_cursor = vim.api.nvim_win_get_cursor(0)
     vim.cmd([[%s/\s\+$//e]])
