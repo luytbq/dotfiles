@@ -38,3 +38,4 @@ map({"n", "v"}, "]t", "<cmd>tabnext<CR>")
 
 
 require("config/usercmds")
+require("config/luasnip")
