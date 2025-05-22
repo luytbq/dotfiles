@@ -28,6 +28,7 @@ return {
     map('n', '<leader>fb', call_builtin_func('buffers'))
     map('n', '<leader>fh', call_builtin_func('help_tags'))
     map('n', '<leader>ff', call_builtin_func('find_files'))
+    map('n', '<leader>fm', call_builtin_func('marks'))
 
     require "config.telescope.multigrep".setup()
   end,
