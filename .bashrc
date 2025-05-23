@@ -145,3 +145,11 @@ if [ -d "$HOME/.bash_functions" ]; then
     unset file  # Cleanup variable
 fi
 
+# source script from ~/.secrets/
+if [ -d "$HOME/.secrets/" ]; then
+    for file in "$HOME/.secrets"/*.sh; do
+        [ -r "$file" ] && source "$file"
+    done
+    unset file  # Cleanup variable
+fi
+
