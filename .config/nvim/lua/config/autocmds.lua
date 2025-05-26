@@ -27,7 +27,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 
 -- before writing buffer with specified pattern, re-indent it
 vim.api.nvim_create_autocmd("BufWritePre", {
-	pattern = { "*.go", "*.lua"},
+	pattern = { "*.go", "*.lua" },
 	callback = function()
 		vim.lsp.buf.format()
 	end,
