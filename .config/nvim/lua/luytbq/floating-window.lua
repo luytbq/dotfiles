@@ -54,6 +54,23 @@ local state = {
 	win = -1,
 }
 
+---@param newest_buf plugin.float_terminal.buf
+local reorder_state_bufs = function(newest_buf)
+	if #state.bufs == 0 then
+		return
+	end
+	local bufs = {}
+	if vim.api.nvim_buf_is_valid(newest_buf.buf) then
+		table.insert(bufs, newest_buf)
+	end
+	for _, buf in ipairs(state.bufs) do
+		if buf.buf ~= newest_buf.buf and vim.api.nvim_buf_is_valid(buf.buf) then
+			table.insert(bufs, buf)
+		end
+	end
+	state.bufs = bufs
+end
+
 ---@param args plugin.float_terminal.open_floating_window
 local open_floating_window = function(args)
 	if args == nil or not vim.api.nvim_buf_is_valid(args.buf) then
@@ -90,6 +107,20 @@ local open_floating_window = function(args)
 	end
 end
 
+local input_new_session = function()
+	vim.ui.input({ prompt = "Enter session name: " }, function(name)
+		if name == nil or name == "" then
+			return
+		end
+
+		local buf = vim.api.nvim_create_buf(false, true)
+		local bbuf = { buf = buf, name = name }
+		table.insert(state.bufs, bbuf)
+		open_floating_window({ buf = buf })
+		reorder_state_bufs(bbuf)
+	end)
+end
+
 vim.api.nvim_create_user_command("FloatTerm",
 	---@param _ vim.api.keyset.create_user_command.command_args not used
 	function(_)
@@ -99,6 +130,11 @@ vim.api.nvim_create_user_command("FloatTerm",
 		end
 
 		state.win = -1
+
+		if #state.bufs < 1 then
+			input_new_session()
+			return
+		end
 
 		local choices = {}
 		for _, v in ipairs(state.bufs) do
@@ -119,17 +155,9 @@ vim.api.nvim_create_user_command("FloatTerm",
 			if choice == nil then
 				return
 			elseif choice.buf == -1 then
-				vim.ui.input({ prompt = "Enter session name: " }, function(name)
-					if name == nil or name == "" then
-						return
-					end
-
-					local buf = vim.api.nvim_create_buf(false, true)
-					local bbuf = { buf = buf, name = name }
-					table.insert(state.bufs, bbuf)
-					open_floating_window({ buf = buf })
-				end)
+				input_new_session()
 			else
+				reorder_state_bufs(choice)
 				open_floating_window({ buf = choice.buf })
 			end
 		end)
