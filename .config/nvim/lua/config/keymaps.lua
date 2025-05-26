@@ -37,10 +37,15 @@ map({ "n", "v" }, "[t", "<cmd>tabprev<CR>")
 map({ "n", "v" }, "]t", "<cmd>tabnext<CR>")
 
 map({ "i", "t" }, "<esc><esc>", "<c-\\><c-n>")
+map({ "i", "t" }, "<c-\\><c-\\>", "<c-\\><c-n>")
 
-map({ "n", "i", "v" }, "<leader>ft", "<cmd>FloatTerm<cr>", { desc = "Toggle Floating Terminal" })
-map({ "n", "i", "v" }, "<c-/>", "<cmd>FloatTerm<cr>", { desc = "Toggle Floating Terminal" })
-map({ "n", "i", "v" }, "<c-_>", "<cmd>FloatTerm<cr>", { desc = "Toggle Floating Terminal" })
+map({ "n", "i", "v" }, "<leader>ft", "<cmd>FloatTerm<cr>", { desc = "Open/Next Floating Terminal" })
+map({ "n", "i", "v", "t" }, "<c-/>", "<cmd>FloatTerm<cr>", { desc = "Open/Next Floating Terminal" })
+map({ "n", "i", "v", "t" }, "<c-_>", "<cmd>FloatTerm<cr>", { desc = "Open/Next Floating Terminal" })
+map({ "n" }, "]\\", "<cmd>FloatTermNext<cr>", { desc = "Next Floating Terminal" })
+map({ "n" }, "[\\", "<cmd>FloatTermPrev<cr>", { desc = "Previous Floating Terminal" })
+map({ "n" }, "<leader>tn", "<cmd>FloatTermNew<cr>", { desc = "Previous Floating Terminal" })
+
 -- map({ "n", "i", "v" }, "<c-\\>", "<cmd>FloatTermOpenNext<cr>", { desc = "Toggle Floating Terminal" })
 -- map({ "n" }, "<c-\\>", "<cmd>FloatTermOpenLast<cr>", { desc = "Toggle Floating Terminal" })
 

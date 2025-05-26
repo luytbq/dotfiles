@@ -26,83 +26,98 @@ local get_selected_text = function()
 	end
 
 	local selected_text = vim.api.nvim_buf_get_text(0, start_line, start_col, end_line, end_col, {})
-	-- -- Trim each line
-	-- for i, line in ipairs(selected_text) do
-	-- 	selected_text[i] = vim.trim(line)
-	-- end
 	return selected_text
 end
 
 
 --- @class plugin.float_terminal.buf
---- @field buf integer Buffer
---- @field name string Buffer name
+--- @field id integer buffer id
+--- @field name? string buffer name
+---
+--- @class plugin.float_terminal.win
+--- @field id integer window id
+--- @field name? string window name
 ---
 --- @class plugin.float_terminal.state
---- @field bufs plugin.float_terminal.buf[]
---- @field last_buf integer
---- @field win integer
+--- @field buffers plugin.float_terminal.buf[]
+--- @field curr_buffer plugin.float_terminal.buf
+--- @field window plugin.float_terminal.win
+--- @field window_open boolean
 ---
 --- @class plugin.float_terminal.open_floating_window
 --- @field win_opts? vim.api.keyset.win_config
---- @field buf integer Buffer
+--- @field buffer plugin.float_terminal.buf
 --- @field put_text? string[] Text to append to buffer
 ---
 
 ---@type plugin.float_terminal.state
 local state = {
-	bufs = {},
-	win = -1,
-	last_buf = -1
+	buffers = {},
+	curr_buffer = { id = -1 },
+	window = { id = -1 },
+	window_open = false,
 }
 
----@param newest_buf plugin.float_terminal.buf
-local reorder_state_bufs = function(newest_buf)
-	if #state.bufs == 0 then
-		return
-	end
-	local bufs = {}
-	if vim.api.nvim_buf_is_valid(newest_buf.buf) then
-		table.insert(bufs, newest_buf)
-	end
-	for _, buf in ipairs(state.bufs) do
-		if buf.buf ~= newest_buf.buf and vim.api.nvim_buf_is_valid(buf.buf) then
-			table.insert(bufs, buf)
-		end
-	end
-	state.bufs = bufs
+---@return plugin.float_terminal.buf
+local create_new_buffer = function()
+	local len = #state.buffers
+	local buffer = { id = vim.api.nvim_create_buf(false, true), name = '#' .. (len + 1) }
+	table.insert(state.buffers, buffer)
+	return buffer
 end
 
 ---@return plugin.float_terminal.buf|nil
-local get_next_buf = function()
-	if #state.bufs == 0 then return nil end
-	if #state.bufs == 1 then return state.bufs[1] end
+local get_prev_buffer = function()
+	if #state.buffers == 0 then return nil end
+	if #state.buffers == 1 then return state.buffers[1] end
 	local last_idx = -1
-	for idx, buf in ipairs(state.bufs) do
-		if buf.buf == state.last_buf then last_idx = idx end
+	for idx, buf in ipairs(state.buffers) do
+		if buf.id == state.curr_buffer.id then last_idx = idx end
 	end
-	if last_idx == #state.bufs then
-		return state.bufs[1]
+	if last_idx == 1 then
+		return state.buffers[#state.buffers]
 	else
-		return state.bufs[last_idx + 1]
+		return state.buffers[last_idx - 1]
 	end
 end
 
+---@return plugin.float_terminal.buf|nil
+local get_next_buffer = function()
+	if #state.buffers == 0 then return nil end
+	if #state.buffers == 1 then return state.buffers[1] end
+	local last_idx = -1
+	for idx, buf in ipairs(state.buffers) do
+		if buf.id == state.curr_buffer.id then last_idx = idx end
+	end
+	if last_idx == #state.buffers then
+		return state.buffers[1]
+	else
+		return state.buffers[last_idx + 1]
+	end
+end
+
+---@return boolean
+local is_win_open = function()
+	return state.window_open and vim.api.nvim_win_is_valid(state.window.id)
+end
+
+---@param buffer plugin.float_terminal.buf
+local set_buffer = function(buffer)
+	state.curr_buffer = buffer
+	vim.api.nvim_win_set_buf(state.window.id, buffer.id)
+	vim.api.nvim_win_set_config(state.window.id, { title = state.curr_buffer.name })
+end
+
 ---@param args plugin.float_terminal.open_floating_window
-local open_floating_window = function(args)
-	if args == nil or not vim.api.nvim_buf_is_valid(args.buf) then
+local open_floating_term = function(args)
+	if args == nil or args.buffer == nil or not vim.api.nvim_buf_is_valid(args.buffer.id) then
 		print("invalid args: " .. vim.inspect(args))
 		return
 	end
 
-	-- close win first if openning
-	-- if vim.api.nvim_win_is_valid(state.win) then
-	-- 	vim.api.nvim_win_close(state.win, true)
-	-- end
-	state.win = -1
+	state.curr_buffer = args.buffer
 
 	args.win_opts = args.win_opts or {}
-
 	local win_width = args.win_opts.width or math.floor(vim.o.columns * 0.8)
 	local win_height = args.win_opts.height or math.floor(vim.o.lines * 0.8)
 	local win_start_col = math.floor((vim.o.columns - win_width) / 2)
@@ -110,6 +125,7 @@ local open_floating_window = function(args)
 
 	---@type vim.api.keyset.win_config
 	local win_config = {
+		title = state.curr_buffer.name,
 		relative = "editor",
 		width = win_width,
 		height = win_height,
@@ -118,140 +134,67 @@ local open_floating_window = function(args)
 		border = "rounded"
 	}
 
-	state.last_buf = args.buf
-	state.win = vim.api.nvim_open_win(args.buf, true, win_config)
-	if vim.bo[args.buf].buftype ~= 'terminal' then
-		vim.cmd.terminal()
-	end
-
-	-- enter terminal mode
-	vim.cmd ":start"
-
 	-- TODO: make this works: get selected text and pass to terminal
 	if args.put_text ~= nil and #args.put_text > 0 then
-		vim.fn.chansend(vim.bo[args.buf].channel, args.put_text)
+		vim.fn.chansend(vim.bo[args.buffer].channel, args.put_text)
+	end
+
+	if is_win_open() then
+		set_buffer(state.curr_buffer)
+	elseif not vim.api.nvim_win_is_valid(state.window.id) then
+		state.window.id = vim.api.nvim_open_win(state.curr_buffer.id, true, win_config)
+	end
+	if vim.bo[state.curr_buffer.id].buftype ~= 'terminal' then
+		vim.cmd.terminal()
+	end
+	state.window_open = true
+end
+
+local close_floating_term = function()
+	vim.api.nvim_win_close(state.window.id, true)
+	state.window_open = false
+end
+
+local new_floating_term = function()
+	local buffer = create_new_buffer()
+	open_floating_term({ buffer = buffer })
+end
+
+local prev_floating_term = function()
+	local buffer = get_prev_buffer()
+	if buffer ~= nil and vim.api.nvim_buf_is_valid(buffer.id) then
+		open_floating_term({ buffer = buffer })
 	end
 end
 
-local input_new_session = function()
-	vim.ui.input({ prompt = "Enter session name: " }, function(name)
-		if name == nil or name == "" then
-			return
-		end
-
-		local buf = vim.api.nvim_create_buf(false, true)
-		local bbuf = { buf = buf, name = name }
-		table.insert(state.bufs, bbuf)
-		open_floating_window({ buf = buf })
-		reorder_state_bufs(bbuf)
-	end)
+local next_floating_term = function()
+	local buffer = get_next_buffer()
+	if buffer ~= nil and vim.api.nvim_buf_is_valid(buffer.id) then
+		open_floating_term({ buffer = buffer })
+	end
 end
+
+local open_current_buf = function()
+	open_floating_term({ buffer = state.curr_buffer })
+end
+
+vim.api.nvim_create_user_command("FloatTermClose", close_floating_term, {})
+vim.api.nvim_create_user_command("FloatTermNew", new_floating_term, {})
+vim.api.nvim_create_user_command("FloatTermNext", next_floating_term, {})
+vim.api.nvim_create_user_command("FloatTermPrev", prev_floating_term, {})
 
 vim.api.nvim_create_user_command("FloatTerm",
 	---@param _ vim.api.keyset.create_user_command.command_args not used
 	function(_)
-		if vim.api.nvim_win_is_valid(state.win) then
-			vim.api.nvim_win_close(state.win, true)
-			return
+		if #state.buffers < 1 then
+			new_floating_term()
+		elseif is_win_open() then
+			close_floating_term()
+		else
+			open_current_buf()
 		end
-
-		state.win = -1
-
-		if #state.bufs < 1 then
-			input_new_session()
-			return
-		end
-
-		local choices = {}
-		for _, v in ipairs(state.bufs) do
-			table.insert(choices, {
-				buf = v.buf,
-				name = v.name or "no name",
-			})
-		end
-		table.insert(choices, { buf = -1, name = "Create new session ..." })
-
-		vim.ui.select(choices, {
-			prompt = "Select a session or create a new one",
-			format_item = function(item)
-				return item.name
-			end
-		}, function(choice)
-			print('choice ' .. vim.inspect(choice))
-			if choice == nil then
-				return
-			elseif choice.buf == -1 then
-				input_new_session()
-			else
-				reorder_state_bufs(choice)
-				open_floating_window({ buf = choice.buf })
-			end
-		end)
 	end,
 	{
 		range = true
 	}
-)
-
-
--- using Telescope
-local pickers = require "telescope.pickers"
-local finders = require "telescope.finders"
-local conf = require("telescope.config").values
-local actions = require "telescope.actions"
-local action_state = require "telescope.actions.state"
-
-local telescope_find_term = function(opts)
-	opts = opts or {}
-	local choices = {}
-	for _, v in ipairs(state.bufs) do
-		table.insert(choices, {
-			buf = v.buf,
-			name = v.name or "no name",
-		})
-	end
-	table.insert(choices, { buf = -1, name = "Create new session ..." })
-
-	pickers.new(opts, {
-		finder = finders.new_table({ "darkblue", "tokyonight-moon", "blue" }),
-		sorter = conf.generic_sorter(opts),
-		attach_mappings = function(bufnr, map)
-			actions.select_default:replace(function()
-				actions.close(bufnr)
-				local selection = action_state.get_selected_entry()
-				vim.cmd('colorscheme ' .. selection[1])
-			end)
-
-			-- map("i", "<C-j>", next_color)
-			-- map("i", "<C-k>", prev_color)
-			-- map("i", "<C-n>", next_color)
-			-- map("i", "<C-p>", prev_color)
-
-			return true
-		end,
-	}):find()
-end
-
-vim.api.nvim_create_user_command("FloatTermOpenLast",
-	---@param _ vim.api.keyset.create_user_command.command_args not used
-	function(_)
-		if not vim.api.nvim_buf_is_valid(state.last_buf) then
-			print('Cannot open last terminal')
-			return
-		end
-		open_floating_window({ buf = state.last_buf })
-	end, {}
-)
-
-vim.api.nvim_create_user_command("FloatTermOpenNext",
-	---@param _ vim.api.keyset.create_user_command.command_args not used
-	function(_)
-		local buf = get_next_buf()
-
-		if buf == nil or not vim.api.nvim_buf_is_valid(buf.buf) then
-			print('Cannot open terminal')
-			return
-		end
-		open_floating_window({ buf = buf.buf })
-	end, {}
 )
