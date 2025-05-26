@@ -40,6 +40,7 @@ end
 ---
 --- @class plugin.float_terminal.state
 --- @field bufs plugin.float_terminal.buf[]
+--- @field last_buf integer
 --- @field win integer
 ---
 --- @class plugin.float_terminal.open_floating_window
@@ -52,6 +53,7 @@ end
 local state = {
 	bufs = {},
 	win = -1,
+	last_buf = -1
 }
 
 ---@param newest_buf plugin.float_terminal.buf
@@ -95,7 +97,7 @@ local open_floating_window = function(args)
 		border = "rounded"
 	}
 
-
+	state.last_buf = args.buf
 	state.win = vim.api.nvim_open_win(args.buf, true, win_config)
 	if vim.bo[args.buf].buftype ~= 'terminal' then
 		vim.cmd.terminal()
@@ -166,3 +168,61 @@ vim.api.nvim_create_user_command("FloatTerm",
 		range = true
 	}
 )
+
+
+-- using Telescope
+local pickers = require "telescope.pickers"
+local finders = require "telescope.finders"
+local conf = require("telescope.config").values
+local actions = require "telescope.actions"
+local action_state = require "telescope.actions.state"
+
+local telescope_find_term = function(opts)
+	opts = opts or {}
+	local choices = {}
+	for _, v in ipairs(state.bufs) do
+		table.insert(choices, {
+			buf = v.buf,
+			name = v.name or "no name",
+		})
+	end
+	table.insert(choices, { buf = -1, name = "Create new session ..." })
+
+	pickers.new(opts, {
+		finder = finders.new_table(choices),
+		sorter = conf.generic_sorter(opts),
+		attach_mappings = function(bufnr, map)
+			actions.select_default:replace(function()
+				actions.close(bufnr)
+				local selection = action_state.get_selected_entry()
+				vim.cmd('colorscheme ' .. selection[1])
+			end)
+
+			-- map("i", "<C-j>", next_color)
+			-- map("i", "<C-k>", prev_color)
+			-- map("i", "<C-n>", next_color)
+			-- map("i", "<C-p>", prev_color)
+
+			return true
+		end,
+	}):find()
+end
+
+vim.api.nvim_create_user_command("FloatTermOpenLast",
+	---@param _ vim.api.keyset.create_user_command.command_args not used
+	function(_)
+		if not vim.api.nvim_buf_is_valid(state.last_buf) then
+			print('Cannot open last terminal')
+			return
+		end
+		open_floating_window({ buf = state.last_buf })
+	end, {}
+)
+local map = vim.keymap.set
+map({ "n", "i", "v" }, "<leader>ft", "<cmd>FloatTerm<cr>", { desc = "Toggle Floating Terminal" })
+map({ "n", "i", "v" }, "<c-/>", "<cmd>FloatTerm<cr>", { desc = "Toggle Floating Terminal" })
+map({ "n", "i", "v" }, "<c-_>", "<cmd>FloatTerm<cr>", { desc = "Toggle Floating Terminal" })
+map({ "n" }, "<c-_>l", "<cmd>FloatTermOpenLast<cr>", { desc = "Toggle Floating Terminal" })
+map({ "n" }, "<c-/>l", "<cmd>FloatTermOpenLast<cr>", { desc = "Toggle Floating Terminal" })
+
+vim.keymap.set({ "n", "i", "v" }, "<c-\\>", telescope_find_term, { desc = "" })
