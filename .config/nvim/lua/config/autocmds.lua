@@ -9,7 +9,7 @@
 
 -- disable auto format
 vim.api.nvim_create_autocmd({ "FileType" }, {
-	pattern = { "java", "ts", "js", "lua", "vue", "html" },
+	pattern = { "*.java", "*.ts", "*.js", "*.vue", "*.html" },
 	callback = function()
 		vim.b.autoformat = false
 	end,
@@ -27,7 +27,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 
 -- before writing buffer with specified pattern, re-indent it
 vim.api.nvim_create_autocmd("BufWritePre", {
-	pattern = "*.go",
+	pattern = { "*.go", "*.lua"},
 	callback = function()
 		vim.lsp.buf.format()
 	end,
