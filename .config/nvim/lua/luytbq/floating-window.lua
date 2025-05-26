@@ -73,12 +73,33 @@ local reorder_state_bufs = function(newest_buf)
 	state.bufs = bufs
 end
 
+---@return plugin.float_terminal.buf|nil
+local get_next_buf = function()
+	if #state.bufs == 0 then return nil end
+	if #state.bufs == 1 then return state.bufs[1] end
+	local last_idx = -1
+	for idx, buf in ipairs(state.bufs) do
+		if buf.buf == state.last_buf then last_idx = idx end
+	end
+	if last_idx == #state.bufs then
+		return state.bufs[1]
+	else
+		return state.bufs[last_idx + 1]
+	end
+end
+
 ---@param args plugin.float_terminal.open_floating_window
 local open_floating_window = function(args)
 	if args == nil or not vim.api.nvim_buf_is_valid(args.buf) then
 		print("invalid args: " .. vim.inspect(args))
 		return
 	end
+
+	-- close win first if openning
+	-- if vim.api.nvim_win_is_valid(state.win) then
+	-- 	vim.api.nvim_win_close(state.win, true)
+	-- end
+	state.win = -1
 
 	args.win_opts = args.win_opts or {}
 
@@ -102,6 +123,9 @@ local open_floating_window = function(args)
 	if vim.bo[args.buf].buftype ~= 'terminal' then
 		vim.cmd.terminal()
 	end
+
+	-- enter terminal mode
+	vim.cmd ":start"
 
 	-- TODO: make this works: get selected text and pass to terminal
 	if args.put_text ~= nil and #args.put_text > 0 then
@@ -189,7 +213,7 @@ local telescope_find_term = function(opts)
 	table.insert(choices, { buf = -1, name = "Create new session ..." })
 
 	pickers.new(opts, {
-		finder = finders.new_table(choices),
+		finder = finders.new_table({ "darkblue", "tokyonight-moon", "blue" }),
 		sorter = conf.generic_sorter(opts),
 		attach_mappings = function(bufnr, map)
 			actions.select_default:replace(function()
@@ -218,11 +242,16 @@ vim.api.nvim_create_user_command("FloatTermOpenLast",
 		open_floating_window({ buf = state.last_buf })
 	end, {}
 )
-local map = vim.keymap.set
-map({ "n", "i", "v" }, "<leader>ft", "<cmd>FloatTerm<cr>", { desc = "Toggle Floating Terminal" })
-map({ "n", "i", "v" }, "<c-/>", "<cmd>FloatTerm<cr>", { desc = "Toggle Floating Terminal" })
-map({ "n", "i", "v" }, "<c-_>", "<cmd>FloatTerm<cr>", { desc = "Toggle Floating Terminal" })
-map({ "n" }, "<c-_>l", "<cmd>FloatTermOpenLast<cr>", { desc = "Toggle Floating Terminal" })
-map({ "n" }, "<c-/>l", "<cmd>FloatTermOpenLast<cr>", { desc = "Toggle Floating Terminal" })
 
-vim.keymap.set({ "n", "i", "v" }, "<c-\\>", telescope_find_term, { desc = "" })
+vim.api.nvim_create_user_command("FloatTermOpenNext",
+	---@param _ vim.api.keyset.create_user_command.command_args not used
+	function(_)
+		local buf = get_next_buf()
+
+		if buf == nil or not vim.api.nvim_buf_is_valid(buf.buf) then
+			print('Cannot open terminal')
+			return
+		end
+		open_floating_window({ buf = buf.buf })
+	end, {}
+)
