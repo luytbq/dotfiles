@@ -64,10 +64,13 @@ end
 
 ---@return plugin.float_terminal.buf
 local create_new_buffer = function()
-	local len = #state.buffers
-	local buffer = { id = vim.api.nvim_create_buf(false, true), name = '#' .. (len + 1) }
-	table.insert(state.buffers, buffer)
 	clean_state_buffers()
+	local len = #state.buffers
+	local buffer = {
+		id = vim.api.nvim_create_buf(false, true),
+		name = '=============== #' .. (len + 1) .. " ==============="
+	}
+	table.insert(state.buffers, buffer)
 	return buffer
 end
 
@@ -115,7 +118,6 @@ end
 
 ---@param args plugin.float_terminal.open_floating_window
 local open_floating_term = function(args)
-	clean_state_buffers()
 	if args == nil or args.buffer == nil or not vim.api.nvim_buf_is_valid(args.buffer.id) then
 		print("invalid args: " .. vim.inspect(args))
 		return
@@ -132,6 +134,7 @@ local open_floating_term = function(args)
 	---@type vim.api.keyset.win_config
 	local win_config = {
 		title = state.curr_buffer.name,
+		title_pos = 'center',
 		relative = "editor",
 		width = win_width,
 		height = win_height,
@@ -170,7 +173,12 @@ end
 ---@param args plugin.float_terminal.open_floating_window|nil
 local open_current_buf = function(args)
 	args = args or {}
-	open_floating_term(merge_table(args, { buffer = state.curr_buffer }))
+	if not vim.api.nvim_buf_is_valid(state.curr_buffer.id) then
+		new_floating_term(args)
+	else
+		open_floating_term(merge_table(args, { buffer = state.curr_buffer }))
+		clean_state_buffers()
+	end
 end
 
 local prev_floating_term = function()
