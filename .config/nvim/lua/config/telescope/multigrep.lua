@@ -6,59 +6,64 @@ local conf = require "telescope.config".values
 local M = {}
 
 local live_multigrep = function(opts)
-  opts = opts or {}
-  opts.cwd = opts.cwd or vim.uv.cwd()
+	opts = opts or {}
+	opts.cwd = opts.cwd or vim.uv.cwd()
 
-  local default_text = opts.default_text or ""
+	local default_text = opts.default_text or ""
 
-  local finder = finders.new_async_job {
-    command_generator = function(prompt)
-      if not prompt or prompt == "" then
-        return nil
-      end
+	local finder = finders.new_async_job {
+		command_generator = function(prompt)
+			if not prompt or prompt == "" then
+				return nil
+			end
 
-      local pieces = vim.split(prompt, "  ")
-      local args = { "rg" }
+			local pieces = vim.split(prompt, "  ")
+			local args = { "rg" }
 
-      if pieces[1] then
-        table.insert(args, "-e")
-        table.insert(args, pieces[1])
-      end
+			if pieces[1] then
+				table.insert(args, "-e")
+				table.insert(args, pieces[1])
+			end
 
-      if pieces[2] then
-        table.insert(args, "-g")
-        table.insert(args, "*"..pieces[2].."*")
-      end
+			if pieces[2] then
+				table.insert(args, "-g")
+				table.insert(args, "*" .. pieces[2] .. "*")
+			end
 
-      ---@diagnostic disable-next-line: deprecated
-      return vim.tbl_flatten {
-        args,
-        { "--color=never", "--no-heading", "--with-filename", "--line-number", "--column", "--smart-case" },
-      }
-    end,
-    entry_maker = make_entry.gen_from_vimgrep(opts),
-    cwd = opts.cwd,
-  }
+			---@diagnostic disable-next-line: deprecated
+			return vim.tbl_flatten {
+				args,
+				{ "--color=never", "--no-heading", "--with-filename", "--line-number", "--column", "--smart-case" },
+			}
+		end,
+		entry_maker = make_entry.gen_from_vimgrep(opts),
+		cwd = opts.cwd,
+	}
 
-  pickers.new(opts, {
-    debounce = 100,
-    prompt_title = "Multi Grep",
-    finder = finder,
-    previewer = conf.grep_previewer(opts),
-    sorter = require("telescope.sorters").empty(),
-    default_text = default_text
-  }):find()
+	pickers.new(opts, {
+		debounce = 100,
+		prompt_title = "Multi Grep",
+		finder = finder,
+		previewer = conf.grep_previewer(opts),
+		sorter = require("telescope.sorters").empty(),
+		default_text = default_text
+	}):find()
 end
 
+---@return string
+local get_visual_selected = function()
+	local restore_reg = vim.fn.getreg('v')
+	vim.cmd('normal! "vy')
+	local selected_text = vim.fn.getreg('v')
+	vim.fn.setreg('v', restore_reg)
+	return selected_text
+end
 M.setup = function()
-  vim.keymap.set("n", "<leader>fi", live_multigrep)
+	vim.keymap.set("n", "<leader>fi", live_multigrep)
 
-  vim.keymap.set('v', '<leader>fi', function()
-    vim.cmd('normal! "vy')
-    local default_text = vim.fn.getreg('v')
-    live_multigrep({default_text = default_text})
-
-  end, { noremap = true, silent = true })
+	vim.keymap.set('v', '<leader>fi', function()
+		live_multigrep({ default_text = get_visual_selected() })
+	end, { noremap = true, silent = true })
 end
 
 return M
