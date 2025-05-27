@@ -45,9 +45,8 @@ map({ "n", "i", "v", "t" }, "<c-_>", "<cmd>FloatTerm<cr>", { desc = "Open/Next F
 map({ "n" }, "]\\", "<cmd>FloatTermNext<cr>", { desc = "Next Floating Terminal" })
 map({ "n" }, "[\\", "<cmd>FloatTermPrev<cr>", { desc = "Previous Floating Terminal" })
 map({ "n" }, "<leader>tn", "<cmd>FloatTermNew<cr>", { desc = "Previous Floating Terminal" })
-
--- map({ "n", "i", "v" }, "<c-\\>", "<cmd>FloatTermOpenNext<cr>", { desc = "Toggle Floating Terminal" })
--- map({ "n" }, "<c-\\>", "<cmd>FloatTermOpenLast<cr>", { desc = "Toggle Floating Terminal" })
+map({ "v" }, "<c-/>", "<cmd>FloatTermVisual<cr>", { desc = "Send selected text to Floating Terminal" })
+map({ "v" }, "<c-_>", "<cmd>FloatTermVisual<cr>", { desc = "Send selected text to Floating Terminal" })
 
 require("config/usercmds")
 require("config/luasnip")

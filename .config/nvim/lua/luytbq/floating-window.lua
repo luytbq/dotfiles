@@ -1,34 +1,19 @@
 ---@diagnostic disable: unused-function, unused-local
 
---
--- TODO: remove invalid buf from state.bufs
---
-
----comment
+---@param args vim.api.keyset.create_user_command.command_args
 ---@return string[]
-local get_selected_text = function()
-	local start_pos = vim.fn.getpos("'<")
-	local end_pos = vim.fn.getpos("'>")
-	print('start_post ' .. vim.inspect(start_pos))
-	print('end_post ' .. vim.inspect(end_pos))
+local get_selected_text = function(args)
+	local restore_reg = vim.fn.getreg('v')
+	vim.cmd('normal! "vy')
+	local selected_text = vim.fn.getreg('v', true)
+	vim.fn.setreg('v', restore_reg)
 
-	local start_line = start_pos[2] - 1
-	local start_col = start_pos[3] - 1
-	local end_line = end_pos[2] - 1
-	local end_col = end_pos[3]
-
-	print('start_line ' .. vim.inspect(start_line))
-	print('start_col ' .. vim.inspect(start_col))
-	print('end_line ' .. vim.inspect(end_line))
-	print('end_col ' .. vim.inspect(end_col))
-	if start_line == 0 or end_line == 0 then
-		return {}
+	if type(selected_text) == "string" then
+		return vim.split(vim.trim(selected_text), "\n")
+	else
+		return selected_text
 	end
-
-	local selected_text = vim.api.nvim_buf_get_text(0, start_line, start_col, end_line, end_col, {})
-	return selected_text
 end
-
 
 --- @class plugin.float_terminal.buf
 --- @field id integer buffer id
@@ -46,7 +31,7 @@ end
 ---
 --- @class plugin.float_terminal.open_floating_window
 --- @field win_opts? vim.api.keyset.win_config
---- @field buffer plugin.float_terminal.buf
+--- @field buffer? plugin.float_terminal.buf
 --- @field put_text? string[] Text to append to buffer
 ---
 
@@ -58,11 +43,31 @@ local state = {
 	window_open = false,
 }
 
+local clean_state_buffers = function()
+	---@type plugin.float_terminal.buf[]
+	local buffers = {}
+	for _, v in ipairs(state.buffers) do
+		if vim.api.nvim_buf_is_valid(v.id) then
+			table.insert(buffers, v)
+		end
+	end
+	state.buffers = buffers
+end
+
+---@param first table
+---@param second table
+---@return table
+local merge_table = function(first, second)
+	for k, v in pairs(second) do first[k] = v end
+	return first
+end
+
 ---@return plugin.float_terminal.buf
 local create_new_buffer = function()
 	local len = #state.buffers
 	local buffer = { id = vim.api.nvim_create_buf(false, true), name = '#' .. (len + 1) }
 	table.insert(state.buffers, buffer)
+	clean_state_buffers()
 	return buffer
 end
 
@@ -110,6 +115,7 @@ end
 
 ---@param args plugin.float_terminal.open_floating_window
 local open_floating_term = function(args)
+	clean_state_buffers()
 	if args == nil or args.buffer == nil or not vim.api.nvim_buf_is_valid(args.buffer.id) then
 		print("invalid args: " .. vim.inspect(args))
 		return
@@ -134,11 +140,6 @@ local open_floating_term = function(args)
 		border = "rounded"
 	}
 
-	-- TODO: make this works: get selected text and pass to terminal
-	if args.put_text ~= nil and #args.put_text > 0 then
-		vim.fn.chansend(vim.bo[args.buffer].channel, args.put_text)
-	end
-
 	if is_win_open() then
 		set_buffer(state.curr_buffer)
 	elseif not vim.api.nvim_win_is_valid(state.window.id) then
@@ -146,6 +147,10 @@ local open_floating_term = function(args)
 	end
 	if vim.bo[state.curr_buffer.id].buftype ~= 'terminal' then
 		vim.cmd.terminal()
+	end
+
+	if args.put_text ~= nil and #args.put_text > 0 then
+		vim.fn.chansend(vim.bo[state.curr_buffer.id].channel, args.put_text)
 	end
 	state.window_open = true
 end
@@ -155,9 +160,17 @@ local close_floating_term = function()
 	state.window_open = false
 end
 
-local new_floating_term = function()
+---@param args plugin.float_terminal.open_floating_window|nil
+local new_floating_term = function(args)
+	args = args or {}
 	local buffer = create_new_buffer()
-	open_floating_term({ buffer = buffer })
+	open_floating_term(merge_table(args, { buffer = buffer }))
+end
+
+---@param args plugin.float_terminal.open_floating_window|nil
+local open_current_buf = function(args)
+	args = args or {}
+	open_floating_term(merge_table(args, { buffer = state.curr_buffer }))
 end
 
 local prev_floating_term = function()
@@ -174,14 +187,21 @@ local next_floating_term = function()
 	end
 end
 
-local open_current_buf = function()
-	open_floating_term({ buffer = state.curr_buffer })
-end
-
 vim.api.nvim_create_user_command("FloatTermClose", close_floating_term, {})
 vim.api.nvim_create_user_command("FloatTermNew", new_floating_term, {})
 vim.api.nvim_create_user_command("FloatTermNext", next_floating_term, {})
 vim.api.nvim_create_user_command("FloatTermPrev", prev_floating_term, {})
+vim.api.nvim_create_user_command("FloatTermVisual", function(args)
+	local selected_text = get_selected_text(args)
+	if #state.buffers < 1 then
+		new_floating_term({ put_text = selected_text })
+	elseif is_win_open() then
+		print("Not supported")
+		return
+	else
+		open_current_buf({ put_text = selected_text })
+	end
+end, { range = true, nargs = "*" })
 
 vim.api.nvim_create_user_command("FloatTerm",
 	---@param _ vim.api.keyset.create_user_command.command_args not used
