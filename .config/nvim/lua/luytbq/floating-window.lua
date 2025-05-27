@@ -76,7 +76,7 @@ end
 
 ---@return plugin.float_terminal.buf|nil
 local get_prev_buffer = function()
-	if #state.buffers == 0 then return nil end
+	if #state.buffers == 0 then return create_new_buffer() end
 	if #state.buffers == 1 then return state.buffers[1] end
 	local last_idx = -1
 	for idx, buf in ipairs(state.buffers) do
@@ -89,9 +89,10 @@ local get_prev_buffer = function()
 	end
 end
 
+---Get next buffer. If there is no buffer, create one
 ---@return plugin.float_terminal.buf|nil
 local get_next_buffer = function()
-	if #state.buffers == 0 then return nil end
+	if #state.buffers == 0 then return create_new_buffer() end
 	if #state.buffers == 1 then return state.buffers[1] end
 	local last_idx = -1
 	for idx, buf in ipairs(state.buffers) do
@@ -214,15 +215,32 @@ end, { range = true, nargs = "*" })
 vim.api.nvim_create_user_command("FloatTerm",
 	---@param _ vim.api.keyset.create_user_command.command_args not used
 	function(_)
-		if #state.buffers < 1 then
-			new_floating_term()
-		elseif is_win_open() then
-			close_floating_term()
-		else
-			open_current_buf()
-		end
+		-- if #state.buffers < 1 then
+		-- 	new_floating_term()
+		-- elseif is_win_open() then
+		-- 	close_floating_term()
+		-- else
+		-- 	open_current_buf()
+		-- end
+		next_floating_term()
 	end,
 	{
 		range = true
 	}
 )
+
+-- vim.api.nvim_create_user_command("FloatTerm",
+-- 	---@param _ vim.api.keyset.create_user_command.command_args not used
+-- 	function(_)
+-- 		if #state.buffers < 1 then
+-- 			new_floating_term()
+-- 		elseif is_win_open() then
+-- 			close_floating_term()
+-- 		else
+-- 			open_current_buf()
+-- 		end
+-- 	end,
+-- 	{
+-- 		range = true
+-- 	}
+-- )

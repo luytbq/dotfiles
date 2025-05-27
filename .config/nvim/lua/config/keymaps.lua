@@ -40,13 +40,16 @@ map({ "i", "t" }, "<esc><esc>", "<c-\\><c-n>")
 map({ "i", "t" }, "<c-\\><c-\\>", "<c-\\><c-n>")
 
 map({ "n", "i", "v" }, "<leader>ft", "<cmd>FloatTerm<cr>", { desc = "Open/Next Floating Terminal" })
-map({ "n", "i", "v", "t" }, "<c-/>", "<cmd>FloatTerm<cr>", { desc = "Open/Next Floating Terminal" })
-map({ "n", "i", "v", "t" }, "<c-_>", "<cmd>FloatTerm<cr>", { desc = "Open/Next Floating Terminal" })
-map({ "n" }, "]\\", "<cmd>FloatTermNext<cr>", { desc = "Next Floating Terminal" })
-map({ "n" }, "[\\", "<cmd>FloatTermPrev<cr>", { desc = "Previous Floating Terminal" })
-map({ "n" }, "<leader>tn", "<cmd>FloatTermNew<cr>", { desc = "Previous Floating Terminal" })
+map({ "n", "i", "t" }, "<c-/>", "<cmd>FloatTerm<cr>", { desc = "Open/Next Floating Terminal" })
+map({ "n", "i", "t" }, "<c-_>", "<cmd>FloatTerm<cr>", { desc = "Open/Next Floating Terminal" })
 map({ "v" }, "<c-/>", "<cmd>FloatTermVisual<cr>", { desc = "Send selected text to Floating Terminal" })
 map({ "v" }, "<c-_>", "<cmd>FloatTermVisual<cr>", { desc = "Send selected text to Floating Terminal" })
+
+map({ "n" }, "]\\", "<cmd>FloatTermNext<cr>", { desc = "Next Floating Terminal" })
+map({ "n", "i", "t" }, "<c-?>", "<cmd>FloatTermPrev<cr>", { desc = "Previous Floating Terminal" })
+
+map({ "n" }, "<leader>tn", "<cmd>FloatTermNew<cr>", { desc = "New Floating Terminal" })
+map({ "n", "i", "t" }, "<c-\\>a", "<cmd>FloatTermNew<cr>", { desc = "New Floating Terminal" })
 
 require("config/usercmds")
 require("config/luasnip")
