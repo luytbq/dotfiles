@@ -137,7 +137,7 @@ local open_floating_term = function(args)
 
 	---@type vim.api.keyset.win_config
 	local win_config = {
-		title = '=============== #' .. state.curr_buffer.name .. " ===============",
+		title = '=============== ' .. state.curr_buffer.name .. " ===============",
 		title_pos = 'center',
 		relative = "editor",
 		width = win_width,
