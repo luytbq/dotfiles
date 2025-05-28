@@ -30,7 +30,6 @@ end
 --- @field window_open boolean
 ---
 --- @class plugin.float_terminal.open_floating_window
---- @field win_opts? vim.api.keyset.win_config
 --- @field buffer? plugin.float_terminal.buf
 --- @field put_text? string[] Text to append to buffer
 ---
@@ -120,23 +119,14 @@ local set_buffer = function(buffer)
 	vim.api.nvim_win_set_config(state.window.id, { title = state.curr_buffer.name })
 end
 
----@param args plugin.float_terminal.open_floating_window
-local open_floating_term = function(args)
-	if args == nil or args.buffer == nil or not vim.api.nvim_buf_is_valid(args.buffer.id) then
-		print("invalid args: " .. vim.inspect(args))
-		return
-	end
-
-	state.curr_buffer = args.buffer
-
-	args.win_opts = args.win_opts or {}
-	local win_width = args.win_opts.width or math.floor(vim.o.columns * 0.8)
-	local win_height = args.win_opts.height or math.floor(vim.o.lines * 0.8)
+---@return vim.api.keyset.win_config
+local calculate_win_config = function()
+	local win_width = math.floor(vim.o.columns * 0.8)
+	local win_height = math.floor(vim.o.lines * 0.8)
 	local win_start_col = math.floor((vim.o.columns - win_width) / 2)
 	local win_start_row = math.floor((vim.o.lines - win_height) / 2)
 
-	---@type vim.api.keyset.win_config
-	local win_config = {
+	return {
 		title = '=============== ' .. state.curr_buffer.name .. " ===============",
 		title_pos = 'center',
 		relative = "editor",
@@ -146,6 +136,18 @@ local open_floating_term = function(args)
 		col = win_start_col,
 		border = "rounded"
 	}
+end
+
+---@param args plugin.float_terminal.open_floating_window
+local open_floating_term = function(args)
+	if args == nil or args.buffer == nil or not vim.api.nvim_buf_is_valid(args.buffer.id) then
+		print("invalid args: " .. vim.inspect(args))
+		return
+	end
+
+	state.curr_buffer = args.buffer
+
+	local win_config = calculate_win_config()
 
 	if is_win_open() then
 		set_buffer(state.curr_buffer)
@@ -230,3 +232,13 @@ vim.api.nvim_create_user_command("FloatTerm",
 		range = true
 	}
 )
+
+vim.api.nvim_create_autocmd("VimResized", {
+	group = vim.api.nvim_create_augroup("float-term-resized", { clear = true }),
+	callback = function()
+		local win_config = calculate_win_config()
+		if vim.api.nvim_win_is_valid(state.window.id) then
+			vim.api.nvim_win_set_config(state.window.id, win_config)
+		end
+	end
+})
