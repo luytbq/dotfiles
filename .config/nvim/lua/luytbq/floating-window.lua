@@ -46,8 +46,9 @@ local state = {
 local clean_state_buffers = function()
 	---@type plugin.float_terminal.buf[]
 	local buffers = {}
-	for _, v in ipairs(state.buffers) do
+	for i, v in ipairs(state.buffers) do
 		if vim.api.nvim_buf_is_valid(v.id) then
+			v.name = "#" .. i
 			table.insert(buffers, v)
 		end
 	end
@@ -66,9 +67,10 @@ end
 local create_new_buffer = function()
 	clean_state_buffers()
 	local len = #state.buffers
+	---@type plugin.float_terminal.buf
 	local buffer = {
 		id = vim.api.nvim_create_buf(false, true),
-		name = '=============== #' .. (len + 1) .. " ==============="
+		name = "#" .. (len + 1)
 	}
 	table.insert(state.buffers, buffer)
 	return buffer
@@ -76,6 +78,7 @@ end
 
 ---@return plugin.float_terminal.buf|nil
 local get_prev_buffer = function()
+	clean_state_buffers()
 	if #state.buffers == 0 then return nil end
 	if #state.buffers == 1 then return state.buffers[1] end
 	local last_idx = -1
@@ -91,6 +94,7 @@ end
 
 ---@return plugin.float_terminal.buf|nil
 local get_next_buffer = function()
+	clean_state_buffers()
 	if #state.buffers == 0 then return nil end
 	if #state.buffers == 1 then return state.buffers[1] end
 	local last_idx = -1
@@ -133,7 +137,7 @@ local open_floating_term = function(args)
 
 	---@type vim.api.keyset.win_config
 	local win_config = {
-		title = state.curr_buffer.name,
+		title = '=============== #' .. state.curr_buffer.name .. " ===============",
 		title_pos = 'center',
 		relative = "editor",
 		width = win_width,
