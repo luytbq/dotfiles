@@ -18,14 +18,15 @@ return {
 			},
 			ollama = {
 				-- model = "qwq:32b",
-				model = "llama3.2:latest",
+				-- model = "llama3.2:latest",
+				model = "devstral:latest",
 			},
 			rag_service = {
-				enabled = false,          -- Enables the RAG service
+				enabled = false,         -- Enables the RAG service
 				host_mount = os.getenv("HOME"), -- Host mount path for the rag service
-				provider = "openai",      -- The provider to use for RAG service (e.g. openai or ollama)
-				llm_model = "",           -- The LLM model to use for RAG service
-				embed_model = "",         -- The embedding model to use for RAG service
+				provider = "openai",     -- The provider to use for RAG service (e.g. openai or ollama)
+				llm_model = "",          -- The LLM model to use for RAG service
+				embed_model = "",        -- The embedding model to use for RAG service
 				endpoint = "http://localhost:11434", -- The API endpoint for RAG service
 			},
 		},
