@@ -1,18 +1,19 @@
 #!/bin/bash
 
-ssh_sync_java_and_exec() {
-	if [ "$#" -ne 5 ]; then
-		echo "Usage: ssh_sync_java ssh_user ssh_host ssh_port rsync_base_dir remote_command"
+ssh_fzf_sync_and_execute() {
+	if [ "$#" -ne 6 ]; then
+		echo "Usage: ssh_fzf_sync_and_execute source_dir ssh_user ssh_host ssh_port rsync_base_dir remote_command"
 		return 1
 	fi
 
-	SSH_USER="$1"
-	SSH_HOST="$2"
-	SSH_PORT="$3"
-	RSYNC_BASE_DIR="$4"
-	REMOTE_CMD="$5"
+	SOURCE_DIR="$1"
+	SSH_USER="$2"
+	SSH_HOST="$3"
+	SSH_PORT="$4"
+	RSYNC_BASE_DIR="$5"
+	REMOTE_CMD="$6"
 
-	ssh_sync_java "$SSH_USER" "$SSH_HOST" "$SSH_PORT" "$RSYNC_BASE_DIR"
+	ssh_fzf_sync "$SOURCE_DIR" "$SSH_USER" "$SSH_HOST" "$SSH_PORT" "$RSYNC_BASE_DIR"
 
 	if [ $? -ne 0 ]; then
 		echo "Sync failed."
@@ -23,18 +24,19 @@ ssh_sync_java_and_exec() {
 	return $?
 }
 
-ssh_sync_java() {
-	if [ "$#" -ne 4 ]; then
-		echo "Usage: ssh_sync_java ssh_user ssh_host ssh_port rsync_base_dir"
+ssh_fzf_sync() {
+	if [ "$#" -ne 5 ]; then
+		echo "Usage: ssh_fzf_sync source_dir ssh_user ssh_host ssh_port rsync_base_dir"
 		return 1
 	fi
 
-	SSH_USER="$1"
-	SSH_HOST="$2"
-	SSH_PORT="$3"
-	RSYNC_BASE_DIR="$4"
+	SOURCE_DIR="$1"
+	SSH_USER="$2"
+	SSH_HOST="$3"
+	SSH_PORT="$4"
+	RSYNC_BASE_DIR="$5"
 
-	SELECTED_FILES=$(find ./target/classes -type f | sed 's|^\./target/classes/||' | fzf --multi)
+	SELECTED_FILES=$(find $SOURCE_DIR -type f | sed 's|^$SOURCE_DIR||' | fzf --multi)
 
 	if [ -z "$SELECTED_FILES" ]; then
 		echo "No files selected."
@@ -44,17 +46,18 @@ ssh_sync_java() {
 	local EXIT_CODE=0
 
 	echo "$SELECTED_FILES" | while read -r FILE_PATH; do
-	SRC="./target/classes/$FILE_PATH"
-	DEST="$SSH_USER@$SSH_HOST:$RSYNC_BASE_DIR$FILE_PATH"
+		SRC="$FILE_PATH"
+		REMOTE_PATH=$(echo "$FILE_PATH" | sed 's|^'"$SOURCE_DIR"'||' | sed 's|^/||')
+		DEST="$SSH_USER@$SSH_HOST:$RSYNC_BASE_DIR$REMOTE_PATH"
 
-	echo "Syncing $SRC to $DEST"
-	rsync -avz -e "ssh -p $SSH_PORT" "$SRC" "$DEST"
-	RSYNC_EXIT_CODE=$?
-	if [ $RSYNC_EXIT_CODE -ne 0 ]; then
-		echo "Error syncing $FILE_PATH (exit code $RSYNC_EXIT_CODE)"
-		EXIT_CODE=$RSYNC_EXIT_CODE
-	fi
-done
+		echo "Syncing $SRC to $DEST"
+		rsync -avz -e "ssh -p $SSH_PORT" "$SRC" "$DEST"
+		RSYNC_EXIT_CODE=$?
+		if [ $RSYNC_EXIT_CODE -ne 0 ]; then
+			echo "Error syncing $FILE_PATH (exit code $RSYNC_EXIT_CODE)"
+			EXIT_CODE=$RSYNC_EXIT_CODE
+		fi
+	done
 
 return $EXIT_CODE
 }
