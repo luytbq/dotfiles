@@ -1,3 +1,53 @@
+create_mr() {
+    local source=""
+    local target="prod"
+    local description=""
+
+    # Parse named arguments
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --source)
+                source="$2"
+                shift 2
+                ;;
+            --target)
+                target="$2"
+                shift 2
+                ;;
+            --description)
+                description="$2"
+                shift 2
+                ;;
+            *)
+                echo "Unknown argument: $1"
+                return 1
+                ;;
+        esac
+    done
+
+    local repo_url
+    repo_url=$(git remote get-url origin)
+
+    if [[ -z "$source" ]]; then
+        source=$(git branch --show-current)
+    fi
+
+    # Convert SSH URL to HTTPS URL
+    local repo_https_url
+    repo_https_url=$(echo "$repo_url" | sed -E 's#ssh://git@([^:]+):[0-9]+/(.+)\.git#https://\1/\2#')
+
+    echo "Repo URL (HTTPS): $https_url"
+    echo "Source Branch: $source"
+    echo "Target Branch: $target"
+
+	local mr_url="${repo_https_url}/-/merge_requests/new"
+	mr_url="${mr_url}?merge_request[source_branch]=${source}"
+	mr_url="${mr_url}&merge_request[target_branch]=${target}"
+	mr_url="${mr_url}&merge_request[description]=${description}"
+    echo "New merge request URL:"
+	echo "$mr_url"
+}
+
 replace_dev_domain() {
 	local subdomain="$1"
 	if [[ -z "$subdomain" ]]; then
