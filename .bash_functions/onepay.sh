@@ -1,0 +1,46 @@
+replace_dev_domain() {
+	local subdomain="$1"
+	if [[ -z "$subdomain" ]]; then
+		echo "Usage: replace_dev_domain dev18"
+		return 1
+	fi
+
+	find . -type f -name "*.ts" \
+		! -path "./node_modules/*" \
+		! -path "./dist/*" \
+		! -path "./.git/*" \
+		! -name "lang-vi.ts" \
+		! -name "lang-en.ts" \
+		-exec grep -lE 'https://(.*)onepay.vn' {} + \
+		| xargs sed -i "s|https://\(.*\)onepay.vn|https://${subdomain}.onepay.vn|g"
+}
+
+watch_angular() {
+	echo "Cleaning dist/..."
+	rm -rf dist/
+	echo "Starting watch build..."
+	ng build --optimization=false --build-optimizer=false --watch "$@"
+}
+
+build_theme_and_sync() {
+	local host="$1"
+	local theme="$2"
+
+	set -e # Exit on error
+
+	if [[ -z "$host" || -z "$theme" ]]; then
+		echo "Usage: ${0} <host> <theme>"
+		echo "Example: ${0} dev18 installment"
+		return 1
+	fi
+
+	nvm use 16
+
+	replace_dev_domain $host
+
+	echo "Cleaning dist/..."
+	rm -rf dist/
+	echo "Building theme"
+	ng build --configuration production --base-href=/paygate/${theme}/ --output-path=dist/paygate/${theme}/
+	rsync -av --progress --delete --rsh='ssh -p7602' dist/paygate/${theme}/ root@${host}:/usr/share/nginx/onepay.vn/paygate/${theme}/
+}
