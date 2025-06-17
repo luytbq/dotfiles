@@ -1,4 +1,3 @@
-
 vim.keymap.set("n", "<leader>ls", "<cmd>source ~/.config/nvim/lua/config/luasnip.lua<CR>")
 
 local ls = require("luasnip")
@@ -39,15 +38,15 @@ ls.add_snippets("html", {
 })
 
 ls.add_snippets("javascript", {
-	s("consolelog", fmt("console.log({})", { i(1, 'x') }) )
+	s("consolelog", fmt("console.log({})", { i(1, 'x') }))
 })
 
 ls.add_snippets("typescript", {
-	s("consolelog", fmt("console.log({})", { i(1, 'x') }) )
+	s("consolelog", fmt("console.log({})", { i(1, 'x') }))
 })
 
 ls.add_snippets("lua", {
-	s("local require", fmt("local {} = require\"{}\"", { i(1, "default"), rep(1) } ))
+	s("local require", fmt("local {} = require\"{}\"", { i(1, "default"), rep(1) }))
 })
 
 ls.add_snippets("java", {
@@ -57,8 +56,8 @@ ls.add_snippets("java", {
 	)),
 })
 
-vim.keymap.set({"i", "s"}, "<c-y>", function ()
-	if require"luasnip".expand_or_jumpable() then
-		require"luasnip".expand_or_jump()
+vim.keymap.set({ "i", "s" }, "<c-y>", function()
+	if require "luasnip".expand_or_jumpable() then
+		require "luasnip".expand_or_jump()
 	end
 end)

@@ -12,3 +12,5 @@ vim.g.autoformat = false
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.o.expandtab = false
+
+-- vim.lsp.set_log_level(vim.log.levels.DEBUG)
