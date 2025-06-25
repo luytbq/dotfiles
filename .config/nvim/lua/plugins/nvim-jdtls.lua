@@ -50,18 +50,16 @@ return {
 					'-Declipse.product=org.eclipse.jdt.ls.core.product',
 					'-Dlog.protocol=true',
 					'-Dlog.level=ALL',
-					'-Xmx1g',
+					'-Xms1g',
+					'-Xmx4g',
 					'--add-modules=ALL-SYSTEM',
 					'--add-opens', 'java.base/java.util=ALL-UNNAMED',
 					'--add-opens', 'java.base/java.lang=ALL-UNNAMED',
 
-					-- '-Xms4g',
 					'-XX:+UseParallelGC',
 					'-XX:GCTimeRatio=4',
 					'-XX:AdaptiveSizePolicyWeight=90',
 					-- '-Dsun.zip.disableMemoryMapping=true',
-					-- '-Xmx4G',
-					'-Xms100m',
 
 					-- 💀
 					'-jar', jdtls_install_path .. '/plugins/org.eclipse.equinox.launcher_1.7.0.v20250331-1702.jar',
