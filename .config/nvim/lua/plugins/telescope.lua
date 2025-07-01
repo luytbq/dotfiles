@@ -6,9 +6,13 @@ return {
 	dependencies = { 'nvim-lua/plenary.nvim', build = 'make' },
 	config = function(opts)
 		require('telescope').setup {
+			defaults = {
+				layout_strategy = 'horizontal',
+				layout_config = { width = 0.95 },
+			},
 			pickers = {
-				find_files = {
-					theme = "ivy"
+				buffers = {
+					theme = "dropdown"
 				},
 				marks = {
 					attach_mappings = function(_, map)
@@ -16,9 +20,9 @@ return {
 						return true
 					end,
 				},
-				-- live_grep = {
-				--   theme = "ivy"
-				-- }
+				live_grep = {
+					theme = "ivy"
+				}
 			},
 		}
 
