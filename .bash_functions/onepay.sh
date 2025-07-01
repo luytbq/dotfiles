@@ -1,3 +1,9 @@
+m1() {
+	git checkout -f prod && git pull && git checkout -b luytbq/prod/ENH_20250423_065-phase2
+}
+m2() {
+	create_mr --target prod --description https://10.36.36.63:8618/op_pm/Project/Detail/472b1fa5-0063-4e56-bcb6-3d95c334f1e8
+}
 create_mr() {
     local source=""
     local target="prod"
