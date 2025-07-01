@@ -2,11 +2,12 @@ m1() {
 	git checkout -f prod && git pull && git checkout -b luytbq/prod/ENH_20250423_065-phase2
 }
 m2() {
-	create_mr --target prod --description https://10.36.36.63:8618/op_pm/Project/Detail/472b1fa5-0063-4e56-bcb6-3d95c334f1e8
+	create_mr --target prod --title "ENH_20250423_065 phase 2" --description https://10.36.36.63:8618/op_pm/Project/Detail/472b1fa5-0063-4e56-bcb6-3d95c334f1e8
 }
 create_mr() {
     local source=""
     local target="prod"
+    local title=""
     local description=""
 
     # Parse named arguments
@@ -18,6 +19,10 @@ create_mr() {
                 ;;
             --target)
                 target="$2"
+                shift 2
+                ;;
+            --title)
+                title="$2"
                 shift 2
                 ;;
             --description)
@@ -49,6 +54,7 @@ create_mr() {
 	local mr_url="${repo_https_url}/-/merge_requests/new"
 	mr_url="${mr_url}?merge_request[source_branch]=${source}"
 	mr_url="${mr_url}&merge_request[target_branch]=${target}"
+	mr_url="${mr_url}&merge_request[title]=${title}"
 	mr_url="${mr_url}&merge_request[description]=${description}"
     echo "New merge request URL:"
 	echo "$mr_url"
@@ -72,10 +78,17 @@ replace_dev_domain() {
 }
 
 watch_angular() {
+	local theme="$1"
 	echo "Cleaning dist/..."
 	rm -rf dist/
 	echo "Starting watch build..."
-	ng build --optimization=false --build-optimizer=false --watch "$@"
+	ng build --configuration production --base-href=/paygate/${theme}/ --output-path=dist/paygate/${theme}/ --watch --watch
+}
+
+sync_theme() {
+	local host="$1"
+	local theme="$2"
+	rsync -av --progress --delete --rsh='ssh -p7602' dist/paygate/${theme}/ root@${host}:/usr/share/nginx/onepay.vn/paygate/${theme}/
 }
 
 build_theme_and_sync() {
@@ -98,5 +111,5 @@ build_theme_and_sync() {
 	rm -rf dist/
 	echo "Building theme"
 	ng build --configuration production --base-href=/paygate/${theme}/ --output-path=dist/paygate/${theme}/
-	rsync -av --progress --delete --rsh='ssh -p7602' dist/paygate/${theme}/ root@${host}:/usr/share/nginx/onepay.vn/paygate/${theme}/
+	sync_theme "$host" "$theme"
 }
