@@ -1,9 +1,26 @@
-m1() {
-	git checkout -f prod && git pull && git checkout -b luytbq/prod/ENH_20250423_065-phase2
+get_repo_url() {
+    echo $(git remote get-url origin)
 }
-m2() {
-	create_mr --target prod --title "ENH_20250423_065 phase 2" --description https://10.36.36.63:8618/op_pm/Project/Detail/472b1fa5-0063-4e56-bcb6-3d95c334f1e8
+
+get_repo_url_http() {
+	local repo_url=$(get_repo_url)
+    repo_url_https=$(echo "$repo_url" | sed -E 's#ssh://git@([^:]+):[0-9]+/(.+)\.git#https://\1/\2#')
+
+	echo $repo_url_https
 }
+
+get_repo_group() {
+	local repo_url=$(get_repo_url)
+	repo_url_https=$(echo "$repo_url" | sed -E 's#.*onepay/([^/]+)/.*#\1#')
+	echo $repo_url_https
+}
+
+get_repo_name() {
+	local repo_url=$(get_repo_url)
+	repo_url_https=$(echo "$repo_url" | sed -E 's#.*/([^/]+).git$#\1#')
+	echo $repo_url_https
+}
+
 create_mr() {
     local source=""
     local target="prod"
