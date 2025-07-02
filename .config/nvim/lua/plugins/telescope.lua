@@ -12,7 +12,8 @@ return {
 			},
 			pickers = {
 				buffers = {
-					theme = "dropdown"
+					theme = "dropdown",
+					layout_config = { width = 0.95 },
 				},
 				marks = {
 					attach_mappings = function(_, map)
@@ -21,7 +22,7 @@ return {
 					end,
 				},
 				live_grep = {
-					theme = "ivy"
+					theme = "ivy",
 				}
 			},
 		}
