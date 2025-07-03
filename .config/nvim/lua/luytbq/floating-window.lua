@@ -112,11 +112,16 @@ local is_win_open = function()
 	return state.window_open and vim.api.nvim_win_is_valid(state.window.id)
 end
 
+---@return string
+local get_title = function()
+	return '=============== ' .. state.curr_buffer.name .. ' / ' .. #state.buffers .. ' ==============='
+end
+
 ---@param buffer plugin.float_terminal.buf
 local set_buffer = function(buffer)
 	state.curr_buffer = buffer
 	vim.api.nvim_win_set_buf(state.window.id, buffer.id)
-	vim.api.nvim_win_set_config(state.window.id, { title = state.curr_buffer.name })
+	vim.api.nvim_win_set_config(state.window.id, { title = get_title() })
 end
 
 ---@return vim.api.keyset.win_config
@@ -127,7 +132,7 @@ local calculate_win_config = function()
 	local win_start_row = math.floor((vim.o.lines - win_height) / 2)
 
 	return {
-		title = '=============== ' .. state.curr_buffer.name .. " ===============",
+		title = get_title(),
 		title_pos = 'center',
 		relative = "editor",
 		width = win_width,
