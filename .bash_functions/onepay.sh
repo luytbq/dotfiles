@@ -207,5 +207,5 @@ build_theme_and_sync() {
 	rm -rf dist/
 	echo "Building theme"
 	ng build --configuration production --base-href=/paygate/${theme}/ --output-path=dist/paygate/${theme}/
-	sync_theme "$host" "$theme"
+	sync_theme --host "$host" --theme "$theme"
 }
