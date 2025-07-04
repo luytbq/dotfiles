@@ -37,7 +37,6 @@ get_theme_name() {
 	echo "$theme_name"
 }
 
-
 create_mr() {
     local source=""
     local target="prod"
@@ -94,6 +93,23 @@ create_mr() {
 	echo "$mr_url"
 }
 
+pipelines_check() {
+	repo_url_http=$(get_repo_url_http)
+	url="${repo_url_http}/-/pipelines"
+	echo "Open ${url}"
+
+	if command -v open >/dev/null; then
+		open "$url"
+	elif command -v xdg-open >/dev/null; then
+		xdg-open "$url"
+	elif command -v start >/dev/null; then
+		start "$url"
+	else
+		echo "No supported command found to open a browser."
+		exit 1
+	fi
+}
+
 replace_dev_domain() {
 	local subdomain="$1"
 	if [[ -z "$subdomain" ]]; then
@@ -123,23 +139,49 @@ watch_angular() {
 	rm -rf dist/
 
 	nvm use 16
-	local cmd="ng build --configuration production --base-href=/paygate/${theme}/ --output-path=dist/paygate/${theme}/ --watch"
+	local cmd="ng build --configuration production --base-href=/paygate/${theme}/ --output-path=dist/paygate/${theme}/ --watch --optimization=false --build-optimizer=false"
 	echo "Running command:"
 	echo "$cmd"
 	eval "$cmd"
 }
 
 sync_theme() {
-	local host="$1"
-	local theme="$2"
+	local host=""
+	local theme=""
+    local user="root"
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --host)
+                host="$2"
+                shift 2
+                ;;
+            --theme)
+                theme="$2"
+                shift 2
+                ;;
+            --user)
+                user="$2"
+                shift 2
+                ;;
+            *)
+                echo "Unknown argument: $1"
+                return 1
+                ;;
+        esac
+    done
+
+	if [[ -z "$theme" ]]; then
+		theme=$(get_theme_name)
+	fi
 
 	if [[ -z "$host" || -z "$theme" ]]; then
-		echo "Usage: command <host> <theme>"
-		echo "Example: command dev18 installment"
+		echo "Usage: command --user <user> --host <host> --theme <theme>"
+		echo "Example: command --user luytbq --host dev18 --theme installment"
 		return 1
 	fi
 
-	local cmd="rsync -av --progress --delete --rsh='ssh -p7602' dist/paygate/${theme}/ root@${host}:/usr/share/nginx/onepay.vn/paygate/${theme}/"
+	local cmd="rsync -av --progress --delete --rsh='ssh -p7602' dist/paygate/${theme}/ ${user}@${host}:/usr/share/nginx/onepay.vn/paygate/${theme}/"
 	echo "Running command:"
 	echo "$cmd"
 	eval "$cmd"
