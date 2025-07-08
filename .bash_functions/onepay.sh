@@ -181,8 +181,8 @@ sync_theme() {
 		return 1
 	fi
 
+	echo "Syncing theme:"
 	local cmd="rsync -av --progress --delete --rsh='ssh -p7602' dist/paygate/${theme}/ ${user}@${host}:/usr/share/nginx/onepay.vn/paygate/${theme}/"
-	echo "Running command:"
 	echo "$cmd"
 	eval "$cmd"
 }
@@ -230,7 +230,10 @@ build_theme_and_sync() {
 
 	echo "Cleaning dist/..."
 	rm -rf dist/
-	echo "Building theme"
-	ng build --configuration production --base-href=/paygate/${theme}/ --output-path=dist/paygate/${theme}/
+	echo "Building theme ..."
+	local cmd="ng build --configuration production --base-href=/paygate/${theme}/ --output-path=dist/paygate/${theme}/"
+	echo "$cmd"
+	eval "$cmd"
+	#ng build --configuration production --base-href=/paygate/${theme}/ --output-path=dist/paygate/${theme}/
 	sync_theme --user "$user" --host "$host" --theme "$theme"
 }
