@@ -176,8 +176,8 @@ sync_theme() {
 	fi
 
 	if [[ -z "$host" || -z "$theme" ]]; then
-		echo "Usage: command --user <user> --host <host> --theme <theme>"
-		echo "Example: command --user luytbq --host dev18 --theme installment"
+		echo "Usage: sync_theme --user <user> --host <host> --theme <theme>"
+		echo "Example: sync_theme --user luytbq --host dev18 --theme installment"
 		return 1
 	fi
 
@@ -188,14 +188,39 @@ sync_theme() {
 }
 
 build_theme_and_sync() {
-	local host="$1"
-	local theme="$2"
+	local host=""
+	local theme=""
+    local user="root"
 
-	set -e # Exit on error
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --host)
+                host="$2"
+                shift 2
+                ;;
+            --theme)
+                theme="$2"
+                shift 2
+                ;;
+            --user)
+                user="$2"
+                shift 2
+                ;;
+            *)
+                echo "Unknown argument: $1"
+                return 1
+                ;;
+        esac
+    done
+
+
+	if [[ -z "$theme" ]]; then
+		theme=$(get_theme_name)
+	fi
 
 	if [[ -z "$host" || -z "$theme" ]]; then
-		echo "Usage: command <host> <theme>"
-		echo "Example: command dev18 installment"
+		echo "Usage: build_theme_and_sync --user <user> --host <host> --theme <theme>"
+		echo "Example: build_theme_and_sync --user luytbq --host dev18 --theme installment"
 		return 1
 	fi
 
@@ -207,5 +232,5 @@ build_theme_and_sync() {
 	rm -rf dist/
 	echo "Building theme"
 	ng build --configuration production --base-href=/paygate/${theme}/ --output-path=dist/paygate/${theme}/
-	sync_theme --host "$host" --theme "$theme"
+	sync_theme --user "$user" --host "$host" --theme "$theme"
 }
