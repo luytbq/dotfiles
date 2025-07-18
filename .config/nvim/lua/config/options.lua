@@ -8,9 +8,10 @@ opt.smoothscroll = false
 
 vim.b.autoformat = false
 vim.g.autoformat = false
+vim.g.editorconfig = false
 
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
-vim.o.expandtab = false
+vim.o.expandtab = true
 
 -- vim.lsp.set_log_level(vim.log.levels.DEBUG)
