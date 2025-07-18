@@ -74,7 +74,7 @@ get_repo_url() {
 get_repo_url_http() {
     local repo_url
     repo_url=$(get_repo_url) || return 1
-    echo "$repo_url" | sed -E 's#ssh://git@([^:]+):[0-9]+/(.+)\.git#https://\1/\2#'
+    echo "$repo_url" | sed -E 's#ssh://git@([^:]+):[0-9]+/(.+)(\.git)?$#https://\1/\2#'
 }
 
 # Extract repository group from URL
