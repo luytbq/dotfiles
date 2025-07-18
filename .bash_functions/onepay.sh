@@ -228,7 +228,7 @@ sync_theme() {
     fi
 
     if [[ "${args[host]}" == "dev18" ]]; then
-		sync_theme_dev18 --user "${args[user]}" --host "${args[host]}" --theme "${args[theme]}"
+		sync_theme_dev18 --user "${args[user]}" --host "${args[host]}" --theme "${args[theme]}" --port "${args[port]}"
         return $?
     fi
 
