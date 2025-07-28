@@ -10,6 +10,28 @@ vim.api.nvim_create_user_command("SetTabStop",
     }
 )
 
+-- ToggleWrap command to toggle line wrapping with state persistence
+vim.api.nvim_create_user_command("ToggleWrap",
+    function()
+        -- Toggle the wrap state
+        local current_wrap = vim.wo.wrap
+        vim.wo.wrap = not current_wrap
+
+        -- Save the state to a JSON file
+        local state_file = vim.fn.stdpath("data") .. "/wrap_state.json"
+        local state = { wrap = not current_wrap }
+        local json_str = vim.fn.json_encode(state)
+
+        -- Write the state to file
+        local file = io.open(state_file, "w")
+        if file then
+            file:write(json_str)
+            file:close()
+        end
+    end,
+    { nargs = 0 }
+)
+
 vim.api.nvim_create_user_command("Format",
     function()
         vim.lsp.buf.format()
