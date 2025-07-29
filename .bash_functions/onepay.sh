@@ -74,7 +74,7 @@ get_repo_url() {
 get_repo_url_http() {
     local repo_url
     repo_url=$(get_repo_url) || return 1
-    echo "$repo_url" | sed -E 's#ssh://git@([^:]+):[0-9]+/(.+)(\.git)?$#https://\1/\2#'
+    echo "$repo_url" | sed -E 's#ssh://git@([^:]+):[0-9]+/(.+)(\.git)?$#https://\1/\2#' | sed 's/\.git$//'
 }
 
 # Extract repository group from URL
@@ -134,8 +134,7 @@ create_mr() {
     [[ -n "$title" ]] && mr_url="${mr_url}&merge_request[title]=${title}"
     [[ -n "$description" ]] && mr_url="${mr_url}&merge_request[description]=${description}"
 
-    echo "Merge request URL:"
-    echo "$mr_url"
+    open_url "$mr_url"
 }
 
 # Check CI/CD pipelines in browser
@@ -144,7 +143,12 @@ pipelines_check() {
     repo_url=$(get_repo_url_http) || return 1
     local url="${repo_url}/-/pipelines"
 
-    echo "Opening pipeline URL: $url" >&2
+    open_url "$url"
+}
+
+open_url() {
+    local url=$1
+    echo "Opening URL: $url" >&2
     if command -v open >/dev/null; then
         open "$url"
     elif command -v xdg-open >/dev/null; then
