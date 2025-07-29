@@ -16,16 +16,27 @@ vim.o.expandtab = true
 
 -- vim.lsp.set_log_level(vim.log.levels.DEBUG)
 
--- Load wrap state from file
-local state_file = vim.fn.stdpath("data") .. "/wrap_state.json"
+-- Load editor state from file
+local state_file = vim.fn.stdpath("data") .. "/editor_state.json"
 local file = io.open(state_file, "r")
 if file then
-    local content = file:read("*all")
-    file:close()
+  local content = file:read("*all")
+  file:close()
 
-    -- Parse JSON and set wrap state
-    local ok, state = pcall(vim.fn.json_decode, content)
-    if ok and state and state.wrap ~= nil then
-        vim.opt.wrap = state.wrap
+  -- Parse JSON and set states
+  local ok, state = pcall(vim.fn.json_decode, content)
+  if ok and state then
+    -- Set wrap state if exists
+    if state.wrap ~= nil then
+      opt.wrap = state.wrap
     end
+
+    -- Set tabstop state if exists
+    if state.tabstop ~= nil then
+      opt.tabstop = state.tabstop
+      opt.softtabstop = state.tabstop
+      opt.shiftwidth = state.tabstop
+    end
+  end
+
 end
