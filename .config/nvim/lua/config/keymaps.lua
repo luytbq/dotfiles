@@ -12,15 +12,15 @@ map("v", "<leader>x", ":lua<CR>")
 -- Quickfix navigation
 X_QUICKFIX_OPENING = false
 map("n", "<leader>qo", -- toggle the quickfix list window
-	function()
-		if not X_QUICKFIX_OPENING then
-			vim.cmd("copen")
-			X_QUICKFIX_OPENING = true
-		else
-			vim.cmd("cclose")
-			X_QUICKFIX_OPENING = false
-		end
-	end)
+    function()
+        if not X_QUICKFIX_OPENING then
+            vim.cmd("copen")
+            X_QUICKFIX_OPENING = true
+        else
+            vim.cmd("cclose")
+            X_QUICKFIX_OPENING = false
+        end
+    end)
 map("n", "[q", "<cmd>cprev<CR>")
 map("n", "]q", "<cmd>cnext<CR>")
 
@@ -47,6 +47,8 @@ map({ "n" }, "[\\", "<cmd>FloatTermPrev<cr>", { desc = "Previous Floating Termin
 map({ "n" }, "<leader>tn", "<cmd>FloatTermNew<cr>", { desc = "Previous Floating Terminal" })
 map({ "v" }, "<c-/>", "<cmd>FloatTermVisual<cr>", { desc = "Send selected text to Floating Terminal" })
 map({ "v" }, "<c-_>", "<cmd>FloatTermVisual<cr>", { desc = "Send selected text to Floating Terminal" })
+
+map({ "n", "i", "v" }, "<c-x>", "<cmd>CopilotChatToggle<cr>", { desc = "CopilotChatToggle" })
 
 require("config/usercmds")
 require("config/luasnip")
