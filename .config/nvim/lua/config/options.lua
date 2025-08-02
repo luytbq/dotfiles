@@ -16,27 +16,19 @@ vim.o.expandtab = true
 
 -- vim.lsp.set_log_level(vim.log.levels.DEBUG)
 
+local utils = require("config.utils")
+
 -- Load editor state from file
-local state_file = vim.fn.stdpath("data") .. "/editor_state.json"
-local file = io.open(state_file, "r")
-if file then
-  local content = file:read("*all")
-  file:close()
-
-  -- Parse JSON and set states
-  local ok, state = pcall(vim.fn.json_decode, content)
-  if ok and state then
-    -- Set wrap state if exists
-    if state.wrap ~= nil then
-      opt.wrap = state.wrap
+-- local state_file = vim.fn.stdpath("data") .. "/editor_config.json"
+local project_config = utils.get_project_config()
+if project_config then
+    if project_config.wrap ~= nil then
+        opt.wrap = project_config.wrap
     end
 
-    -- Set tabstop state if exists
-    if state.tabstop ~= nil then
-      opt.tabstop = state.tabstop
-      opt.softtabstop = state.tabstop
-      opt.shiftwidth = state.tabstop
+    if project_config.tabstop ~= nil then
+        opt.tabstop = project_config.tabstop
+        opt.softtabstop = project_config.tabstop
+        opt.shiftwidth = project_config.tabstop
     end
-  end
-
 end

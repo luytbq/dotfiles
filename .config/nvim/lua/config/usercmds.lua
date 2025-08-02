@@ -1,3 +1,5 @@
+local utils = require("config.utils")
+
 vim.api.nvim_create_user_command("SetTabStop",
     function(cmd_args)
         -- Toggle between 2 and 4 if no args provided
@@ -13,31 +15,8 @@ vim.api.nvim_create_user_command("SetTabStop",
         vim.cmd("set softtabstop=" .. tabWidth)
         vim.cmd("set shiftwidth=" .. tabWidth)
 
-        -- Save the state to a JSON file
-        local state_file = vim.fn.stdpath("data") .. "/editor_state.json"
-
-        -- Read existing state file
-        local state = {}
-        local existing_file = io.open(state_file, "r")
-        if existing_file then
-            local content = existing_file:read("*all")
-            existing_file:close()
-            local ok, existing_state = pcall(vim.fn.json_decode, content)
-            if ok and existing_state then
-                state = existing_state
-            end
-        end
-
-        -- Update tabstop state
-        state.tabstop = tabWidth
-
-        -- Write updated state back to file
-        local json_str = vim.fn.json_encode(state)
-        local file = io.open(state_file, "w")
-        if file then
-            file:write(json_str)
-            file:close()
-        end
+        -- Save the config
+        utils.save_project_config({ tabstop = tabWidth })
     end,
     {
         nargs = "?" -- Optional argument
@@ -51,31 +30,8 @@ vim.api.nvim_create_user_command("ToggleWrap",
         local current_wrap = vim.wo.wrap
         vim.wo.wrap = not current_wrap
 
-        -- Save the state to a JSON file
-        local state_file = vim.fn.stdpath("data") .. "/editor_state.json"
-
-        -- Read existing state file
-        local state = {}
-        local existing_file = io.open(state_file, "r")
-        if existing_file then
-            local content = existing_file:read("*all")
-            existing_file:close()
-            local ok, existing_state = pcall(vim.fn.json_decode, content)
-            if ok and existing_state then
-                state = existing_state
-            end
-        end
-
-        -- Update wrap state
-        state.wrap = not current_wrap
-
-        -- Write updated state back to file
-        local json_str = vim.fn.json_encode(state)
-        local file = io.open(state_file, "w")
-        if file then
-            file:write(json_str)
-            file:close()
-        end
+        -- Save the config
+        utils.save_project_config({ wrap = current_wrap })
     end,
     { nargs = 0 }
 )
