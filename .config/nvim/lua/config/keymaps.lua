@@ -24,7 +24,7 @@ map("n", "<leader>qo", -- toggle the quickfix list window
 map("n", "[q", "<cmd>cprev<CR>")
 map("n", "]q", "<cmd>cnext<CR>")
 
--- Change paste behavior: keep register after overwrite text
+-- change paste behavior: keep register after overwrite text
 map({ "v" }, "p", "pgvy")
 
 map("n", "<A-j>", ":m .+1<CR>==")     -- move line up(n)
@@ -52,6 +52,7 @@ map({ "n", "i", "v" }, "<c-x>", "<cmd>CopilotChatToggle<cr>", { desc = "CopilotC
 vim.g.copilot_no_tab_map = true
 vim.api.nvim_set_keymap("i", "<c-e>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
 
+-- vim.keymap.set('n', '<Leader>cp', ':CopyPath<CR>', { desc = 'Copy current file path' })
 
 require("config/usercmds")
 require("config/luasnip")
