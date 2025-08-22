@@ -14,7 +14,26 @@ local function get_selected_text()
     end
 end
 
--- State
+--- @class plugin.float_terminal.buf
+--- @field id integer buffer id
+--- @field name? string buffer name
+---
+--- @class plugin.float_terminal.win
+--- @field id integer window id
+--- @field name? string window name
+---
+--- @class plugin.float_terminal.state
+--- @field buffers plugin.float_terminal.buf[]
+--- @field curr_buffer plugin.float_terminal.buf
+--- @field window plugin.float_terminal.win
+--- @field window_open boolean
+---
+--- @class plugin.float_terminal.open_floating_window
+--- @field buffer? plugin.float_terminal.buf
+--- @field put_text? string[] Text to append to buffer
+---
+
+---@type plugin.float_terminal.state
 local state = {
     buffers = {},
     curr_buffer = { id = -1 },
@@ -24,6 +43,7 @@ local state = {
 
 -- Utility
 local function clean_state_buffers()
+    ---@type plugin.float_terminal.buf[]
     local buffers = {}
     for i, v in ipairs(state.buffers) do
         if vim.api.nvim_buf_is_valid(v.id) then
@@ -34,15 +54,20 @@ local function clean_state_buffers()
     state.buffers = buffers
 end
 
+---@param first table
+---@param second table
+---@return table
 local function merge_table(first, second)
     for k, v in pairs(second) do first[k] = v end
     return first
 end
 
 -- Buffer management
+---@return plugin.float_terminal.buf
 local function create_new_buffer()
     clean_state_buffers()
     local len = #state.buffers
+    ---@type plugin.float_terminal.buf
     local buffer = {
         id = vim.api.nvim_create_buf(false, true),
         name = "#" .. (len + 1)
@@ -51,6 +76,7 @@ local function create_new_buffer()
     return buffer
 end
 
+---@return plugin.float_terminal.buf|nil
 local function get_prev_buffer()
     clean_state_buffers()
     if #state.buffers == 0 then return nil end
@@ -66,6 +92,7 @@ local function get_prev_buffer()
     end
 end
 
+---@return plugin.float_terminal.buf|nil
 local function get_next_buffer()
     clean_state_buffers()
     if #state.buffers == 0 then return nil end
@@ -81,20 +108,24 @@ local function get_next_buffer()
     end
 end
 
+---@return boolean
 local function is_win_open()
     return state.window_open and vim.api.nvim_win_is_valid(state.window.id)
 end
 
+---@return string
 local function get_title()
     return '=============== ' .. state.curr_buffer.name .. ' / ' .. #state.buffers .. ' ==============='
 end
 
+---@param buffer plugin.float_terminal.buf
 local function set_buffer(buffer)
     state.curr_buffer = buffer
     vim.api.nvim_win_set_buf(state.window.id, buffer.id)
     vim.api.nvim_win_set_config(state.window.id, { title = get_title() })
 end
 
+---@return vim.api.keyset.win_config
 local function calculate_win_config()
     local win_width = math.floor(vim.o.columns * 0.8)
     local win_height = math.floor(vim.o.lines * 0.8)
@@ -112,6 +143,7 @@ local function calculate_win_config()
     }
 end
 
+---@param args plugin.float_terminal.open_floating_window
 local function open_floating_term(args)
     if args == nil or args.buffer == nil or not vim.api.nvim_buf_is_valid(args.buffer.id) then
         print("invalid args: " .. vim.inspect(args))
@@ -138,12 +170,14 @@ local function close_floating_term()
     state.window_open = false
 end
 
+---@param args plugin.float_terminal.open_floating_window|nil
 local function new_floating_term(args)
     args = args or {}
     local buffer = create_new_buffer()
     open_floating_term(merge_table(args, { buffer = buffer }))
 end
 
+---@param args plugin.float_terminal.open_floating_window|nil
 local function open_current_buf(args)
     args = args or {}
     if not vim.api.nvim_buf_is_valid(state.curr_buffer.id) then
