@@ -14,6 +14,8 @@ vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
 vim.o.expandtab = true
 
+vim.g.ftplugin_sql_omni_key = '<leader>sql'
+
 -- vim.lsp.set_log_level(vim.log.levels.DEBUG)
 
 local utils = require("config.utils")
