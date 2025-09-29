@@ -1,0 +1,201 @@
+local M = {}
+
+--- @class plugin.float_win.buf
+--- @field buf_id integer buffer id
+--- @field name? string buffer name
+---
+--- @class plugin.float_win.win
+--- @field win_id integer window id
+--- @field buffers plugin.float_win.buf[]
+--- @field curr_buf integer index of current buffer
+--- @field orientation "vertical"|"horizontal"
+---
+--- @class plugin.float_win.state
+--- @field float_wins plugin.float_win.win[]
+--- @field curr_win integer index of current window
+---
+
+---@type plugin.float_win.state
+local state = {
+    float_wins = {},
+    curr_win = 1,
+}
+
+--- Get visually selected text as lines
+---@return string[]
+local function get_selected_text()
+    local restore_reg = vim.fn.getreg('v')
+    vim.cmd('normal! "vy')
+    local selected_text = vim.fn.getreg('v', true)
+    vim.fn.setreg('v', restore_reg)
+    if type(selected_text) == "string" then
+        return vim.split(vim.trim(selected_text), "\n")
+    else
+        return selected_text
+    end
+end
+
+local function clean_state_float_wins()
+    local wins = {}
+    for i, win in ipairs(state.float_wins) do
+        if vim.api.nvim_win_is_valid(win.win_id) then
+            win.name = "#" .. i
+            table.insert(wins, win)
+        end
+    end
+    state.float_wins = wins
+end
+
+local function merge_table(first, second)
+    for k, v in pairs(second) do first[k] = v end
+    return first
+end
+
+--- Create a new buffer (pane)
+---@return plugin.float_win.buf
+local function create_new_buffer()
+    local buf = {
+        buf_id = vim.api.nvim_create_buf(false, true),
+        name = "buf#" .. tostring(math.random(10000, 99999))
+    }
+    return buf
+end
+
+--- Create a new floating window with one buffer
+---@param orientation "vertical"|"horizontal"
+local function create_new_float_win(orientation)
+    clean_state_float_wins()
+    local buf = create_new_buffer()
+    local win_config = calculate_win_config(orientation, 1, 1)
+    local win_id = vim.api.nvim_open_win(buf.buf_id, true, win_config)
+    local float_win = {
+        win_id = win_id,
+        buffers = { buf },
+        curr_buf = 1,
+        orientation = orientation,
+    }
+    table.insert(state.float_wins, float_win)
+    state.curr_win = #state.float_wins
+    vim.api.nvim_set_current_win(win_id)
+    vim.cmd("terminal")
+end
+
+--- Add a new buffer (pane) to the current floating window
+local function add_buffer_to_current_win()
+    local win = state.float_wins[state.curr_win]
+    if not win or not vim.api.nvim_win_is_valid(win.win_id) then return end
+    local buf = create_new_buffer()
+    table.insert(win.buffers, buf)
+    win.curr_buf = #win.buffers
+    update_float_win_layout(win)
+    vim.api.nvim_win_set_buf(win.win_id, buf.buf_id)
+    vim.cmd.terminal()
+end
+
+--- Delete the current buffer (pane) from the current floating window
+local function delete_current_buffer()
+    local win = state.float_wins[state.curr_win]
+    if not win or not vim.api.nvim_win_is_valid(win.win_id) then return end
+    local idx = win.curr_buf
+    local buf = win.buffers[idx]
+    if buf and vim.api.nvim_buf_is_valid(buf.buf_id) then
+        vim.api.nvim_buf_delete(buf.buf_id, { force = true })
+    end
+    table.remove(win.buffers, idx)
+    if #win.buffers == 0 then
+        vim.api.nvim_win_close(win.win_id, true)
+        table.remove(state.float_wins, state.curr_win)
+        state.curr_win = math.max(1, state.curr_win - 1)
+    else
+        win.curr_buf = math.max(1, idx - 1)
+        vim.api.nvim_win_set_buf(win.win_id, win.buffers[win.curr_buf].buf_id)
+        update_float_win_layout(win)
+    end
+end
+
+--- Switch to next floating window
+local function next_float_win()
+    clean_state_float_wins()
+    if #state.float_wins == 0 then return end
+    state.curr_win = (state.curr_win % #state.float_wins) + 1
+    local win = state.float_wins[state.curr_win]
+    vim.api.nvim_set_current_win(win.win_id)
+end
+
+--- Switch to previous floating window
+local function prev_float_win()
+    clean_state_float_wins()
+    if #state.float_wins == 0 then return end
+    state.curr_win = (state.curr_win - 2) % #state.float_wins + 1
+    local win = state.float_wins[state.curr_win]
+    vim.api.nvim_set_current_win(win.win_id)
+end
+
+--- Calculate window config for floating window, supporting orientation and panes
+---@param orientation "vertical"|"horizontal"
+---@param pane_count integer
+---@param pane_index integer
+---@return vim.api.keyset.win_config
+function calculate_win_config(orientation, pane_count, pane_index)
+    local win_width = math.floor(vim.o.columns * 0.8)
+    local win_height = math.floor(vim.o.lines * 0.8)
+    local col = math.floor((vim.o.columns - win_width) / 2)
+    local row = math.floor((vim.o.lines - win_height) / 2)
+    if orientation == "vertical" and pane_count > 1 then
+        win_width = math.floor(win_width / pane_count)
+        col = col + win_width * (pane_index - 1)
+    elseif orientation == "horizontal" and pane_count > 1 then
+        win_height = math.floor(win_height / pane_count)
+        row = row + win_height * (pane_index - 1)
+    end
+    return {
+        title = "FloatWin " .. pane_index .. "/" .. pane_count,
+        title_pos = 'center',
+        relative = "editor",
+        width = win_width,
+        height = win_height,
+        row = row,
+        col = col,
+        border = "rounded"
+    }
+end
+
+--- Update layout of panes in a floating window
+---@param win plugin.float_win.win
+function update_float_win_layout(win)
+    local pane_count = #win.buffers
+    for i, buf in ipairs(win.buffers) do
+        local win_config = calculate_win_config(win.orientation, pane_count, i)
+        if i == win.curr_buf then
+            vim.api.nvim_win_set_config(win.win_id, win_config)
+            vim.api.nvim_win_set_buf(win.win_id, buf.buf_id)
+        else
+            -- For simulation, only show current pane in window
+            -- Future: create more floating windows for each pane if needed
+        end
+    end
+end
+
+-- User commands
+
+vim.api.nvim_create_user_command("FloatWinNew", function(opts)
+    local orientation = opts.args == "horizontal" and "horizontal" or "vertical"
+    create_new_float_win(orientation)
+end, { nargs = "?", complete = function() return { "vertical", "horizontal" } end })
+
+vim.api.nvim_create_user_command("FloatWinNext", next_float_win, {})
+vim.api.nvim_create_user_command("FloatWinPrev", prev_float_win, {})
+vim.api.nvim_create_user_command("FloatBufNew", add_buffer_to_current_win, {})
+vim.api.nvim_create_user_command("FloatBufDelete", delete_current_buffer, {})
+
+vim.api.nvim_create_autocmd("VimResized", {
+    group = vim.api.nvim_create_augroup("float-win-resized", { clear = true }),
+    callback = function()
+        clean_state_float_wins()
+        for _, win in ipairs(state.float_wins) do
+            update_float_win_layout(win)
+        end
+    end
+})
+
+return M
