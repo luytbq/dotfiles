@@ -85,3 +85,49 @@ end, {})
 vim.api.nvim_create_user_command('CopyPathRelative', function()
     vim.fn.setreg('+', vim.fn.expand('%'))
 end, {})
+
+vim.api.nvim_create_user_command("JdtlsClean", function()
+  -- find the jdtls client explicitly
+  local jdtls_client
+  for _, client in pairs(vim.lsp.get_active_clients()) do
+    if client.name == "jdtls" then
+      jdtls_client = client
+      break
+    end
+  end
+
+  if not jdtls_client then
+    print("No active jdtls client")
+    return
+  end
+
+  local cmd = jdtls_client.config.cmd or {}
+  for i, v in ipairs(cmd) do
+    if v == "-data" and cmd[i + 1] then
+      local path = cmd[i + 1]
+      local confirm = vim.fn.confirm(
+        "Delete jdtls workspace?\n" .. path,
+        "&Yes\n&No",
+        2
+      )
+      if confirm == 1 then
+        vim.fn.system({ "rm", "-rf", path })
+        print("Deleted " .. path)
+
+        -- stop only jdtls
+        jdtls_client.stop()
+
+        -- reattach (LazyVim auto-triggers on buffer)
+        vim.defer_fn(function()
+          vim.cmd("edit") -- reopen current buffer to trigger LSP attach
+          print("Jdtls restarting...")
+        end, 500)
+      else
+        print("Cancelled")
+      end
+      return
+    end
+  end
+
+  print("No -data found in jdtls command")
+end, {})
