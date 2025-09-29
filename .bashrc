@@ -133,7 +133,6 @@ source <(ng completion script)
 
 export PATH=${PATH}:/opt/flutter/bin
 
-export PATH=$PATH:$(go env GOPATH)/bin
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
@@ -153,3 +152,5 @@ if [ -d "$HOME/.secrets/" ]; then
     unset file  # Cleanup variable
 fi
 
+# jdtls
+export PATH=$PATH:/home/luytbq/.local/share/nvim/mason/packages/jdtls/
