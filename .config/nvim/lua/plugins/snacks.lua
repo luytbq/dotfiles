@@ -8,7 +8,8 @@ local get_visual_selected = function()
 end
 
 return {
-    "folke/snacks.nvim",
+    -- "folke/snacks.nvim",
+    "snacks.nvim",
     ---@type snacks.Config
     keys = {
         { "<leader>ff", function() Snacks.picker.smart() end, desc = "Smart Find Files", },
@@ -21,6 +22,45 @@ return {
         },
     },
     opts = {
+        dashboard = {
+            preset = {
+                pick = function(cmd, opts)
+                return LazyVim.pick(cmd, opts)()
+                end,
+                header = [[
+
+,---,---,---,---,---,---,---,---,---,---,---,---,---,-------,
+|1/2| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0 | + | ' | <-    |
+|---'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-----|
+| ->| | Q | W | E | R | T | Y | U | I | O | P | ] | ^ |     |
+|-----',--',--',--',--',--',--',--',--',--',--',--',--'|    |
+| Caps | A | S | D | F | G | H | J | K | L | \ | [ | * |    |
+|----,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'---'----|
+|    | < | Z | X | C | V | B | N | M | , | . | - |          |
+|----'-,-',--'--,'---'---'---'---'---'---'-,-'---',--,------|
+| ctrl |  | alt |                          |altgr |  | ctrl |
+'------'  '-----'--------------------------'------'  '------'
+
+
+Hello, World!
+
+
+        ]],
+                -- stylua: ignore
+                ---@type snacks.dashboard.Item[]
+                keys = {
+                { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
+                { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
+                { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
+                { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.dashboard.pick('oldfiles')" },
+                { icon = " ", key = "c", desc = "Config", action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})" },
+                { icon = " ", key = "s", desc = "Restore Session", section = "session" },
+                { icon = " ", key = "x", desc = "Lazy Extras", action = ":LazyExtras" },
+                { icon = "󰒲 ", key = "l", desc = "Lazy", action = ":Lazy" },
+                { icon = " ", key = "q", desc = "Quit", action = ":qa" },
+                },
+            },
+            },
         picker = {
             win = {
                 input = {
@@ -37,5 +77,6 @@ return {
                 },
             },
         },
+
     },
 }
