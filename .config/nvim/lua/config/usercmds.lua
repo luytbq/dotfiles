@@ -131,3 +131,13 @@ vim.api.nvim_create_user_command("JdtlsClean", function()
 
   print("No -data found in jdtls command")
 end, {})
+
+
+-- format json
+vim.api.nvim_create_user_command('JsonFormat', function()
+  vim.cmd("'<,'>!jq")
+end, { range = true })
+vim.api.nvim_create_user_command('JsonMinify', function()
+    vim.cmd("'<,'>!jq --compact-output")
+end, { range = true })
+
