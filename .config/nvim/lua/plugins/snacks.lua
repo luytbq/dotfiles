@@ -12,7 +12,7 @@ return {
     "snacks.nvim",
     ---@type snacks.Config
     keys = {
-        { "<leader>ff", function() Snacks.picker.smart() end, desc = "Smart Find Files", },
+        { "<leader>ff", function() Snacks.picker.files() end, desc = "Files", },
         { "<leader>fb", function() Snacks.picker.buffers() end, desc = "Buffers" },
         { "<leader>fi", mode = "n", function() Snacks.picker.grep() end, desc = "Grep" },
         { "<leader>fi", mode = "v", function()
