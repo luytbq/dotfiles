@@ -741,3 +741,30 @@ ssh_fzf_sync_and_execute() {
     ssh_execute_command --user "${args[user]}" --host "${args[host]}" --port "${args[port]}" --command "${args[remote_cmd]}"
     return $?
 }
+
+sync_java() {
+    user="$1"
+    host="$2"
+    port="$3"
+    service_name="$4"
+
+    mkdir -p "./prod/classes" || return 1
+
+    # Sync remote -> local
+    rsync --rsync-path='sudo rsync' -av --progress --delete --delete-excluded \
+        --rsh="ssh -p ${port}" \
+        "${user}@${host}:/opt/${service_name}/classes/" "prod/classes/" || return 1
+
+    # Meld for manual comparison/merge
+    meld "target/classes" "prod/classes" || return 1
+
+    # Sync local -> remote (only classes)
+    rsync --rsync-path='sudo rsync' -av --progress \
+        --rsh="ssh -p ${port}" \
+        "prod/classes" "${user}@${host}:/opt/${service_name}/"
+
+    # Restart service remotely
+    ssh -p "${port}" "${user}@${host}" "systemctl restart ${service_name}"
+
+    return 0
+}
