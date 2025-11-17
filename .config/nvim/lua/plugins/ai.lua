@@ -87,8 +87,12 @@ return {
         },
         build = "make tiktoken",
         opts = function()
-            return {
+            -- starts with the default config from mappings.lua
+            local mapping = require('CopilotChat.config.mappings')
+            mapping.close.insert = nil
 
+
+            return {
                 system_prompt = 'COPILOT_INSTRUCTIONS', -- System prompt to use (can be specified manually in prompt via /).
 
                 model = 'gpt-4.1',                      -- Default model to use, see ':CopilotChatModels' for available models (can be specified manually in prompt via $).
@@ -164,7 +168,7 @@ return {
 
                 -- default mappings
                 -- see config/mappings.lua for implementation
-                mappings = require('CopilotChat.config.mappings'),
+                mappings = mapping,
             }
         end,
     }
