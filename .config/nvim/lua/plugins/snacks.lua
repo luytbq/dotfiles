@@ -62,6 +62,7 @@ Hello, World!
             },
             },
         picker = {
+            ui_select = true,
             win = {
                 input = {
                     keys = {
