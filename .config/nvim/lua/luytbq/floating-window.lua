@@ -167,6 +167,16 @@ local function calculate_win_config()
     }
 end
 
+local function set_terminal_options()
+    local buf_id = state.curr_buffer.id
+    if not vim.api.nvim_buf_is_valid(buf_id) then
+        return
+    end
+    if vim.bo[buf_id].buftype ~= 'terminal' then
+        vim.cmd.terminal()
+    end
+end
+
 ---@param args plugin.float_terminal.open_floating_window
 local function open_floating_term(args)
     if args == nil or args.buffer == nil or not vim.api.nvim_buf_is_valid(args.buffer.id) then
@@ -180,9 +190,9 @@ local function open_floating_term(args)
     elseif not vim.api.nvim_win_is_valid(state.window.id) then
         state.window.id = vim.api.nvim_open_win(state.curr_buffer.id, true, win_config)
     end
-    if vim.bo[state.curr_buffer.id].buftype ~= 'terminal' then
-        vim.cmd.terminal()
-    end
+
+    set_terminal_options()
+
     if args.put_text ~= nil and #args.put_text > 0 then
         vim.fn.chansend(vim.bo[state.curr_buffer.id].channel, args.put_text)
     end
