@@ -223,12 +223,24 @@ local function delete_current_float_term_buffer(args)
         return
     end
 
-    -- delete current buffer from state and from vim
-    local buf_id = state.curr_buffer.id
-    vim.api.nvim_buf_delete(buf_id, { force = true })
+    local buf_id_delete = state.curr_buffer.id
+    -- remove buffer from state buffers
+    local new_buffers = {}
+    for _, buf in ipairs(state.buffers) do
+        if buf.id ~= buf_id_delete then
+            table.insert(new_buffers, buf)
+        end
+    end
+    state.buffers = new_buffers
     clean_state_buffers()
 
-    -- close_floating_term()
+    -- replace current buffer with next buffer if exists
+    local next_buffer = get_next_buffer()
+    if next_buffer ~= nil and next_buffer.id ~= state.curr_buffer.id then
+        set_buffer(next_buffer)
+    end
+
+    vim.api.nvim_buf_delete(buf_id_delete, { force = true })
 end
 
 ---@param args plugin.float_terminal.open_floating_window|nil
