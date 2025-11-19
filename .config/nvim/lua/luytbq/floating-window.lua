@@ -41,7 +41,14 @@ local state = {
     window_open = false,
 }
 
--- Utility
+local isDebug = true
+local function debug_print(msg)
+    if isDebug then
+        print("[float-terminal] " .. msg)
+    end
+end
+
+-- Cleans up state buffers by removing invalid buffers
 local function clean_state_buffers()
     ---@type plugin.float_terminal.buf[]
     local buffers = {}
@@ -52,6 +59,23 @@ local function clean_state_buffers()
         end
     end
     state.buffers = buffers
+
+    -- if state current buffer is not in state buffers, reset it
+    local curr_buffer_valid = false
+    for _, v in ipairs(state.buffers) do
+        if v.id == state.curr_buffer.id then
+            curr_buffer_valid = true
+            break
+        end
+    end
+    if not curr_buffer_valid then
+        -- set to first buffer if exists
+        if #state.buffers > 0 then
+            state.curr_buffer = state.buffers[1]
+        else
+            state.curr_buffer = { id = -1 }
+        end
+    end
 end
 
 ---@param first table
@@ -177,6 +201,26 @@ local function new_floating_term(args)
     open_floating_term(merge_table(args, { buffer = buffer }))
 end
 
+local function delete_current_float_term_buffer(args)
+    -- if state window is not open, do nothing
+    if not is_win_open() then
+        print("No floating window open")
+        return
+    end
+
+    if not vim.api.nvim_buf_is_valid(state.curr_buffer.id) then
+        print("No valid current buffer to delete")
+        return
+    end
+
+    -- delete current buffer from state and from vim
+    local buf_id = state.curr_buffer.id
+    vim.api.nvim_buf_delete(buf_id, { force = true })
+    clean_state_buffers()
+
+    -- close_floating_term()
+end
+
 ---@param args plugin.float_terminal.open_floating_window|nil
 local function open_current_buf(args)
     args = args or {}
@@ -204,6 +248,7 @@ end
 
 vim.api.nvim_create_user_command("FloatTermClose", close_floating_term, {})
 vim.api.nvim_create_user_command("FloatTermNew", new_floating_term, {})
+vim.api.nvim_create_user_command("FloatTermDel", delete_current_float_term_buffer, {})
 vim.api.nvim_create_user_command("FloatTermNext", next_floating_term, {})
 vim.api.nvim_create_user_command("FloatTermPrev", prev_floating_term, {})
 vim.api.nvim_create_user_command("FloatTermVisual", function()
