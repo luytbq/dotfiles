@@ -12,6 +12,7 @@ return {
     "snacks.nvim",
     ---@type snacks.Config
     keys = {
+        { "<leader>fp", function() Snacks.picker() end, desc = "Snacks Pickers", },
         { "<leader>ff", function() Snacks.picker.files() end, desc = "Files", },
         { "<leader>fb", function() Snacks.picker.buffers() end, desc = "Buffers" },
         { "<leader>fi", mode = "n", function() Snacks.picker.grep() end, desc = "Grep" },

@@ -14,9 +14,9 @@ return {
     { "<c-k>", "<cmd><C-U>TmuxNavigateUp<cr>" },
     { "<c-l>", "<cmd><C-U>TmuxNavigateRight<cr>" },
     { "<c-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>" },
-    { "<c-h>", "<cmd>TmuxNavigateLeft<cr>" , mode = "v" },
-    { "<c-j>", "<cmd>TmuxNavigateDown<cr>" , mode = "v" },
-    { "<c-k>", "<cmd>TmuxNavigateUp<cr>" , mode = "v" },
-    { "<c-l>", "<cmd>TmuxNavigateRight<cr>" , mode = "v"},
+    { "<c-h>", "<cmd>TmuxNavigateLeft<cr>" , mode = {"v", "i"} },
+    { "<c-j>", "<cmd>TmuxNavigateDown<cr>" , mode = {"v", "i"} },
+    { "<c-k>", "<cmd>TmuxNavigateUp<cr>" , mode = {"v", "i"} },
+    { "<c-l>", "<cmd>TmuxNavigateRight<cr>" , mode = {"v", "i"} },
   },
 }
