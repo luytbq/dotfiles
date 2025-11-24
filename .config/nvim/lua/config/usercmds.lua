@@ -97,7 +97,31 @@ vim.api.nvim_create_user_command("JdtlsClean", function()
   end
 
   if not jdtls_client then
-    print("No active jdtls client")
+    -- print("No active jdtls client")
+    -- if no active jdtls client, try to find default data path:
+    -- ~/.cache/nvim/jdtls/{project_name}/workspace where project_name is the name of the current working directory
+    -- then prompt to delete that
+
+    local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
+    local workspace_dir = vim.fn.stdpath("cache") .. "/jdtls/" .. project_name .. "/workspace"
+    local confirm = vim.fn.confirm(
+      "Delete jdtls workspace?\n" .. workspace_dir,
+      "&Yes\n&No",
+      2
+    )
+    if confirm == 1 then
+      vim.fn.system({ "rm", "-rf", workspace_dir })
+      print("Deleted " .. workspace_dir)
+
+    -- restart jdtls by automaticaly running :LspRestart
+    vim.defer_fn(function()
+        vim.cmd("LspRestart")
+        print("Jdtls restarting...")
+    end, 500)
+
+    else
+      print("Cancelled")
+    end
     return
   end
 
