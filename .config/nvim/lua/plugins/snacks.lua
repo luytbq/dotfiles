@@ -1,10 +1,10 @@
 ---@return string
 local get_visual_selected = function()
-	local restore_reg = vim.fn.getreg('v')
-	vim.cmd('normal! "vy')
-	local selected_text = vim.fn.getreg('v')
-	vim.fn.setreg('v', restore_reg)
-	return selected_text
+    local restore_reg = vim.fn.getreg('v')
+    vim.cmd('normal! "vy')
+    local selected_text = vim.fn.getreg('v')
+    vim.fn.setreg('v', restore_reg)
+    return selected_text
 end
 
 return {
@@ -14,42 +14,49 @@ return {
     keys = {
         { "<leader>fp", function() Snacks.picker() end, desc = "Snacks Pickers", },
         { "<leader>ff", function() Snacks.picker.files() end, desc = "Files", },
-        { "<leader>fb", function() Snacks.picker.buffers() end, desc = "Buffers" },
+        { "<leader>fb", function() Snacks.picker.buffers({ layout = "select", }) end,
+        desc = "Buffers" },
+        { "<leader>fk", function() Snacks.picker.commands({
+            layout = "select",
+            confirm = function(picker, item)
+                picker:close()
+                vim.cmd(item.cmd)
+        end, }) end, desc = "Commands" },
         { "<leader>fi", mode = "n", function() Snacks.picker.grep() end, desc = "Grep" },
         { "<leader>fi", mode = "v", function()
             Snacks.picker.grep({ search = get_visual_selected() })
-            end,
-            desc = "Grep Visual Selection",
-        },
+        end,
+        desc = "Grep Visual Selection",
     },
-    opts = {
-        dashboard = {
-            preset = {
-                pick = function(cmd, opts)
+},
+opts = {
+    dashboard = {
+        preset = {
+            pick = function(cmd, opts)
                 return LazyVim.pick(cmd, opts)()
-                end,
-                header = [[
+            end,
+            header = [[
 
-,---,---,---,---,---,---,---,---,---,---,---,---,---,-------,
-|1/2| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0 | + | ' | <-    |
-|---'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-----|
-| ->| | Q | W | E | R | T | Y | U | I | O | P | ] | ^ |     |
-|-----',--',--',--',--',--',--',--',--',--',--',--',--'|    |
-| Caps | A | S | D | F | G | H | J | K | L | \ | [ | * |    |
-|----,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'---'----|
-|    | < | Z | X | C | V | B | N | M | , | . | - |          |
-|----'-,-',--'--,'---'---'---'---'---'---'-,-'---',--,------|
-| ctrl |  | alt |                          |altgr |  | ctrl |
-'------'  '-----'--------------------------'------'  '------'
-
-
-Hello, World!
+            ,---,---,---,---,---,---,---,---,---,---,---,---,---,-------,
+            |1/2| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0 | + | ' | <-    |
+            |---'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-----|
+            | ->| | Q | W | E | R | T | Y | U | I | O | P | ] | ^ |     |
+            |-----',--',--',--',--',--',--',--',--',--',--',--',--'|    |
+            | Caps | A | S | D | F | G | H | J | K | L | \ | [ | * |    |
+            |----,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'---'----|
+            |    | < | Z | X | C | V | B | N | M | , | . | - |          |
+            |----'-,-',--'--,'---'---'---'---'---'---'-,-'---',--,------|
+            | ctrl |  | alt |                          |altgr |  | ctrl |
+            '------'  '-----'--------------------------'------'  '------'
 
 
-        ]],
-                -- stylua: ignore
-                ---@type snacks.dashboard.Item[]
-                keys = {
+            Hello, World!
+
+
+            ]],
+            -- stylua: ignore
+            ---@type snacks.dashboard.Item[]
+            keys = {
                 { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
                 { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
                 { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
@@ -59,26 +66,26 @@ Hello, World!
                 { icon = " ", key = "x", desc = "Lazy Extras", action = ":LazyExtras" },
                 { icon = "󰒲 ", key = "l", desc = "Lazy", action = ":Lazy" },
                 { icon = " ", key = "q", desc = "Quit", action = ":qa" },
+            },
+        },
+    },
+    picker = {
+        ui_select = true,
+        win = {
+            input = {
+                keys = {
+                    ["<c-j>"] = false,
+                    ["<c-k>"] = false,
                 },
             },
-            },
-        picker = {
-            ui_select = true,
-            win = {
-                input = {
-                    keys = {
-                        ["<c-j>"] = false,
-                        ["<c-k>"] = false,
-                    },
-                },
-                list = {
-                    keys = {
-                        ["<c-j>"] = false,
-                        ["<c-k>"] = false,
-                    },
+            list = {
+                keys = {
+                    ["<c-j>"] = false,
+                    ["<c-k>"] = false,
                 },
             },
         },
-
     },
+
+},
 }
