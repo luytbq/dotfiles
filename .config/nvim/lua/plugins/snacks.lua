@@ -14,14 +14,25 @@ return {
     keys = {
         { "<leader>fp", function() Snacks.picker() end, desc = "Snacks Pickers", },
         { "<leader>ff", function() Snacks.picker.files() end, desc = "Files", },
-        { "<leader>fb", function() Snacks.picker.buffers({ layout = "select", }) end,
-        desc = "Buffers" },
+        { "<leader>fb", function() Snacks.picker.buffers({ layout = "select", }) end, desc = "Buffers" },
         { "<leader>fk", function() Snacks.picker.commands({
             layout = "select",
             confirm = function(picker, item)
                 picker:close()
                 vim.cmd(item.cmd)
         end, }) end, desc = "Commands" },
+        { "<leader>av", function() Snacks.picker.commands({
+            layout = "select",
+            pattern = "^avante",
+            confirm = function(picker, item)
+                picker:close()
+                vim.cmd(item.cmd)
+            end,
+            })
+        end,
+        desc = "Avante",
+        },
+
         { "<leader>fi", mode = "n", function() Snacks.picker.grep() end, desc = "Grep" },
         { "<leader>fi", mode = "v", function()
             Snacks.picker.grep({ search = get_visual_selected() })
