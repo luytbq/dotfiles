@@ -21,7 +21,7 @@ return {
                 picker:close()
                 vim.cmd(item.cmd)
         end, }) end, desc = "Commands" },
-        { "<leader>av", function() Snacks.picker.commands({
+        { "<leader>ava", function() Snacks.picker.commands({
             layout = "select",
             pattern = "^avante",
             confirm = function(picker, item)
