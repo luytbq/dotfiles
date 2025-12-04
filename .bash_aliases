@@ -7,3 +7,5 @@ alias tm='tmux-rename.sh'
 alias tssh='rename_and_ssh.sh'
 
 alias n='nvim .'
+
+alias oc='opencode'
