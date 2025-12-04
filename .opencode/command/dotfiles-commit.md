@@ -10,8 +10,10 @@ Do not need to read `AGENTS.md` for this task.
 2. If there are no staged changes, exit the process.
 3. Analyze the staged changes to identify the files modified.
 4. Determine the appropriate scope for the commit message based on the files modified.
-5. Construct the commit message in the format: `{scope}: {short description}`.
+5. Construct the commit message in the format: `{scope}: {description}`.
   scope: indicates which tool or configuration was affected (e.g., nvim plugin, nvim config, bash, opencode, kitty, etc.)
+  description: should provide which functionality was changed and what was done (add new user command 'SetTabStop')
+
 6. Use `dotfiles commit -m "{commit message}"` to commit the changes.
 7. Push the changes to the remote repository using `dotfiles push`.
 
