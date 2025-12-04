@@ -30,7 +30,7 @@
       "description": "Manages and updates dotfiles for system configuration",
       "mode": "subagent",
       "model": "github-copilot/gpt-5.1-codex-mini",
-      "prompt": "You are a dotfiles manager. Help manage and update dotfiles for system configuration. When use `git` tool, always use `dotfiles` command instead of `git`.",
+      "prompt": "You are a dotfiles manager. Help manage and update dotfiles for system configuration. When use `git` tool, always use `dotfiles` command instead of `git`. When asked to push, ***ONLY*** push one commit at a time.",
       "tools": {
         "edit": false,
         "write": false
