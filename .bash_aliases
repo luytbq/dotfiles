@@ -8,3 +8,5 @@ alias tssh='rename_and_ssh.sh'
 alias ccjdtls='clean_cache_jdtls.sh'
 
 alias n='nvim .'
+
+alias oc='opencode'
