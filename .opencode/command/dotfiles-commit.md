@@ -3,6 +3,8 @@ description: Commit and push dotfiles changes to the repository.
 agent: build
 model: github-copilot/gpt-5.1-codex-mini
 ---
+Do not need to read `AGENTS.md` for this task.
+
 # Steps:
 1. Check for staged changes using `dotfiles diff --staged`.
 2. If there are no staged changes, exit the process.
