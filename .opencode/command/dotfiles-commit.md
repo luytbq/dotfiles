@@ -1,6 +1,7 @@
 ---
 description: Commit and push dotfiles changes to the repository.
 agent: dotfiles
+model: github-copilot/gpt-5.1-codex-mini
 ---
 Your task is: Commit and Push my dotfiles Changes.
 
