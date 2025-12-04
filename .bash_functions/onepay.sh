@@ -306,7 +306,29 @@ parse_args() {
 
 # Get the repository's remote origin URL
 get_repo_url() {
-    git remote get-url origin 2>/dev/null || { echo "Error: Not a git repository or no origin set" >&2; return 1; }
+    local repo_url
+
+    if repo_url=$(git remote get-url origin 2>/dev/null); then
+        echo "$repo_url"
+        return 0
+    fi
+
+    if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+        echo "Error: Not a git repository or no origin set" >&2
+        return 1
+    fi
+
+    if command -v dotfiles >/dev/null 2>&1; then
+        if repo_url=$(dotfiles remote get-url origin 2>/dev/null); then
+            repo_url=${repo_url%.git}
+            repo_url=${repo_url/git@github.com:/https://github.com/}
+            echo "$repo_url"
+            return 0
+        fi
+    fi
+
+    echo "Error: Not a git repository or no origin set" >&2
+    return 1
 }
 
 # Convert SSH repo URL to HTTPS
@@ -314,6 +336,16 @@ get_repo_url_http() {
     local repo_url
     repo_url=$(get_repo_url) || return 1
     echo "$repo_url" | sed -E 's#ssh://git@([^:]+):[0-9]+/(.+)(\.git)?$#https://\1/\2#' | sed 's/\.git$//'
+}
+
+open_repo_in_browser() {
+    if [[ "$1" == "--help" ]]; then
+        echo "Usage: open_repo_in_browser\nOpen the repository URL in the default web browser." >&2
+        return 0
+    fi
+    local repo_url
+    repo_url=$(get_repo_url_http) || return 1
+    open_url "$repo_url"
 }
 
 # Extract repository group from URL

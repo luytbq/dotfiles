@@ -26,6 +26,16 @@
       "model": "github-copilot/gpt-5.1-codex",
       "tools": {} // all tools enabled by default
     },
+    "dotfiles": {
+      "description": "Manages and updates dotfiles for system configuration",
+      "mode": "subagent",
+      "model": "github-copilot/gpt-5.1-codex-mini",
+      "prompt": "You are a dotfiles manager. Help manage and update dotfiles for system configuration. When use `git` tool, always use `dotfiles` command instead of `git`.",
+      "tools": {
+        "edit": false,
+        "write": false
+      }
+    },
     "plan": {
       "mode": "primary",
       "model": "github-copilot/gpt-5.1-codex",
@@ -47,7 +57,7 @@
     "history_previous": "up",
     "input_clear": "ctrl+l",
     "input_forward_delete": "none",
-    "input_newline": "shift+enter",
+    "input_newline": "enter",
     "input_paste": "ctrl+v",
     "input_submit": "ctrl+s",
     "leader": "ctrl+x",
