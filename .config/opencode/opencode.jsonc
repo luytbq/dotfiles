@@ -54,7 +54,7 @@
     "history_previous": "up",
     "input_clear": "ctrl+l",
     "input_forward_delete": "none",
-    "input_newline": "enter",
+    "input_newline": "ctrl+n",
     "input_paste": "ctrl+v",
     "input_submit": "ctrl+s",
     "leader": "ctrl+x",
