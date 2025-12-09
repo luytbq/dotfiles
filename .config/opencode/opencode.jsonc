@@ -87,6 +87,13 @@
     "theme_list": "<leader>t",
     "username_toggle": "none"
   },
+  "mcp": {
+      "onepay-sql-mcp-server": {
+          "type": "local",
+        "command": ["/Users/luytbq/projects/onepay/op-sql-mcp-server/op-sql-mcp-server"],
+        "enabled": true
+      }
+  },
   "model": "github-copilot/gpt-5.1-codex",
   "theme": "tokyonight"
 }
