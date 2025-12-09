@@ -4,7 +4,7 @@
     "agent-code-diff-review": {
       "description": "Reviews uncommited code diffs for best practices and potential issues",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5.1-codex",
+      "model": "github-copilot/claude-opus-4.5",
       "prompt": "You are a code reviewer. Reviews changes in code diffs. Focus on breaking changes, security, and maintainability.",
       "tools": {
         "edit": false,
@@ -14,7 +14,7 @@
     "agent-code-review": {
       "description": "Reviews code for best practices and potential issues",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5.1-codex",
+      "model": "github-copilot/claude-opus-4.5",
       "prompt": "You are a code reviewer. Focus on security, performance, and maintainability.",
       "tools": {
         "edit": false,
@@ -23,19 +23,19 @@
     },
     "build": {
       "mode": "primary",
-      "model": "github-copilot/gpt-5.1-codex",
+      "model": "github-copilot/claude-opus-4.5",
       "tools": {} // all tools enabled by default
     },
     "dotfiles": {
       "description": "Manages and updates dotfiles for system configuration",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5.1-codex-mini",
+      "model": "github-copilot/claude-opus-4.5-mini",
       "prompt": "You are a dotfiles manager. Help manage and update dotfiles for system configuration. When use `git` tool, always use `dotfiles` command instead of `git`. When asked to push, ***ONLY*** push one commit at a time.",
       "tools": {}
     },
     "plan": {
       "mode": "primary",
-      "model": "github-copilot/gpt-5.1-codex",
+      "model": "github-copilot/claude-opus-4.5",
       "tools": {
         "edit": false,
         "write": false
@@ -94,6 +94,6 @@
         "enabled": true
       }
   },
-  "model": "github-copilot/gpt-5.1-codex",
+  "model": "github-copilot/claude-opus-4.5",
   "theme": "tokyonight"
 }
