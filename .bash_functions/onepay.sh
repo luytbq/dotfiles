@@ -163,7 +163,7 @@ Options:
   --help              Show this help message
 
 Example:
-  replace_dev_domain dev18
+  replace_dev_domain dev2.opdev.vn
 EOF
             ;;
         "watch_angular")
@@ -409,7 +409,7 @@ create_mr() {
         title=$(printf '%s' "$title" | sed 's/ /%20/g; s/&/%26/g; s/#/%23/g')
     fi
     if [[ -n "$description" ]]; then
-        description=$(printf '%s' "$description" | sed 's/ /%20/g; s/&/%26/g; s/#/%23/g')
+        description=$(printf '%s' "$description" | sed ':a;N;$!ba;s/\n/%0A/g; s/ /%20/g; s/&/%26/g; s/#/%23/g')
     fi
 
     local mr_url="${repo_url}/-/merge_requests/new"
@@ -460,9 +460,9 @@ replace_dev_domain() {
         return 0
     fi
 
-    local subdomain="$1"
-    if [[ -z "$subdomain" ]]; then
-        echo "Usage: replace_dev_domain <subdomain> (e.g., replace_dev_domain dev18)" >&2
+    local newdomain="$1"
+    if [[ -z "$newdomain" ]]; then
+        echo "Usage: replace_dev_domain <newdomain> (e.g., replace_dev_domain dev2.opdev.vn)" >&2
         return 1
     fi
 
@@ -472,8 +472,8 @@ replace_dev_domain() {
         -not -path "./.git/*" \
         -not -name "lang-vi.ts" \
         -not -name "lang-en.ts" \
-        -exec grep -lE 'https://(.*)onepay.vn' {} + \
-        | xargs -r sed -i "s|https://\(.*\)onepay.vn|https://${subdomain}.onepay.vn|g"
+        -exec grep -lE 'https://[^/]*onepay\.vn' {} + \
+        | xargs -r sed -i "s|https://[^/]*onepay\.vn|https://${newdomain}|g"
 }
 
 # Replace domain in ./dist/ files
