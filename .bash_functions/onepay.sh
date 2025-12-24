@@ -335,7 +335,14 @@ get_repo_url() {
 get_repo_url_http() {
     local repo_url
     repo_url=$(get_repo_url) || return 1
-    echo "$repo_url" | sed -E 's#ssh://git@([^:]+):[0-9]+/(.+)(\.git)?$#https://\1/\2#' | sed 's/\.git$//'
+    # Handle ssh://git@host:port/path format (port is numeric)
+    repo_url=$(echo "$repo_url" | sed -E 's#^ssh://git@([^:]+):[0-9]+/(.+)$#https://\1/\2#')
+    # Handle ssh://git@host/path format (no port)
+    repo_url=$(echo "$repo_url" | sed -E 's#^ssh://git@([^/]+)/(.+)$#https://\1/\2#')
+    # Handle git@host:user/repo format (e.g., git@github.com:user/repo.git)
+    repo_url=$(echo "$repo_url" | sed -E 's#^git@([^:]+):(.+)$#https://\1/\2#')
+    # Remove .git suffix if present
+    echo "${repo_url%.git}"
 }
 
 open_repo_in_browser() {
