@@ -1,0 +1,129 @@
+#!/usr/bin/env bash
+
+# Source bash functions (needed for tmux popup context)
+for f in ~/.bash_functions/*.sh; do
+    [[ -r "$f" ]] && source "$f"
+done
+
+TMP_IN=$(mktemp)
+TMP_OUT=$(mktemp)
+TMP_IMPROVED=$(mktemp)
+trap 'stty sane </dev/tty; rm -f "$TMP_IN" "$TMP_OUT" "$TMP_IMPROVED"' EXIT
+
+clear
+echo "=== Improve English ==="
+echo "Paste text. Press Ctrl-S to submit."
+echo "────────────────────────────"
+echo
+
+# Raw mode so we can catch function keys
+stty raw -echo </dev/tty
+
+while true; do
+    IFS= read -r -n1 ch </dev/tty
+
+    # Ctrl-S = ASCII 19 (0x13)
+    if [[ $ch == $'\x13' ]]; then
+        break
+    fi
+
+    # Handle backspace (0x7f or 0x08)
+    if [[ $ch == $'\x7f' || $ch == $'\x08' ]]; then
+        # Remove last character from temp file if not empty
+        if [[ -s "$TMP_IN" ]]; then
+            # Truncate last byte from file
+            truncate -s -1 "$TMP_IN" 2>/dev/null || \
+                sed -i '$ s/.$//' "$TMP_IN"
+            # Move cursor back, overwrite with space, move back again
+            printf '\b \b'
+        fi
+        continue
+    fi
+
+    # Handle ESC sequences (arrow keys, etc.) - pass through
+    if [[ $ch == $'\e' ]]; then
+        read -r -n2 rest </dev/tty
+        printf "%s%s" "$ch" "$rest" >> "$TMP_IN"
+        printf "%s%s" "$ch" "$rest"
+        continue
+    fi
+
+    printf "%s" "$ch"
+    printf "%s" "$ch" >> "$TMP_IN"
+done
+
+stty sane </dev/tty
+
+if [[ ! -s "$TMP_IN" ]]; then
+    echo
+    echo "No input. Press any key."
+    read -r </dev/tty
+    exit 0
+fi
+
+echo
+echo "Processing..."
+
+open_ai_improve_english < "$TMP_IN" > "$TMP_OUT"
+
+# Extract the improved text (everything after "IMPROVED:" until end or next section)
+# Use awk to get only lines between IMPROVED: and the end, skipping the header
+awk '/^IMPROVED:/{found=1; next} found{print}' "$TMP_OUT" | sed '/^$/d' > "$TMP_IMPROVED"
+
+# Extract scores
+score_grammar=$(grep -oP '^Grammar:\s*\K[0-9]+' "$TMP_OUT" || echo "?")
+score_vocab=$(grep -oP '^Vocabulary:\s*\K[0-9]+' "$TMP_OUT" || echo "?")
+score_style=$(grep -oP '^Style:\s*\K[0-9]+' "$TMP_OUT" || echo "?")
+score_overall=$(grep -oP '^Overall:\s*\K[0-9]+' "$TMP_OUT" || echo "?")
+
+# Function to get score bar
+get_score_bar() {
+    local score=$1
+    local width=20
+    if [[ "$score" == "?" ]]; then
+        printf '[%s]' "$(printf '?%.0s' $(seq 1 $width))"
+        return
+    fi
+    local filled=$((score * width / 100))
+    local empty=$((width - filled))
+    printf '[%s%s]' "$(printf '█%.0s' $(seq 1 $filled) 2>/dev/null)" "$(printf '░%.0s' $(seq 1 $empty) 2>/dev/null)"
+}
+
+while true; do
+    clear
+    
+    # Display scores at the top
+    echo "SCORES"
+    echo "────────────────────────────────────────"
+    printf "  Grammar:    %3s  %s\n" "$score_grammar" "$(get_score_bar "$score_grammar")"
+    printf "  Vocabulary: %3s  %s\n" "$score_vocab" "$(get_score_bar "$score_vocab")"
+    printf "  Style:      %3s  %s\n" "$score_style" "$(get_score_bar "$score_style")"
+    echo "────────────────────────────────────────"
+    printf "  Overall:    %3s  %s\n" "$score_overall" "$(get_score_bar "$score_overall")"
+    echo
+    
+    # Display the rest of the output (issues and improved text)
+    # Skip the SCORES section, show from GRAMMAR ISSUES onwards
+    sed -n '/^GRAMMAR ISSUES:/,$p' "$TMP_OUT"
+    
+    echo
+    echo "────────────────────────────"
+    echo "[y] Copy improved text   [q] Quit"
+    read -rsn1 key </dev/tty
+    case "$key" in
+        y)
+            if command -v wl-copy >/dev/null; then
+                wl-copy < "$TMP_IMPROVED"
+            elif command -v xclip >/dev/null; then
+                xclip -selection clipboard < "$TMP_IMPROVED"
+            elif command -v pbcopy >/dev/null; then
+                pbcopy < "$TMP_IMPROVED"
+            fi
+            echo "Improved text copied! Press any key."
+            read -rsn1 </dev/tty
+            ;;
+        q)
+            break
+            ;;
+    esac
+done
