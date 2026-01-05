@@ -70,11 +70,16 @@ open_ai_improve_english < "$TMP_IN" > "$TMP_OUT"
 # Use awk to get only lines between IMPROVED: and the end, skipping the header
 awk '/^IMPROVED:/{found=1; next} found{print}' "$TMP_OUT" | sed '/^$/d' > "$TMP_IMPROVED"
 
-# Extract scores
-score_grammar=$(grep -oP '^Grammar:\s*\K[0-9]+' "$TMP_OUT" || echo "?")
-score_vocab=$(grep -oP '^Vocabulary:\s*\K[0-9]+' "$TMP_OUT" || echo "?")
-score_style=$(grep -oP '^Style:\s*\K[0-9]+' "$TMP_OUT" || echo "?")
-score_overall=$(grep -oP '^Overall:\s*\K[0-9]+' "$TMP_OUT" || echo "?")
+# Extract scores (macOS compatible - no grep -P)
+score_grammar=$(sed -n 's/^Grammar:[[:space:]]*\([0-9]*\).*/\1/p' "$TMP_OUT" | head -1)
+score_vocab=$(sed -n 's/^Vocabulary:[[:space:]]*\([0-9]*\).*/\1/p' "$TMP_OUT" | head -1)
+score_style=$(sed -n 's/^Style:[[:space:]]*\([0-9]*\).*/\1/p' "$TMP_OUT" | head -1)
+score_overall=$(sed -n 's/^Overall:[[:space:]]*\([0-9]*\).*/\1/p' "$TMP_OUT" | head -1)
+# Default to "?" if empty
+[[ -z "$score_grammar" ]] && score_grammar="?"
+[[ -z "$score_vocab" ]] && score_vocab="?"
+[[ -z "$score_style" ]] && score_style="?"
+[[ -z "$score_overall" ]] && score_overall="?"
 
 # Function to get score bar
 get_score_bar() {
@@ -112,14 +117,29 @@ while true; do
     read -rsn1 key </dev/tty
     case "$key" in
         y)
-            if command -v wl-copy >/dev/null; then
-                wl-copy < "$TMP_IMPROVED"
-            elif command -v xclip >/dev/null; then
-                xclip -selection clipboard < "$TMP_IMPROVED"
-            elif command -v pbcopy >/dev/null; then
-                pbcopy < "$TMP_IMPROVED"
+            copied=false
+            # macOS
+            if [[ "$(uname)" == "Darwin" ]]; then
+                if [[ -n "$TMUX" ]]; then
+                    # Inside tmux: use tmux's buffer and pipe to pbcopy
+                    tmux load-buffer "$TMP_IMPROVED" && tmux save-buffer - | pbcopy && copied=true
+                elif command -v pbcopy >/dev/null; then
+                    pbcopy < "$TMP_IMPROVED" && copied=true
+                fi
+            # Linux with Wayland
+            elif command -v wl-copy >/dev/null && [[ -n "$WAYLAND_DISPLAY" ]]; then
+                wl-copy < "$TMP_IMPROVED" && copied=true
+            # Linux with X11
+            elif command -v xclip >/dev/null && [[ -n "$DISPLAY" ]]; then
+                xclip -selection clipboard < "$TMP_IMPROVED" && copied=true
+            elif command -v xsel >/dev/null && [[ -n "$DISPLAY" ]]; then
+                xsel --clipboard --input < "$TMP_IMPROVED" && copied=true
             fi
-            echo "Improved text copied! Press any key."
+            if $copied; then
+                echo "Improved text copied! Press any key."
+            else
+                echo "Failed to copy (no clipboard tool available). Press any key."
+            fi
             read -rsn1 </dev/tty
             ;;
         q)
