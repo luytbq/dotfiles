@@ -78,108 +78,108 @@ return {
     --     },
     -- },
 
-    -- {
-    --     "CopilotC-Nvim/CopilotChat.nvim",
-    --     -- https://github.com/CopilotC-Nvim/CopilotChat.nvim?tab=readme-ov-file
-    --     dependencies = {
-    --         { "github/copilot.vim" },                       -- or zbirenbaum/copilot.lua
-    --         { "nvim-lua/plenary.nvim", branch = "master" }, -- for curl, log and async functions
-    --     },
-    --     build = "make tiktoken",
-    --     opts = function()
-    --         -- starts with the default config from mappings.lua
-    --         local mapping = require('CopilotChat.config.mappings')
-    --         mapping.close.insert = nil
-    --
-    --
-    --         return {
-    --             system_prompt = 'COPILOT_INSTRUCTIONS', -- System prompt to use (can be specified manually in prompt via /).
-    --
-    --             model = 'gpt-4.1',                      -- Default model to use, see ':CopilotChatModels' for available models (can be specified manually in prompt via $).
-    --             tools = nil,                            -- Default tool or array of tools (or groups) to share with LLM (can be specified manually in prompt via @).
-    --             sticky = nil,                           -- Default sticky prompt or array of sticky prompts to use at start of every new chat (can be specified manually in prompt via >).
-    --
-    --             resource_processing = false,            -- Enable intelligent resource processing (skips unnecessary resources to save tokens)
-    --
-    --             temperature = 0.1,                      -- Result temperature
-    --             headless = false,                       -- Do not write to chat buffer and use history (useful for using custom processing)
-    --             callback = nil,                         -- Function called when full response is received
-    --             remember_as_sticky = true,              -- Remember config as sticky prompts when asking questions
-    --
-    --             -- default selection
-    --             -- see select.lua for implementation
-    --             selection = require('CopilotChat.select').visual,
-    --
-    --             -- default window options
-    --             window = {
-    --                 layout = 'vertical',    -- 'vertical', 'horizontal', 'float', 'replace', or a function that returns the layout
-    --                 width = 0.5,            -- fractional width of parent, or absolute width in columns when > 1
-    --                 height = 0.5,           -- fractional height of parent, or absolute height in rows when > 1
-    --                 -- Options below only apply to floating windows
-    --                 relative = 'editor',    -- 'editor', 'win', 'cursor', 'mouse'
-    --                 border = 'single',      -- 'none', single', 'double', 'rounded', 'solid', 'shadow'
-    --                 row = nil,              -- row position of the window, default is centered
-    --                 col = nil,              -- column position of the window, default is centered
-    --                 title = 'Copilot Chat', -- title of chat window
-    --                 footer = nil,           -- footer of chat window
-    --                 zindex = 1,             -- determines if window is on top or below other floating windows
-    --             },
-    --
-    --             show_help = true,                 -- Shows help message as virtual lines when waiting for user input
-    --             show_folds = true,                -- Shows folds for sections in chat
-    --             highlight_selection = true,       -- Highlight selection
-    --             highlight_headers = true,         -- Highlight headers in chat, disable if using markdown renderers (like render-markdown.nvim)
-    --             auto_follow_cursor = true,        -- Auto-follow cursor in chat
-    --             auto_insert_mode = false,         -- Automatically enter insert mode when opening window and on new prompt
-    --             insert_at_end = false,            -- Move cursor to end of buffer when inserting text
-    --             clear_chat_on_new_prompt = false, -- Clears chat on every new prompt
-    --
-    --             -- Static config starts here (can be configured only via setup function)
-    --
-    --             debug = false,                                                   -- Enable debug logging (same as 'log_level = 'debug')
-    --             log_level = 'info',                                              -- Log level to use, 'trace', 'debug', 'info', 'warn', 'error', 'fatal'
-    --             proxy = nil,                                                     -- [protocol://]host[:port] Use this proxy
-    --             allow_insecure = false,                                          -- Allow insecure server connections
-    --
-    --             chat_autocomplete = true,                                        -- Enable chat autocompletion (when disabled, requires manual `mappings.complete` trigger)
-    --
-    --             log_path = vim.fn.stdpath('state') .. '/CopilotChat.log',        -- Default path to log file
-    --             history_path = vim.fn.stdpath('data') .. '/copilotchat_history', -- Default path to stored history
-    --
-    --             headers = {
-    --                 user = '## User ',         -- Header to use for user questions
-    --                 assistant = '## Copilot ', -- Header to use for AI answers
-    --                 tool = '## Tool ',         -- Header to use for tool calls
-    --             },
-    --
-    --             separator = '───', -- Separator to use in chat
-    --
-    --             -- default providers
-    --             -- see config/providers.lua for implementation
-    --             providers = require('CopilotChat.config.providers'),
-    --
-    --             -- default functions
-    --             -- see config/functions.lua for implementation
-    --             functions = require('CopilotChat.config.functions'),
-    --
-    --             -- default prompts
-    --             -- see config/prompts.lua for implementation
-    --             prompts = require('CopilotChat.config.prompts'),
-    --
-    --             -- default mappings
-    --             -- see config/mappings.lua for implementation
-    --             mappings = mapping,
-    --         }
-    --     end,
-    -- },
-    -- {
-    --     "ravitemer/mcphub.nvim",
-    --     dependencies = {
-    --         "nvim-lua/plenary.nvim",
-    --     },
-    --     build = "npm install -g mcp-hub@latest",  -- Installs `mcp-hub` node binary globally
-    --     config = function()
-    --         require("mcphub").setup()
-    --     end
-    -- }
+    {
+        "CopilotC-Nvim/CopilotChat.nvim",
+        -- https://github.com/CopilotC-Nvim/CopilotChat.nvim?tab=readme-ov-file
+        dependencies = {
+            { "github/copilot.vim" },                       -- or zbirenbaum/copilot.lua
+            { "nvim-lua/plenary.nvim", branch = "master" }, -- for curl, log and async functions
+        },
+        build = "make tiktoken",
+        opts = function()
+            -- starts with the default config from mappings.lua
+            local mapping = require('CopilotChat.config.mappings')
+            mapping.close.insert = nil
+
+
+            return {
+                system_prompt = 'COPILOT_INSTRUCTIONS', -- System prompt to use (can be specified manually in prompt via /).
+
+                model = 'gpt-4.1',                      -- Default model to use, see ':CopilotChatModels' for available models (can be specified manually in prompt via $).
+                tools = nil,                            -- Default tool or array of tools (or groups) to share with LLM (can be specified manually in prompt via @).
+                sticky = nil,                           -- Default sticky prompt or array of sticky prompts to use at start of every new chat (can be specified manually in prompt via >).
+
+                resource_processing = false,            -- Enable intelligent resource processing (skips unnecessary resources to save tokens)
+
+                temperature = 0.1,                      -- Result temperature
+                headless = false,                       -- Do not write to chat buffer and use history (useful for using custom processing)
+                callback = nil,                         -- Function called when full response is received
+                remember_as_sticky = true,              -- Remember config as sticky prompts when asking questions
+
+                -- default selection
+                -- see select.lua for implementation
+                selection = require('CopilotChat.select').visual,
+
+                -- default window options
+                window = {
+                    layout = 'vertical',    -- 'vertical', 'horizontal', 'float', 'replace', or a function that returns the layout
+                    width = 0.5,            -- fractional width of parent, or absolute width in columns when > 1
+                    height = 0.5,           -- fractional height of parent, or absolute height in rows when > 1
+                    -- Options below only apply to floating windows
+                    relative = 'editor',    -- 'editor', 'win', 'cursor', 'mouse'
+                    border = 'single',      -- 'none', single', 'double', 'rounded', 'solid', 'shadow'
+                    row = nil,              -- row position of the window, default is centered
+                    col = nil,              -- column position of the window, default is centered
+                    title = 'Copilot Chat', -- title of chat window
+                    footer = nil,           -- footer of chat window
+                    zindex = 1,             -- determines if window is on top or below other floating windows
+                },
+
+                show_help = true,                 -- Shows help message as virtual lines when waiting for user input
+                show_folds = true,                -- Shows folds for sections in chat
+                highlight_selection = true,       -- Highlight selection
+                highlight_headers = true,         -- Highlight headers in chat, disable if using markdown renderers (like render-markdown.nvim)
+                auto_follow_cursor = true,        -- Auto-follow cursor in chat
+                auto_insert_mode = false,         -- Automatically enter insert mode when opening window and on new prompt
+                insert_at_end = false,            -- Move cursor to end of buffer when inserting text
+                clear_chat_on_new_prompt = false, -- Clears chat on every new prompt
+
+                -- Static config starts here (can be configured only via setup function)
+
+                debug = false,                                                   -- Enable debug logging (same as 'log_level = 'debug')
+                log_level = 'info',                                              -- Log level to use, 'trace', 'debug', 'info', 'warn', 'error', 'fatal'
+                proxy = nil,                                                     -- [protocol://]host[:port] Use this proxy
+                allow_insecure = false,                                          -- Allow insecure server connections
+
+                chat_autocomplete = true,                                        -- Enable chat autocompletion (when disabled, requires manual `mappings.complete` trigger)
+
+                log_path = vim.fn.stdpath('state') .. '/CopilotChat.log',        -- Default path to log file
+                history_path = vim.fn.stdpath('data') .. '/copilotchat_history', -- Default path to stored history
+
+                headers = {
+                    user = '## User ',         -- Header to use for user questions
+                    assistant = '## Copilot ', -- Header to use for AI answers
+                    tool = '## Tool ',         -- Header to use for tool calls
+                },
+
+                separator = '───', -- Separator to use in chat
+
+                -- default providers
+                -- see config/providers.lua for implementation
+                providers = require('CopilotChat.config.providers'),
+
+                -- default functions
+                -- see config/functions.lua for implementation
+                functions = require('CopilotChat.config.functions'),
+
+                -- default prompts
+                -- see config/prompts.lua for implementation
+                prompts = require('CopilotChat.config.prompts'),
+
+                -- default mappings
+                -- see config/mappings.lua for implementation
+                mappings = mapping,
+            }
+        end,
+    },
+    {
+        "ravitemer/mcphub.nvim",
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+        },
+        build = "npm install -g mcp-hub@latest",  -- Installs `mcp-hub` node binary globally
+        config = function()
+            require("mcphub").setup()
+        end
+    }
 }
