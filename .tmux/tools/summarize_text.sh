@@ -76,14 +76,29 @@ while true; do
     read -rsn1 key </dev/tty
     case "$key" in
         y)
-            if command -v wl-copy >/dev/null; then
-                wl-copy < "$TMP_OUT"
-            elif command -v xclip >/dev/null; then
-                xclip -selection clipboard < "$TMP_OUT"
-            elif command -v pbcopy >/dev/null; then
-                pbcopy < "$TMP_OUT"
+            copied=false
+            # macOS
+            if [[ "$(uname)" == "Darwin" ]]; then
+                if [[ -n "$TMUX" ]]; then
+                    # Inside tmux: use tmux's buffer and pipe to pbcopy
+                    tmux load-buffer "$TMP_OUT" && tmux save-buffer - | pbcopy && copied=true
+                elif command -v pbcopy >/dev/null; then
+                    pbcopy < "$TMP_OUT" && copied=true
+                fi
+            # Linux with Wayland
+            elif command -v wl-copy >/dev/null && [[ -n "$WAYLAND_DISPLAY" ]]; then
+                wl-copy < "$TMP_OUT" && copied=true
+            # Linux with X11
+            elif command -v xclip >/dev/null && [[ -n "$DISPLAY" ]]; then
+                xclip -selection clipboard < "$TMP_OUT" && copied=true
+            elif command -v xsel >/dev/null && [[ -n "$DISPLAY" ]]; then
+                xsel --clipboard --input < "$TMP_OUT" && copied=true
             fi
-            echo "Copied! Press any key."
+            if $copied; then
+                echo "Copied! Press any key."
+            else
+                echo "Failed to copy (no clipboard tool available). Press any key."
+            fi
             read -rsn1 </dev/tty
             ;;
         q)
