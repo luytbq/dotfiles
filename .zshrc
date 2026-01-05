@@ -33,3 +33,11 @@ export PATH="/Users/luytbq/.antigravity/antigravity/bin:$PATH"
 
 # opencode
 export PATH=/Users/luytbq/.opencode/bin:$PATH
+
+# source scripts from ~/.secrets/
+if [[ -d "$HOME/.secrets" ]]; then
+  for file in "$HOME/.secrets"/*.sh; do
+    [[ -r "$file" ]] && source "$file"
+  done
+  unset file
+fi
