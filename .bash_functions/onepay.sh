@@ -755,6 +755,9 @@ sync_java() {
 
     mkdir -p "./prod/classes" || return 1
 
+    # Backup remote
+    ssh -p "${port}" "${user}@${host}" "mkdir -p /opt/backup/ && cp -R /opt/${service_name}/ /opt/backup/${service_name}-$(date +%Y%m%d_%H%M%S)/"
+
     # Sync remote -> local
     rsync --rsync-path='sudo rsync' -av --progress --delete --delete-excluded \
         --rsh="ssh -p ${port}" \
