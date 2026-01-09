@@ -49,6 +49,8 @@ map({ "n" }, "<leader>td", "<cmd>FloatTermDel<cr>", { desc = "Delete Current Flo
 map({ "v" }, "<c-/>", "<cmd>FloatTermVisual<cr>", { desc = "Send selected text to Floating Terminal" })
 map({ "v" }, "<c-_>", "<cmd>FloatTermVisual<cr>", { desc = "Send selected text to Floating Terminal" })
 
+map({ "n", "v" }, "<leader>ca", "<cmd>lua vim.lsp.buf.code_action()<cr>", { desc = "LSP buffer code action" })
+
 -- map({ "n", "i", "v" }, "<c-x>", "<cmd>CopilotChatToggle<cr>", { desc = "CopilotChatToggle" })
 vim.g.copilot_no_tab_map = true
 vim.api.nvim_set_keymap("i", "<c-e>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
