@@ -766,6 +766,14 @@ sync_java() {
     # Meld for manual comparison/merge
     meld "target/classes" "prod/classes" || return 1
 
+    # Confirmation step
+    echo "Meld complete. Proceed sync and restart? (y/N)" >&2
+    read -r confirm
+    if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+        echo "Canceled." >&2
+        return 0
+    fi
+
     # Sync local -> remote (only classes)
     rsync --rsync-path='sudo rsync' -av --progress \
         --rsh="ssh -p ${port}" \
