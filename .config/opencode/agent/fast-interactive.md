@@ -1,7 +1,7 @@
 ---
 description: Use for quick interactive conversations
 mode: primary
-model: github-copilot/claude-opus-4.5
+model: anthropic/claude-opus-4.5
 tools:
   write: false
   edit: false
