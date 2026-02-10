@@ -127,6 +127,30 @@
             ],
             "enabled": true
         },
+        "oracle_system_112": {
+            "type": "local",
+            "command": [
+                "bash", "-c",
+                "docker run -i --rm -e ORACLE_CONNECTION_STRING=\"$ORACLE_SYSTEM_112_CONNECTION_STRING\" -e READ_ONLY_MODE=true -e THICK_MODE=1 dmeppiel/oracle-mcp-server"
+            ],
+            "enabled": true
+        },
+        "oracle_system_114": {
+            "type": "local",
+            "command": [
+                "bash", "-c",
+                "docker run -i --rm -e ORACLE_CONNECTION_STRING=\"$ORACLE_SYSTEM_114_CONNECTION_STRING\" -e READ_ONLY_MODE=true -e THICK_MODE=1 dmeppiel/oracle-mcp-server"
+            ],
+            "enabled": true
+        },
+        "oracle_system_118": {
+            "type": "local",
+            "command": [
+                "bash", "-c",
+                "docker run -i --rm -e ORACLE_CONNECTION_STRING=\"$ORACLE_SYSTEM_118_CONNECTION_STRING\" -e READ_ONLY_MODE=true -e THICK_MODE=1 dmeppiel/oracle-mcp-server"
+            ],
+            "enabled": true
+        },
         "word-document-server": {
             "type": "local",
             "command": [
