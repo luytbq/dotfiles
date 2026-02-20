@@ -1,5 +1,4 @@
 ---
-description: Use for quick interactive conversations
 mode: primary
 model: anthropic/claude-opus-4.5
 tools:
