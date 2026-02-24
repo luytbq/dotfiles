@@ -138,3 +138,30 @@ open_ai_translate_en_vi() {
     echo "$response" | jq -r '.choices[0].message.content'
 }
 
+open_ai_ask() {
+    text="$(cat)"
+
+    json_payload=$(jq -n \
+        --arg text "$text" \
+        '{
+            "model": "gpt-4o-mini",
+            "messages": [
+                {"role": "system", "content": "You are a helpful assistant. Answer the user question concisely and accurately."},
+                {"role": "user", "content": $text}
+            ]
+        }')
+
+    local response
+    response=$(curl -s https://api.openai.com/v1/chat/completions \
+        -H "Authorization: Bearer $OPENAI_API_KEY" \
+        -H "Content-Type: application/json" \
+        -d "$json_payload")
+
+    if echo "$response" | jq -e '.error' >/dev/null 2>&1; then
+        echo "Error: $(echo "$response" | jq -r '.error.message')" >&2
+        return 1
+    fi
+
+    echo "$response" | jq -r '.choices[0].message.content'
+}
+

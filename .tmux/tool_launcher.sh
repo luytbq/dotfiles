@@ -69,6 +69,7 @@ TOOLS=(
     "Summarize Text|summarize_text.sh"
     "Translate: Vietnamese → English|translate_vi_to_en.sh"
     "Translate: English → Vietnamese|translate_en_to_vi.sh"
+    "Quick Search|quick_search.sh"
 )
 
 # Build the list for fzf
