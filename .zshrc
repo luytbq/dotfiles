@@ -41,3 +41,4 @@ if [[ -d "$HOME/.secrets" ]]; then
   done
   unset file
 fi
+export PATH="$HOME/.local/bin:$PATH"
