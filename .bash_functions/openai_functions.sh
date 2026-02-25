@@ -5,7 +5,7 @@ open_ai_improve_english() {
     json_payload=$(jq -n \
         --arg text "$text" \
         '{
-            "model": "gpt-4o-mini",
+            "model": "gpt-4.1-nano",
             "messages": [
                 {"role": "system", "content": "You are an English teacher evaluating and improving student writing. Analyze the text and respond in EXACTLY this format:
 
