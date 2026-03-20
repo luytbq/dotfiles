@@ -193,11 +193,28 @@ Example:
   ssh_fzf_sync_and_execute --host dev18 --source-dir ./src --remote-dir /var/www/html --command "systemctl restart nginx"
 EOF
             ;;
+        "sync_java")
+            cat << 'EOF'
+Usage: sync_java [OPTIONS]
+Sync Java classes to remote server with backup, meld comparison, and service restart
+
+Options:
+  --user, -u          SSH user (default: root)
+  --host, -h          SSH host (required)
+  --port, -p          SSH port (default: 7602)
+  --service, -s       Service name (required)
+  --help              Show this help message
+
+Example:
+  sync_java --host 10.0.0.1 --user root --service my-service
+EOF
+            ;;
         *)
             cat << 'EOF'
 Available functions:
   create_mr              - Create merge request URL
   sync_theme            - Sync theme to remote server
+  sync_java             - Sync Java classes to remote server
   build_theme_and_sync  - Build and sync theme
   ssh_execute_command   - Execute SSH command
   ssh_fzf_sync         - Sync files with fzf selection
@@ -230,6 +247,7 @@ parse_args() {
     result[target]=""
     result[title]=""
     result[description]=""
+    result[service]=""
     result[help]="false"
 
     while [[ $# -gt 0 ]]; do
@@ -287,6 +305,11 @@ parse_args() {
             --description)
                 [[ -z "$2" ]] && { echo "Error: --description requires a value" >&2; return 1; }
                 result[description]="$2"
+                shift 2
+                ;;
+            --service|-s)
+                [[ -z "$2" ]] && { echo "Error: --service requires a value" >&2; return 1; }
+                result[service]="$2"
                 shift 2
                 ;;
             *)
@@ -782,10 +805,30 @@ ssh_fzf_sync_and_execute() {
 }
 
 sync_java() {
-    user="$1"
-    host="$2"
-    port="$3"
-    service_name="$4"
+    local args
+    declare -A args
+    parse_args args "sync_java" "$@"
+    local parse_result=$?
+    if [[ "${args[help]}" == "true" ]]; then
+        show_help "sync_java"
+        return 0
+    fi
+    [[ $parse_result -ne 0 ]] && return $parse_result
+
+    # Validate required arguments
+    if [[ -z "${args[host]}" ]]; then
+        echo "Error: --host/-h is required" >&2
+        return 1
+    fi
+    if [[ -z "${args[service]}" ]]; then
+        echo "Error: --service is required" >&2
+        return 1
+    fi
+
+    local user="${args[user]}"
+    local host="${args[host]}"
+    local port="${args[port]}"
+    local service_name="${args[service]}"
 
     mkdir -p "./prod/classes" || return 1
 
