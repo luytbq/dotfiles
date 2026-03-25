@@ -1,0 +1,13 @@
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "includeCoAuthoredBy": false,
+  "enabledPlugins": {
+    "jdtls-lsp@claude-plugins-official": true
+  },
+  "effortLevel": "medium",
+  "skipDangerousModePermissionPrompt": true,
+  "teammateMode": "tmux",
+  "gitAttribution": false
+}
