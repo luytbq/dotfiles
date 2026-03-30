@@ -1,0 +1,2064 @@
+{
+  "numStartups": 128,
+  "installMethod": "native",
+  "autoUpdates": false,
+  "theme": "light-ansi",
+  "hasSeenTasksHint": true,
+  "customApiKeyResponses": {
+    "approved": [
+      "KIUjfhnMiNw-QJ4gPgAA"
+    ],
+    "rejected": [
+      "rJ-sWKIEtMg-X-OX5QAA"
+    ]
+  },
+  "tipsHistory": {
+    "new-user-warmup": 8,
+    "plan-mode-for-complex-tasks": 3,
+    "terminal-setup": 13,
+    "memory-command": 124,
+    "theme-command": 124,
+    "status-line": 106,
+    "prompt-queue": 5,
+    "enter-to-steer-in-relatime": 126,
+    "todo-list": 126,
+    "install-github-app": 120,
+    "install-slack-app": 120,
+    "drag-and-drop-images": 123,
+    "double-esc-code-restore": 123,
+    "continue": 124,
+    "shift-tab": 124,
+    "image-paste": 126,
+    "web-app": 125,
+    "mobile-app": 125,
+    "default-permission-mode-config": 127,
+    "custom-agents": 128,
+    "agent-flag": 128,
+    "guest-passes": 128,
+    "permissions": 125,
+    "rename-conversation": 117,
+    "custom-commands": 117,
+    "ide-upsell-external-terminal": 128,
+    "shift-enter": 123,
+    "feedback-command": 119,
+    "git-worktrees": 123,
+    "color-when-multi-clauding": 128,
+    "frontend-design-plugin": 116
+  },
+  "promptQueueUseCount": 81,
+  "btwUseCount": 10,
+  "cachedGrowthBookFeatures": {
+    "tengu_opus_default_pro_plan": false,
+    "tengu_crystal_beam": {
+      "budgetTokens": 0
+    },
+    "tengu_willow_census_ttl_hours": 24,
+    "tengu_tide_elm": "off",
+    "tengu_grey_step": true,
+    "tengu_year_end_2025_campaign_promo": false,
+    "tengu_marble_whisper": true,
+    "tengu_borax_j4w": false,
+    "tengu_passport_quail": false,
+    "tengu_native_installation": false,
+    "tengu_silver_lantern": false,
+    "tengu_penguin_mode_promo": {
+      "discountPercent": 0,
+      "endDate": "Feb 16"
+    },
+    "tengu_snippet_save": false,
+    "tengu_bridge_repl_v2": true,
+    "tengu_malort_pedway": {
+      "enabled": false,
+      "pixelValidation": false,
+      "clipboardPasteMultiline": true,
+      "screenshotFilter": true,
+      "mouseAnimation": true,
+      "hideBeforeAction": true,
+      "autoTargetDisplay": true,
+      "coordinateMode": "pixels"
+    },
+    "tengu_plum_vx3": true,
+    "tengu_prompt_cache_1h_config": {
+      "allowlist": [
+        "repl_main_thread*",
+        "sdk",
+        "auto_mode"
+      ]
+    },
+    "tengu_file_write_optimization": true,
+    "tengu_prompt_suggestion": true,
+    "tengu_bergotte_lantern": false,
+    "tengu_desktop_upsell": {
+      "enable_shortcut_tip": false,
+      "enable_startup_dialog": false
+    },
+    "tengu_satin_quoll": {},
+    "tengu_plank_river_frost": "user_intent",
+    "tengu_turtle_carbon": true,
+    "tengu_1p_event_batch_config": {
+      "scheduledDelayMillis": 10000,
+      "maxExportBatchSize": 400,
+      "maxQueueSize": 8192,
+      "path": "/api/event_logging/v2/batch"
+    },
+    "tengu_cache_plum_violet": true,
+    "tengu_pewter_kestrel": {
+      "global": 50000,
+      "Bash": 30000,
+      "PowerShell": 30000,
+      "Grep": 20000,
+      "Snip": 1000,
+      "StrReplaceBasedEditTool": 30000,
+      "BashSearchTool": 20000
+    },
+    "tengu_read_dedup_killswitch": false,
+    "tengu_bridge_min_version": {
+      "minVersion": "2.1.70"
+    },
+    "tengu_collage_kaleidoscope": true,
+    "tengu-top-of-feed-tip": {
+      "tip": "",
+      "color": ""
+    },
+    "tengu_version_config": {
+      "minVersion": "1.0.24"
+    },
+    "tengu_mulberry_fog": false,
+    "tengu_claudeai_mcp_connectors": true,
+    "tengu_system_prompt_global_cache": true,
+    "tengu_pid_based_version_locking": true,
+    "tengu_thinkback": false,
+    "tengu_auto_mode_config": {
+      "enabled": "disabled",
+      "twoStageClassifier": true
+    },
+    "tengu_walrus_canteen": false,
+    "tengu_willow_refresh_ttl_hours": 0,
+    "auto_migrate_to_native": false,
+    "tengu_harbor": true,
+    "tengu_gha_plugin_code_review": false,
+    "tengu_ccr_bundle_max_bytes": 104857600,
+    "tengu_swann_brevity": "focused",
+    "tengu_defer_caveat_m9k": false,
+    "tengu_oboe": true,
+    "tengu_slate_ridge": true,
+    "tengu_swinburne_dune": true,
+    "tengu_tangerine_ladder_boost": true,
+    "tengu_sm_config": {
+      "minimumMessageTokensToInit": 150000,
+      "minimumTokensBetweenUpdate": 40000,
+      "toolCallsBetweenUpdates": 10
+    },
+    "tengu_blue_coaster": false,
+    "tengu_bridge_poll_interval_ms": 0,
+    "tengu_orchid_trellis": false,
+    "tengu_immediate_model_command": false,
+    "tengu_bridge_repl_v2_config": {
+      "init_retry_max_attempts": 3,
+      "init_retry_base_delay_ms": 500,
+      "init_retry_jitter_fraction": 0.25,
+      "init_retry_max_delay_ms": 4000,
+      "http_timeout_ms": 10000,
+      "uuid_dedup_buffer_size": 2000,
+      "heartbeat_interval_ms": 20000,
+      "heartbeat_jitter_fraction": 0.1,
+      "token_refresh_buffer_ms": 600000,
+      "teardown_archive_timeout_ms": 1500,
+      "connect_timeout_ms": 15000,
+      "min_version": "2.1.70",
+      "should_show_app_upgrade_message": true
+    },
+    "tengu_otk_slot_v1": false,
+    "tengu_slate_thimble": false,
+    "tengu_birthday_hat": false,
+    "tengu-off-switch": {
+      "activated": false
+    },
+    "tengu_olive_hinge": "",
+    "tengu_quiet_fern": true,
+    "tengu_tst_hint_m7r": false,
+    "tengu_cork_lantern": false,
+    "tengu_mcp_elicitation": true,
+    "tengu_marble_whisper2": true,
+    "tengu_tern_alloy": "off",
+    "tengu_negative_interaction_transcript_ask_config": {
+      "probability": 0
+    },
+    "tengu_miraculo_the_bard": false,
+    "tengu_compact_line_prefix_killswitch": false,
+    "tengu_log_datadog_events": true,
+    "tengu_keybinding_customization_release": true,
+    "tengu_permission_explainer": true,
+    "tengu_event_sampling_config": {},
+    "tengu_marble_sandcastle": false,
+    "tengu_post_compact_survey": false,
+    "tengu_cobalt_compass": true,
+    "tengu_amber_flint": true,
+    "tengu_vscode_cc_auth": true,
+    "tengu_coral_fern": false,
+    "tengu_amber_prism": true,
+    "tengu_kairos_cron_durable": false,
+    "tengu_basalt_3kr": true,
+    "tengu_chomp_inflection": false,
+    "tengu_bramble_lintel": 2,
+    "tengu_willow_sentinel_ttl_hours": 1,
+    "tengu_workout2": true,
+    "tengu_plugin_official_mkt_git_fallback": true,
+    "tengu_pebble_leaf_prune": true,
+    "tengu_scratch": false,
+    "tengu_lapis_finch": true,
+    "tengu_red_coaster": false,
+    "tengu_jade_anvil_4": false,
+    "tengu_frond_boric": {},
+    "tengu_chair_sermon": false,
+    "tengu_onyx_plover": {
+      "enabled": false,
+      "minHours": 24,
+      "minSessions": 3
+    },
+    "tengu_dunwich_bell": false,
+    "tengu_copper_wren": false,
+    "tengu_attribution_header": true,
+    "tengu_c4w_usage_limit_notifications_enabled": true,
+    "tengu_destructive_command_warning": false,
+    "tengu_cobalt_lantern": true,
+    "tengu_max_version_config": {},
+    "tengu_flint_harbor": false,
+    "tengu_lodestone_enabled": true,
+    "tengu_quiet_hollow": true,
+    "tengu_penguins_enabled": true,
+    "tengu_ccr_bundle_seed_enabled": false,
+    "tengu_streaming_tool_execution2": true,
+    "tengu_copper_lantern": false,
+    "tengu_moth_copse": false,
+    "tengu_tool_pear": false,
+    "tengu_streaming_text": true,
+    "tengu_turnip_cathedral": false,
+    "tengu_sage_compass": {},
+    "tengu_bad_survey_transcript_ask_config": {
+      "probability": 0
+    },
+    "tengu_cobalt_raccoon": false,
+    "tengu_pewter_ledger": "OFF",
+    "tengu_surreal_dali": true,
+    "tengu_code_diff_cli": true,
+    "tengu_frozen_nest": false,
+    "tengu_sm_compact_config": {
+      "minTokens": 2000,
+      "maxTokens": 20000,
+      "minTextBlockMessages": 5
+    },
+    "tengu_sumi": true,
+    "tengu_quartz_lantern": true,
+    "tengu_marble_anvil": true,
+    "tengu_copper_bridge": true,
+    "tengu_glacier_2xr": true,
+    "tengu_hawthorn_window": 200000,
+    "tengu_hawthorn_steeple": false,
+    "tengu_tool_result_persistence": true,
+    "tengu_willow_mode": "hint_v2",
+    "tengu_coral_whistle": false,
+    "tengu_slate_heron": {
+      "enabled": false,
+      "gapThresholdMinutes": 70,
+      "keepRecent": 5
+    },
+    "tengu_feedback_survey_config": {
+      "minTimeBeforeFeedbackMs": 600000,
+      "minTimeBetweenFeedbackMs": 100000000,
+      "minTimeBetweenGlobalFeedbackMs": 100000000,
+      "minUserTurnsBeforeFeedback": 5,
+      "minUserTurnsBetweenFeedback": 25,
+      "hideThanksAfterMs": 3000,
+      "onForModels": [
+        "*"
+      ],
+      "probability": 0.01
+    },
+    "tengu_pr_status_cli": true,
+    "tengu_birch_mist": true,
+    "tengu_amber_stoat": true,
+    "tengu_review_bughunter_config": {
+      "fleet_size": 5,
+      "max_duration_minutes": 10,
+      "agent_timeout_seconds": 600,
+      "total_wallclock_minutes": 22
+    },
+    "tengu_marble_fox": false,
+    "tengu_sotto_voce": true,
+    "tengu_herring_clock": false,
+    "tengu_session_memory": false,
+    "tengu_compact_cache_prefix": true,
+    "ccr_auto_permission_mode": false,
+    "tengu_tool_search_unsupported_models": [
+      "haiku"
+    ],
+    "tengu_vscode_review_upsell": false,
+    "tengu_summarize_tool_results": true,
+    "tengu_ccr_bridge_multi_session": true,
+    "tengu_grey_wool": true,
+    "tengu_worktree_mode": true,
+    "tengu_amber_lattice": {
+      "plugins": [
+        "security-guidance",
+        "code-review",
+        "commit-commands",
+        "code-simplifier",
+        "hookify",
+        "feature-dev",
+        "frontend-design",
+        "pr-review-toolkit",
+        "skill-creator",
+        "plugin-dev",
+        "agent-sdk-dev",
+        "mcp-server-dev",
+        "claude-code-setup",
+        "claude-md-management",
+        "playground",
+        "ralph-loop",
+        "explanatory-output-style",
+        "learning-output-style",
+        "clangd-lsp",
+        "csharp-lsp",
+        "gopls-lsp",
+        "jdtls-lsp",
+        "kotlin-lsp",
+        "lua-lsp",
+        "php-lsp",
+        "pyright-lsp",
+        "ruby-lsp",
+        "rust-analyzer-lsp",
+        "swift-lsp",
+        "typescript-lsp"
+      ]
+    },
+    "tengu_ant_attribution_header_new": true,
+    "tengu_sepia_heron": false,
+    "tengu_defer_all_bn4": false,
+    "tengu_vscode_onboarding": false,
+    "tengu_mcp_tool_search": true,
+    "tengu_kairos_cron": true,
+    "tengu_trace_lantern": false,
+    "tengu_slate_nexus": true,
+    "tengu_harbor_ledger": [
+      {
+        "marketplace": "claude-plugins-official",
+        "plugin": "discord"
+      },
+      {
+        "marketplace": "claude-plugins-official",
+        "plugin": "telegram"
+      },
+      {
+        "marketplace": "claude-plugins-official",
+        "plugin": "fakechat"
+      },
+      {
+        "marketplace": "claude-plugins-official",
+        "plugin": "imessage"
+      }
+    ],
+    "tengu_react_vulnerability_warning": false,
+    "tengu_accept_with_feedback": true,
+    "tengu_brass_pebble": false,
+    "tengu_amber_quartz": true,
+    "tengu_harbor_permissions": true,
+    "tengu_scarf_coffee": false,
+    "tengu_good_survey_transcript_ask_config": {
+      "probability": 0
+    },
+    "tengu_brief_tool_enabled": false,
+    "tengu_amber_wren": {
+      "targetedRangeNudge": true,
+      "maxTokens": 10000
+    },
+    "tengu_grey_step2": {
+      "enabled": true,
+      "dialogTitle": "We recommend medium effort for Opus",
+      "dialogDescription": "Effort determines how long Claude thinks for when completing your task. We recommend medium effort for most tasks to balance speed and intelligence and maximize rate limits. Use ultrathink to trigger high effort when needed."
+    },
+    "tengu_vinteuil_phrase": true,
+    "tengu_hayate": false,
+    "tengu_cobalt_frost": true,
+    "tengu_ccr_bridge": true,
+    "tengu_disable_bypass_permissions_mode": false,
+    "tengu_kv7_prompt_sort": false,
+    "tengu_cork_m4q": true,
+    "tengu_bridge_poll_interval_config": {
+      "poll_interval_ms_not_at_capacity": 2000,
+      "poll_interval_ms_at_capacity": 600000,
+      "heartbeat_interval_ms": 0,
+      "multisession_poll_interval_ms_not_at_capacity": 5000,
+      "multisession_poll_interval_ms_at_capacity": 60000,
+      "multisession_poll_interval_ms_partial_capacity": 5000,
+      "non_exclusive_heartbeat_interval_ms": 180000,
+      "session_keepalive_interval_ms": 0,
+      "session_keepalive_interval_v2_ms": 0
+    }
+  },
+  "firstStartTime": "2025-05-23T02:31:59.996Z",
+  "userID": "f8f9fd854c81d15bff6ed621bdc8b2158fba0914b7ac519aa068a365d5fa9655",
+  "isQualifiedForDataSharing": false,
+  "claudeMaxTier": "not_max",
+  "hasCompletedOnboarding": true,
+  "lastOnboardingVersion": "1.0.2",
+  "projects": {
+    "/home/luytbq/projects/onepay/fe-paygate": {
+      "allowedTools": [],
+      "dontCrawlDirectory": false,
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "enableAllProjectMcpServers": false,
+      "hasTrustDialogAccepted": true,
+      "ignorePatterns": [],
+      "projectOnboardingSeenCount": 3,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "lastCost": 0.8710779999999997,
+      "lastAPIDuration": 289494,
+      "lastDuration": 4323096,
+      "lastLinesAdded": 48,
+      "lastLinesRemoved": 9,
+      "lastTotalInputTokens": 19859,
+      "lastTotalOutputTokens": 11142,
+      "lastTotalCacheCreationInputTokens": 106410,
+      "lastTotalCacheReadInputTokens": 964687,
+      "lastSessionId": "9a4f0959-bc1a-454c-9cce-83ecc81216fc"
+    },
+    "/home/luytbq/projects/onepay/fe-paygate/paygate-general": {
+      "allowedTools": [],
+      "dontCrawlDirectory": false,
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "enableAllProjectMcpServers": false,
+      "hasTrustDialogAccepted": false,
+      "ignorePatterns": [],
+      "projectOnboardingSeenCount": 1,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "exampleFiles": [
+        "payment.service.ts",
+        "qr-mobile.component.ts",
+        "qr-desktop.component.ts",
+        "qr-main.component.ts",
+        "digital-wallet.service.ts"
+      ],
+      "exampleFilesGeneratedAt": 1747969315294,
+      "hasCompletedProjectOnboarding": true,
+      "lastCost": 0.43639374999999997,
+      "lastAPIDuration": 87288,
+      "lastDuration": 2408866,
+      "lastLinesAdded": 80,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 16035,
+      "lastTotalOutputTokens": 3000,
+      "lastTotalCacheCreationInputTokens": 75337,
+      "lastTotalCacheReadInputTokens": 230252,
+      "lastSessionId": "69ec5a4c-aa31-42b1-b0da-3ed92d0bba19"
+    },
+    "/home/luytbq/projects/onepay/be-paygate/msp-go": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "projectOnboardingSeenCount": 9,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "reactVulnerabilityCache": {
+        "detected": false,
+        "package": null,
+        "packageName": null,
+        "version": null,
+        "packageManager": null
+      },
+      "exampleFiles": [
+        "handler.go",
+        "db.go",
+        "server.go",
+        "model.go",
+        "msp_repository.go"
+      ],
+      "exampleFilesGeneratedAt": 1772439098693
+    },
+    "/home/luytbq/projects/onepay/be-paygate/msp": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "projectOnboardingSeenCount": 8,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "exampleFiles": [
+        "InstallmentService.java",
+        "Payments.java",
+        "InstallmentUtil.java",
+        "Server.java",
+        "DB.java"
+      ],
+      "exampleFilesGeneratedAt": 1771901249131,
+      "lastCost": 0.144841,
+      "lastAPIDuration": 37371,
+      "lastAPIDurationWithoutRetries": 37366,
+      "lastToolDuration": 201,
+      "lastDuration": 395016,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 6,
+      "lastTotalOutputTokens": 1204,
+      "lastTotalCacheCreationInputTokens": 9224,
+      "lastTotalCacheReadInputTokens": 114122,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 2.78,
+      "lastFpsLow1Pct": 181.86,
+      "lastModelUsage": {
+        "claude-opus-4-6": {
+          "inputTokens": 6,
+          "outputTokens": 1204,
+          "cacheReadInputTokens": 114122,
+          "cacheCreationInputTokens": 9224,
+          "webSearchRequests": 0,
+          "costUSD": 0.144841
+        }
+      },
+      "lastSessionId": "6bcf8101-5a44-4ca6-8eb6-81929843ab1d",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 1097,
+        "frame_duration_ms_min": 0.07901199999992059,
+        "frame_duration_ms_max": 21.686439000011887,
+        "frame_duration_ms_avg": 0.8916793773927222,
+        "frame_duration_ms_p50": 0.6030160000009346,
+        "frame_duration_ms_p95": 2.004329350003853,
+        "frame_duration_ms_p99": 5.475313010000005,
+        "pre_tool_hook_duration_ms_count": 3,
+        "pre_tool_hook_duration_ms_min": 1,
+        "pre_tool_hook_duration_ms_max": 1,
+        "pre_tool_hook_duration_ms_avg": 1,
+        "pre_tool_hook_duration_ms_p50": 1,
+        "pre_tool_hook_duration_ms_p95": 1,
+        "pre_tool_hook_duration_ms_p99": 1
+      }
+    },
+    "/home/luytbq/projects/l/test-ai/tswitch": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "projectOnboardingSeenCount": 45,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "hasCompletedProjectOnboarding": true,
+      "lastCost": 29.02116910000002,
+      "lastAPIDuration": 5113935,
+      "lastAPIDurationWithoutRetries": 5113080,
+      "lastToolDuration": 397889,
+      "lastDuration": 30156570,
+      "lastLinesAdded": 1928,
+      "lastLinesRemoved": 720,
+      "lastTotalInputTokens": 97812,
+      "lastTotalOutputTokens": 255548,
+      "lastTotalCacheCreationInputTokens": 1142096,
+      "lastTotalCacheReadInputTokens": 34789023,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 5.13,
+      "lastFpsLow1Pct": 30.37,
+      "lastModelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 85177,
+          "outputTokens": 28305,
+          "cacheReadInputTokens": 879861,
+          "cacheCreationInputTokens": 226090,
+          "webSearchRequests": 0,
+          "costUSD": 0.5973005999999997
+        },
+        "claude-sonnet-4-6": {
+          "inputTokens": 5239,
+          "outputTokens": 147486,
+          "cacheReadInputTokens": 18029807,
+          "cacheCreationInputTokens": 389047,
+          "webSearchRequests": 0,
+          "costUSD": 15.159792249999992
+        },
+        "claude-opus-4-6": {
+          "inputTokens": 7396,
+          "outputTokens": 79757,
+          "cacheReadInputTokens": 15879355,
+          "cacheCreationInputTokens": 526959,
+          "webSearchRequests": 0,
+          "costUSD": 13.264076250000006
+        }
+      },
+      "lastSessionId": "ca512722-cc52-4aec-b1db-393041ce8f64",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 105,
+        "frame_duration_ms_min": 0.3979169999999499,
+        "frame_duration_ms_max": 240.76256000000285,
+        "frame_duration_ms_avg": 10.414071066666597,
+        "frame_duration_ms_p50": 1.6909660000001168,
+        "frame_duration_ms_p95": 55.749664999999794,
+        "frame_duration_ms_p99": 216.81575343999714
+      },
+      "exampleFiles": [
+        "handler.go",
+        "client.go",
+        "main.go",
+        "keys.go",
+        "config.go"
+      ],
+      "exampleFilesGeneratedAt": 1773831379289
+    },
+    "/home/luytbq/.tmux": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "projectOnboardingSeenCount": 24,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "hasCompletedProjectOnboarding": true
+    },
+    "/home/luytbq/projects/onepay/prsp2/prsp2": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "projectOnboardingSeenCount": 20,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "lastCost": 9.718182349999994,
+      "lastAPIDuration": 2124324,
+      "lastAPIDurationWithoutRetries": 2121844,
+      "lastToolDuration": 1437713,
+      "lastDuration": 6718814,
+      "lastLinesAdded": 1322,
+      "lastLinesRemoved": 237,
+      "lastTotalInputTokens": 64264,
+      "lastTotalOutputTokens": 192222,
+      "lastTotalCacheCreationInputTokens": 885721,
+      "lastTotalCacheReadInputTokens": 10252233,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 2.36,
+      "lastFpsLow1Pct": 35.84,
+      "lastModelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 53647,
+          "outputTokens": 119454,
+          "cacheReadInputTokens": 2524856,
+          "cacheCreationInputTokens": 491390,
+          "webSearchRequests": 0,
+          "costUSD": 1.5176400999999997
+        },
+        "claude-opus-4-6": {
+          "inputTokens": 10617,
+          "outputTokens": 72768,
+          "cacheReadInputTokens": 7727377,
+          "cacheCreationInputTokens": 394331,
+          "webSearchRequests": 0,
+          "costUSD": 8.200542250000002
+        }
+      },
+      "lastSessionId": "842611a2-c071-437e-b546-68870930d8b8",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 75,
+        "frame_duration_ms_min": 0.10627900000008594,
+        "frame_duration_ms_max": 27.902258000000074,
+        "frame_duration_ms_avg": 1.7985997733333738,
+        "frame_duration_ms_p50": 0.9034139999998843,
+        "frame_duration_ms_p95": 4.529962999999769,
+        "frame_duration_ms_p99": 14.645063280000095
+      },
+      "hasCompletedProjectOnboarding": true
+    },
+    "/home/luytbq/.claude": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "projectOnboardingSeenCount": 0,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "hasCompletedProjectOnboarding": true,
+      "lastCost": 0,
+      "lastAPIDuration": 0,
+      "lastAPIDurationWithoutRetries": 0,
+      "lastToolDuration": 0,
+      "lastDuration": 28991,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 0,
+      "lastTotalOutputTokens": 0,
+      "lastTotalCacheCreationInputTokens": 0,
+      "lastTotalCacheReadInputTokens": 0,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 1.84,
+      "lastFpsLow1Pct": 103.17,
+      "lastModelUsage": {},
+      "lastSessionId": "aa24a465-dd05-4f62-bb09-bb0f3be87f0c",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 51,
+        "frame_duration_ms_min": 0.08026999999992768,
+        "frame_duration_ms_max": 9.692901000000347,
+        "frame_duration_ms_avg": 1.3518305294117412,
+        "frame_duration_ms_p50": 0.4429889999992156,
+        "frame_duration_ms_p95": 5.426605000000109,
+        "frame_duration_ms_p99": 9.63645200000019
+      }
+    },
+    "/home/luytbq/projects/onepay/hungtn-prsp-go": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "projectOnboardingSeenCount": 1,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "lastCost": 0.39665374999999997,
+      "lastAPIDuration": 67631,
+      "lastAPIDurationWithoutRetries": 67582,
+      "lastToolDuration": 813,
+      "lastDuration": 1589465,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 3267,
+      "lastTotalOutputTokens": 2878,
+      "lastTotalCacheCreationInputTokens": 30921,
+      "lastTotalCacheReadInputTokens": 265065,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 1.6,
+      "lastFpsLow1Pct": 185.07,
+      "lastModelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 3255,
+          "outputTokens": 220,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.0043549999999999995
+        },
+        "claude-opus-4-6": {
+          "inputTokens": 12,
+          "outputTokens": 2658,
+          "cacheReadInputTokens": 265065,
+          "cacheCreationInputTokens": 30921,
+          "webSearchRequests": 0,
+          "costUSD": 0.39229875
+        }
+      },
+      "lastSessionId": "5c2c5401-294b-4a17-b400-337c6c440aa2",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 2542,
+        "frame_duration_ms_min": 0.09472299999970346,
+        "frame_duration_ms_max": 91.37585599999875,
+        "frame_duration_ms_avg": 0.9072793623131972,
+        "frame_duration_ms_p50": 0.6073399999877438,
+        "frame_duration_ms_p95": 2.6330036999926927,
+        "frame_duration_ms_p99": 6.0390879799710815,
+        "pre_tool_hook_duration_ms_count": 14,
+        "pre_tool_hook_duration_ms_min": 0,
+        "pre_tool_hook_duration_ms_max": 7,
+        "pre_tool_hook_duration_ms_avg": 1.1428571428571428,
+        "pre_tool_hook_duration_ms_p50": 1,
+        "pre_tool_hook_duration_ms_p95": 3.099999999999998,
+        "pre_tool_hook_duration_ms_p99": 6.219999999999995,
+        "hook_duration_ms_count": 8,
+        "hook_duration_ms_min": 0,
+        "hook_duration_ms_max": 1,
+        "hook_duration_ms_avg": 0.125,
+        "hook_duration_ms_p50": 0,
+        "hook_duration_ms_p95": 0.6499999999999995,
+        "hook_duration_ms_p99": 0.9299999999999997
+      }
+    },
+    "/home/luytbq/projects/onepay/paygate-go": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "projectOnboardingSeenCount": 15,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "hasCompletedProjectOnboarding": true,
+      "lastCost": 27.222729000000008,
+      "lastAPIDuration": 4624451,
+      "lastAPIDurationWithoutRetries": 4621257,
+      "lastToolDuration": 1391510,
+      "lastDuration": 104546951,
+      "lastLinesAdded": 4276,
+      "lastLinesRemoved": 1010,
+      "lastTotalInputTokens": 172314,
+      "lastTotalOutputTokens": 249597,
+      "lastTotalCacheCreationInputTokens": 2112210,
+      "lastTotalCacheReadInputTokens": 34909235,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 0.29,
+      "lastFpsLow1Pct": 30.95,
+      "lastModelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 160868,
+          "outputTokens": 107699,
+          "cacheReadInputTokens": 9829410,
+          "cacheCreationInputTokens": 761096,
+          "webSearchRequests": 0,
+          "costUSD": 2.6336739999999983
+        },
+        "claude-opus-4-6": {
+          "inputTokens": 11446,
+          "outputTokens": 141898,
+          "cacheReadInputTokens": 25079825,
+          "cacheCreationInputTokens": 1351114,
+          "webSearchRequests": 0,
+          "costUSD": 24.589055000000005
+        }
+      },
+      "lastSessionId": "dedfcf69-108c-4bd1-93d8-5b0493d3e073",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 23587,
+        "frame_duration_ms_min": 0.08082899986766279,
+        "frame_duration_ms_max": 303.58005098998547,
+        "frame_duration_ms_avg": 2.5058932380269456,
+        "frame_duration_ms_p50": 1.077834501862526,
+        "frame_duration_ms_p95": 5.221893306635297,
+        "frame_duration_ms_p99": 93.96164095989649,
+        "pre_tool_hook_duration_ms_count": 227,
+        "pre_tool_hook_duration_ms_min": 0,
+        "pre_tool_hook_duration_ms_max": 3,
+        "pre_tool_hook_duration_ms_avg": 0.6916299559471366,
+        "pre_tool_hook_duration_ms_p50": 1,
+        "pre_tool_hook_duration_ms_p95": 1,
+        "pre_tool_hook_duration_ms_p99": 2,
+        "hook_duration_ms_count": 174,
+        "hook_duration_ms_min": 0,
+        "hook_duration_ms_max": 8,
+        "hook_duration_ms_avg": 0.28735632183908044,
+        "hook_duration_ms_p50": 0,
+        "hook_duration_ms_p95": 1,
+        "hook_duration_ms_p99": 1.5400000000000205
+      },
+      "exampleFiles": [
+        "repository.go",
+        "service.go",
+        "postgres.go",
+        "calculator.go",
+        "promotion.go"
+      ],
+      "exampleFilesGeneratedAt": 1772016699736
+    },
+    "/home/luytbq/projects/onepay/dbcm-sdk-go": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "projectOnboardingSeenCount": 7,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "exampleFiles": [
+        "pgx_pool.go",
+        "sql_db.go",
+        "dbcm_client.go",
+        "sql_pool.go",
+        "dbcm.proto"
+      ],
+      "exampleFilesGeneratedAt": 1772004401490
+    },
+    "/home/luytbq/projects/l": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "projectOnboardingSeenCount": 1,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "lastCost": 0,
+      "lastAPIDuration": 0,
+      "lastAPIDurationWithoutRetries": 0,
+      "lastToolDuration": 0,
+      "lastDuration": 28868,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 0,
+      "lastTotalOutputTokens": 0,
+      "lastTotalCacheCreationInputTokens": 0,
+      "lastTotalCacheReadInputTokens": 0,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 4.85,
+      "lastFpsLow1Pct": 134.13,
+      "lastModelUsage": {},
+      "lastSessionId": "abb469b0-e432-4447-adcd-99e24eebd476",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 138,
+        "frame_duration_ms_min": 0.08798300000125892,
+        "frame_duration_ms_max": 7.911198000000013,
+        "frame_duration_ms_avg": 1.3544624202900013,
+        "frame_duration_ms_p50": 0.9333160000001044,
+        "frame_duration_ms_p95": 3.9730618500004766,
+        "frame_duration_ms_p99": 6.615462210000752
+      }
+    },
+    "/home/luytbq/projects/onepay/android/UnionPayQRSimulator": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "projectOnboardingSeenCount": 1,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "hasCompletedProjectOnboarding": true,
+      "lastCost": 0.10492125,
+      "lastAPIDuration": 15721,
+      "lastAPIDurationWithoutRetries": 15719,
+      "lastToolDuration": 255,
+      "lastDuration": 4219266,
+      "lastLinesAdded": 16,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 854,
+      "lastTotalOutputTokens": 418,
+      "lastTotalCacheCreationInputTokens": 5739,
+      "lastTotalCacheReadInputTokens": 114857,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 0.09,
+      "lastFpsLow1Pct": 112.7,
+      "lastModelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 554,
+          "outputTokens": 44,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.000774
+        },
+        "claude-opus-4-6": {
+          "inputTokens": 300,
+          "outputTokens": 374,
+          "cacheReadInputTokens": 114857,
+          "cacheCreationInputTokens": 5739,
+          "webSearchRequests": 0,
+          "costUSD": 0.10414725
+        }
+      },
+      "lastSessionId": "8678e262-b07f-4e10-bbe4-f0378508d0ea",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 363,
+        "frame_duration_ms_min": 0.094724000000042,
+        "frame_duration_ms_max": 14.861400000052527,
+        "frame_duration_ms_avg": 0.9776360468350002,
+        "frame_duration_ms_p50": 0.6133889999982785,
+        "frame_duration_ms_p95": 2.6269324002130716,
+        "frame_duration_ms_p99": 7.6706563799999365,
+        "pre_tool_hook_duration_ms_count": 2,
+        "pre_tool_hook_duration_ms_min": 0,
+        "pre_tool_hook_duration_ms_max": 1,
+        "pre_tool_hook_duration_ms_avg": 0.5,
+        "pre_tool_hook_duration_ms_p50": 0.5,
+        "pre_tool_hook_duration_ms_p95": 0.95,
+        "pre_tool_hook_duration_ms_p99": 0.99,
+        "hook_duration_ms_count": 1,
+        "hook_duration_ms_min": 1,
+        "hook_duration_ms_max": 1,
+        "hook_duration_ms_avg": 1,
+        "hook_duration_ms_p50": 1,
+        "hook_duration_ms_p95": 1,
+        "hook_duration_ms_p99": 1
+      }
+    },
+    "/home/luytbq/projects/onepay/test-docs": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "projectOnboardingSeenCount": 1,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "lastCost": 0,
+      "lastAPIDuration": 0,
+      "lastAPIDurationWithoutRetries": 0,
+      "lastToolDuration": 0,
+      "lastDuration": 11236,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 0,
+      "lastTotalOutputTokens": 0,
+      "lastTotalCacheCreationInputTokens": 0,
+      "lastTotalCacheReadInputTokens": 0,
+      "lastTotalWebSearchRequests": 0,
+      "lastModelUsage": {},
+      "lastSessionId": "79f75602-742e-4ed0-bcff-eb5e15fdff5b",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 9597,
+        "frame_duration_ms_min": 0.07952000000022963,
+        "frame_duration_ms_max": 35.199276000028476,
+        "frame_duration_ms_avg": 1.0514785610098236,
+        "frame_duration_ms_p50": 0.6907350000110455,
+        "frame_duration_ms_p95": 1.3129013000288934,
+        "frame_duration_ms_p99": 8.435343739928209,
+        "pre_tool_hook_duration_ms_count": 68,
+        "pre_tool_hook_duration_ms_min": 0,
+        "pre_tool_hook_duration_ms_max": 2,
+        "pre_tool_hook_duration_ms_avg": 0.8529411764705882,
+        "pre_tool_hook_duration_ms_p50": 1,
+        "pre_tool_hook_duration_ms_p95": 2,
+        "pre_tool_hook_duration_ms_p99": 2,
+        "hook_duration_ms_count": 16,
+        "hook_duration_ms_min": 0,
+        "hook_duration_ms_max": 1,
+        "hook_duration_ms_avg": 0.4375,
+        "hook_duration_ms_p50": 0,
+        "hook_duration_ms_p95": 1,
+        "hook_duration_ms_p99": 1
+      }
+    },
+    "/home/luytbq/projects/onepay/ldp/shopify-apps": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "projectOnboardingSeenCount": 0,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "exampleFiles": [
+        "shopify.app.toml",
+        "shopify.extension.toml",
+        "README.md",
+        "route.jsx",
+        "admin-app-README.md"
+      ],
+      "exampleFilesGeneratedAt": 1772420033945,
+      "lastCost": 3.6598891500000015,
+      "lastAPIDuration": 793296,
+      "lastAPIDurationWithoutRetries": 793234,
+      "lastToolDuration": 133035,
+      "lastDuration": 8231677,
+      "lastLinesAdded": 849,
+      "lastLinesRemoved": 140,
+      "lastTotalInputTokens": 1791,
+      "lastTotalOutputTokens": 38838,
+      "lastTotalCacheCreationInputTokens": 112589,
+      "lastTotalCacheReadInputTokens": 5429017,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 2.75,
+      "lastFpsLow1Pct": 29.66,
+      "lastModelUsage": {
+        "claude-opus-4-6": {
+          "inputTokens": 152,
+          "outputTokens": 30079,
+          "cacheReadInputTokens": 4572568,
+          "cacheCreationInputTokens": 69811,
+          "webSearchRequests": 0,
+          "costUSD": 3.4753377500000013
+        },
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 1639,
+          "outputTokens": 8759,
+          "cacheReadInputTokens": 856449,
+          "cacheCreationInputTokens": 42778,
+          "webSearchRequests": 0,
+          "costUSD": 0.18455139999999998
+        }
+      },
+      "lastSessionId": "c0ebbc9e-71b9-48a3-91b9-b68b40a66920",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 22604,
+        "frame_duration_ms_min": 0.15330999996513128,
+        "frame_duration_ms_max": 196.35821600072086,
+        "frame_duration_ms_avg": 1.7297614051521162,
+        "frame_duration_ms_p50": 0.8423330000368878,
+        "frame_duration_ms_p95": 2.5827898000141416,
+        "frame_duration_ms_p99": 49.819505219962416,
+        "pre_tool_hook_duration_ms_count": 119,
+        "pre_tool_hook_duration_ms_min": 0,
+        "pre_tool_hook_duration_ms_max": 5,
+        "pre_tool_hook_duration_ms_avg": 0.9495798319327731,
+        "pre_tool_hook_duration_ms_p50": 1,
+        "pre_tool_hook_duration_ms_p95": 2,
+        "pre_tool_hook_duration_ms_p99": 3.819999999999993,
+        "hook_duration_ms_count": 88,
+        "hook_duration_ms_min": 0,
+        "hook_duration_ms_max": 1,
+        "hook_duration_ms_avg": 0.29545454545454547,
+        "hook_duration_ms_p50": 0,
+        "hook_duration_ms_p95": 1,
+        "hook_duration_ms_p99": 1
+      }
+    },
+    "/home/luytbq/projects/onepay/be-paygate/psp-onecredit": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "projectOnboardingSeenCount": 40,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "exampleFiles": [
+        "Cup3DS2.java",
+        "Bug_20260302_074-dev-analysis_vi.md",
+        "config.properties",
+        "CyberSourceTask.java",
+        "MpgsTask.java"
+      ],
+      "exampleFilesGeneratedAt": 1773214509010,
+      "lastCost": 0,
+      "lastAPIDuration": 0,
+      "lastAPIDurationWithoutRetries": 0,
+      "lastToolDuration": 0,
+      "lastDuration": 7467985,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 0,
+      "lastTotalOutputTokens": 0,
+      "lastTotalCacheCreationInputTokens": 0,
+      "lastTotalCacheReadInputTokens": 0,
+      "lastTotalWebSearchRequests": 0,
+      "lastModelUsage": {},
+      "lastSessionId": "6b54b913-99d7-4a92-957e-f9fcacd43640",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 101,
+        "frame_duration_ms_min": 0.07935100048780441,
+        "frame_duration_ms_max": 29.3105999995023,
+        "frame_duration_ms_avg": 1.8566118415616537,
+        "frame_duration_ms_p50": 0.9058570000001964,
+        "frame_duration_ms_p95": 7.677251999266446,
+        "frame_duration_ms_p99": 12.692594999999983
+      },
+      "lastFpsAverage": 0.01,
+      "lastFpsLow1Pct": 78.79
+    },
+    "/home/luytbq/projects/onepay/be-paygate/bank-emulator": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "projectOnboardingSeenCount": 1,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "exampleFiles": [
+        "zalopay.go",
+        "capture.go",
+        "config.yaml",
+        "cyber.go",
+        "index.html"
+      ],
+      "exampleFilesGeneratedAt": 1773047745245,
+      "lastCost": 5.6441661,
+      "lastAPIDuration": 1059829,
+      "lastAPIDurationWithoutRetries": 1059798,
+      "lastToolDuration": 543619,
+      "lastDuration": 3011048,
+      "lastLinesAdded": 258,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 8111,
+      "lastTotalOutputTokens": 42084,
+      "lastTotalCacheCreationInputTokens": 836590,
+      "lastTotalCacheReadInputTokens": 4051665,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 6.37,
+      "lastFpsLow1Pct": 488.36,
+      "lastModelUsage": {
+        "claude-opus-4-6": {
+          "inputTokens": 31,
+          "outputTokens": 5445,
+          "cacheReadInputTokens": 544818,
+          "cacheCreationInputTokens": 294910,
+          "webSearchRequests": 0,
+          "costUSD": 2.2518765
+        },
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 56,
+          "outputTokens": 7493,
+          "cacheReadInputTokens": 315075,
+          "cacheCreationInputTokens": 50733,
+          "webSearchRequests": 0,
+          "costUSD": 0.13244475
+        },
+        "claude-sonnet-4-6": {
+          "inputTokens": 8024,
+          "outputTokens": 29146,
+          "cacheReadInputTokens": 3191772,
+          "cacheCreationInputTokens": 490947,
+          "webSearchRequests": 0,
+          "costUSD": 3.2598448499999986
+        }
+      },
+      "lastSessionId": "0aa63f9a-fc65-4c3a-a0d7-40964da6c2b2",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 19188,
+        "frame_duration_ms_min": 0.03547400003299117,
+        "frame_duration_ms_max": 20.29388800007291,
+        "frame_duration_ms_avg": 0.2748072248805005,
+        "frame_duration_ms_p50": 0.28061749995686114,
+        "frame_duration_ms_p95": 0.5557154999958575,
+        "frame_duration_ms_p99": 1.5818227100622577,
+        "pre_tool_hook_duration_ms_count": 144,
+        "pre_tool_hook_duration_ms_min": 0,
+        "pre_tool_hook_duration_ms_max": 1,
+        "pre_tool_hook_duration_ms_avg": 0.05555555555555555,
+        "pre_tool_hook_duration_ms_p50": 0,
+        "pre_tool_hook_duration_ms_p95": 0.8499999999999943,
+        "pre_tool_hook_duration_ms_p99": 1,
+        "hook_duration_ms_count": 109,
+        "hook_duration_ms_min": 0,
+        "hook_duration_ms_max": 1,
+        "hook_duration_ms_avg": 0.1559633027522936,
+        "hook_duration_ms_p50": 0,
+        "hook_duration_ms_p95": 1,
+        "hook_duration_ms_p99": 1
+      }
+    },
+    "/home/luytbq/projects/onepay/job/scheduler-go": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "projectOnboardingSeenCount": 0,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "exampleFiles": [
+        "main.go",
+        "config.yaml",
+        "recieverjob.go",
+        "telegram.go",
+        "db.go"
+      ],
+      "exampleFilesGeneratedAt": 1773131821874,
+      "hasCompletedProjectOnboarding": true,
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 1256,
+        "frame_duration_ms_min": 0.049075000002630986,
+        "frame_duration_ms_max": 7.311552000002848,
+        "frame_duration_ms_avg": 0.4128983638534213,
+        "frame_duration_ms_p50": 0.32854800000495743,
+        "frame_duration_ms_p95": 0.6969312500042681,
+        "frame_duration_ms_p99": 3.9059736999997217,
+        "pre_tool_hook_duration_ms_count": 45,
+        "pre_tool_hook_duration_ms_min": 0,
+        "pre_tool_hook_duration_ms_max": 1,
+        "pre_tool_hook_duration_ms_avg": 0.15555555555555556,
+        "pre_tool_hook_duration_ms_p50": 0,
+        "pre_tool_hook_duration_ms_p95": 1,
+        "pre_tool_hook_duration_ms_p99": 1,
+        "hook_duration_ms_count": 33,
+        "hook_duration_ms_min": 0,
+        "hook_duration_ms_max": 1,
+        "hook_duration_ms_avg": 0.18181818181818182,
+        "hook_duration_ms_p50": 0,
+        "hook_duration_ms_p95": 1,
+        "hook_duration_ms_p99": 1
+      },
+      "lastCost": 0.30858945000000004,
+      "lastAPIDuration": 98154,
+      "lastAPIDurationWithoutRetries": 98148,
+      "lastToolDuration": 79219,
+      "lastDuration": 86510,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 77,
+      "lastTotalOutputTokens": 5366,
+      "lastTotalCacheCreationInputTokens": 76353,
+      "lastTotalCacheReadInputTokens": 898794,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 14.59,
+      "lastFpsLow1Pct": 255.79,
+      "lastModelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 74,
+          "outputTokens": 4040,
+          "cacheReadInputTokens": 889957,
+          "cacheCreationInputTokens": 63094,
+          "webSearchRequests": 0,
+          "costUSD": 0.18813719999999998
+        },
+        "claude-opus-4-6": {
+          "inputTokens": 3,
+          "outputTokens": 1326,
+          "cacheReadInputTokens": 8837,
+          "cacheCreationInputTokens": 13259,
+          "webSearchRequests": 0,
+          "costUSD": 0.12045225000000001
+        }
+      },
+      "lastSessionId": "ef9cd90a-096e-4ff1-960b-c1446aa31ebf"
+    },
+    "/home/luytbq/projects/onepay/be-paygate/prsp": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "projectOnboardingSeenCount": 0,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "exampleFiles": [
+        "DB.java",
+        "PaygatePromotion.java",
+        "pom.xml",
+        "Util.java",
+        "config.json"
+      ],
+      "exampleFilesGeneratedAt": 1773206874427
+    },
+    "/home/luytbq/projects/onepay/be-paygate": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "projectOnboardingSeenCount": 0,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "lastCost": 0.59401805,
+      "lastAPIDuration": 315818,
+      "lastAPIDurationWithoutRetries": 315805,
+      "lastToolDuration": 899,
+      "lastDuration": 1499291,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 742,
+      "lastTotalOutputTokens": 27692,
+      "lastTotalCacheCreationInputTokens": 153847,
+      "lastTotalCacheReadInputTokens": 2625073,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 4.38,
+      "lastFpsLow1Pct": 576.31,
+      "lastModelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 742,
+          "outputTokens": 27692,
+          "cacheReadInputTokens": 2625073,
+          "cacheCreationInputTokens": 153847,
+          "webSearchRequests": 0,
+          "costUSD": 0.59401805
+        }
+      },
+      "lastSessionId": "35e51e22-ff6d-46a2-950c-c0ab33403575",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 6557,
+        "frame_duration_ms_min": 0.05726399999912246,
+        "frame_duration_ms_max": 19.571878999937326,
+        "frame_duration_ms_avg": 0.41901826811077936,
+        "frame_duration_ms_p50": 0.42305800000031013,
+        "frame_duration_ms_p95": 0.7309293999816863,
+        "frame_duration_ms_p99": 2.5341850800208316,
+        "pre_tool_hook_duration_ms_count": 50,
+        "pre_tool_hook_duration_ms_min": 0,
+        "pre_tool_hook_duration_ms_max": 1,
+        "pre_tool_hook_duration_ms_avg": 0.08,
+        "pre_tool_hook_duration_ms_p50": 0,
+        "pre_tool_hook_duration_ms_p95": 1,
+        "pre_tool_hook_duration_ms_p99": 1,
+        "hook_duration_ms_count": 31,
+        "hook_duration_ms_min": 0,
+        "hook_duration_ms_max": 32,
+        "hook_duration_ms_avg": 3.096774193548387,
+        "hook_duration_ms_p50": 0,
+        "hook_duration_ms_p95": 18,
+        "hook_duration_ms_p99": 28.39999999999999
+      }
+    },
+    "/home/luytbq/projects/onepay": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "projectOnboardingSeenCount": 1,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "hasCompletedProjectOnboarding": true,
+      "lastCost": 0.7760355,
+      "lastAPIDuration": 157574,
+      "lastAPIDurationWithoutRetries": 157533,
+      "lastToolDuration": 9036,
+      "lastDuration": 1183111,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 401,
+      "lastTotalOutputTokens": 5041,
+      "lastTotalCacheCreationInputTokens": 32406,
+      "lastTotalCacheReadInputTokens": 894312,
+      "lastTotalWebSearchRequests": 0,
+      "lastModelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 352,
+          "outputTokens": 14,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.00042199999999999996
+        },
+        "claude-opus-4-6[1m]": {
+          "inputTokens": 49,
+          "outputTokens": 5027,
+          "cacheReadInputTokens": 894312,
+          "cacheCreationInputTokens": 32406,
+          "webSearchRequests": 0,
+          "costUSD": 0.7756134999999998
+        }
+      },
+      "lastSessionId": "8fad6099-f623-4929-b3ca-9b9b1d25c739",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 3114,
+        "frame_duration_ms_min": 0.06333900000026915,
+        "frame_duration_ms_max": 7.420417000015732,
+        "frame_duration_ms_avg": 0.4396899277455715,
+        "frame_duration_ms_p50": 0.3514199999917764,
+        "frame_duration_ms_p95": 0.7397680499998386,
+        "frame_duration_ms_p99": 2.2499215100469865,
+        "pre_tool_hook_duration_ms_count": 17,
+        "pre_tool_hook_duration_ms_min": 0,
+        "pre_tool_hook_duration_ms_max": 1,
+        "pre_tool_hook_duration_ms_avg": 0.058823529411764705,
+        "pre_tool_hook_duration_ms_p50": 0,
+        "pre_tool_hook_duration_ms_p95": 0.1999999999999993,
+        "pre_tool_hook_duration_ms_p99": 0.8399999999999999
+      },
+      "lastFpsAverage": 2.64,
+      "lastFpsLow1Pct": 387.9
+    },
+    "/home/luytbq/projects/onepay/prsp": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": false,
+      "projectOnboardingSeenCount": 4,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "exampleFiles": [
+        "DB.java",
+        "pom.xml",
+        "PaygatePromotion.java",
+        "Util.java",
+        "config.json"
+      ],
+      "exampleFilesGeneratedAt": 1774426981718,
+      "lastCost": 1.5740694999999998,
+      "lastAPIDuration": 958488,
+      "lastAPIDurationWithoutRetries": 958460,
+      "lastToolDuration": 10825,
+      "lastDuration": 1100745,
+      "lastLinesAdded": 368,
+      "lastLinesRemoved": 47,
+      "lastTotalInputTokens": 1687,
+      "lastTotalOutputTokens": 15395,
+      "lastTotalCacheCreationInputTokens": 85470,
+      "lastTotalCacheReadInputTokens": 1307560,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 17.25,
+      "lastFpsLow1Pct": 139.03,
+      "lastModelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 1657,
+          "outputTokens": 29,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.001802
+        },
+        "claude-opus-4-6": {
+          "inputTokens": 30,
+          "outputTokens": 15366,
+          "cacheReadInputTokens": 1307560,
+          "cacheCreationInputTokens": 85470,
+          "webSearchRequests": 0,
+          "costUSD": 1.5722674999999997
+        }
+      },
+      "lastSessionId": "45351915-cdd6-4f59-9d1e-bc740c06a0c5",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 18964,
+        "frame_duration_ms_min": 0.07889199999954144,
+        "frame_duration_ms_max": 26.010388000053354,
+        "frame_duration_ms_avg": 1.0798138842019493,
+        "frame_duration_ms_p50": 0.9490770000265911,
+        "frame_duration_ms_p95": 2.9001897000416563,
+        "frame_duration_ms_p99": 8.394215249997794,
+        "pre_tool_hook_duration_ms_count": 64,
+        "pre_tool_hook_duration_ms_min": 0,
+        "pre_tool_hook_duration_ms_max": 1,
+        "pre_tool_hook_duration_ms_avg": 0.09375,
+        "pre_tool_hook_duration_ms_p50": 0,
+        "pre_tool_hook_duration_ms_p95": 1,
+        "pre_tool_hook_duration_ms_p99": 1,
+        "hook_duration_ms_count": 55,
+        "hook_duration_ms_min": 0,
+        "hook_duration_ms_max": 24,
+        "hook_duration_ms_avg": 0.7636363636363637,
+        "hook_duration_ms_p50": 0,
+        "hook_duration_ms_p95": 1,
+        "hook_duration_ms_p99": 11.58000000000002
+      }
+    },
+    "/home/luytbq/projects/onepay/msp": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": false,
+      "projectOnboardingSeenCount": 6,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "exampleFiles": [
+        "Util.java",
+        "Payments.java",
+        "DB.java",
+        "QRService.java",
+        "InstallmentService.java"
+      ],
+      "exampleFilesGeneratedAt": 1774410015568,
+      "lastCost": 0.1285495,
+      "lastAPIDuration": 10743,
+      "lastAPIDurationWithoutRetries": 10741,
+      "lastToolDuration": 1,
+      "lastDuration": 43647,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 6,
+      "lastTotalOutputTokens": 342,
+      "lastTotalCacheCreationInputTokens": 16860,
+      "lastTotalCacheReadInputTokens": 29189,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 8.18,
+      "lastFpsLow1Pct": 205.93,
+      "lastModelUsage": {
+        "claude-opus-4-6[1m]": {
+          "inputTokens": 6,
+          "outputTokens": 342,
+          "cacheReadInputTokens": 29189,
+          "cacheCreationInputTokens": 16860,
+          "webSearchRequests": 0,
+          "costUSD": 0.1285495
+        }
+      },
+      "lastSessionId": "da2948e2-44e9-4657-8527-d8b4a3d564cc",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 354,
+        "frame_duration_ms_min": 0.07067499999902793,
+        "frame_duration_ms_max": 8.978327000000263,
+        "frame_duration_ms_avg": 0.49386844067798236,
+        "frame_duration_ms_p50": 0.3580599999986589,
+        "frame_duration_ms_p95": 1.280903699999724,
+        "frame_duration_ms_p99": 4.696573240000189,
+        "pre_tool_hook_duration_ms_count": 2,
+        "pre_tool_hook_duration_ms_min": 0,
+        "pre_tool_hook_duration_ms_max": 0,
+        "pre_tool_hook_duration_ms_avg": 0,
+        "pre_tool_hook_duration_ms_p50": 0,
+        "pre_tool_hook_duration_ms_p95": 0,
+        "pre_tool_hook_duration_ms_p99": 0
+      }
+    },
+    "/home/luytbq/projects/onepay/onepay-database-mcp": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": false,
+      "projectOnboardingSeenCount": 0,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "exampleFiles": [],
+      "lastCost": 0,
+      "lastAPIDuration": 0,
+      "lastAPIDurationWithoutRetries": 0,
+      "lastToolDuration": 0,
+      "lastDuration": 15199,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 0,
+      "lastTotalOutputTokens": 0,
+      "lastTotalCacheCreationInputTokens": 0,
+      "lastTotalCacheReadInputTokens": 0,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 5.11,
+      "lastFpsLow1Pct": 84.33,
+      "lastModelUsage": {},
+      "lastSessionId": "c3c8366f-0b18-46df-bb20-058729b67f64",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 74,
+        "frame_duration_ms_min": 0.08286000000043714,
+        "frame_duration_ms_max": 11.858828000000358,
+        "frame_duration_ms_avg": 0.8701304459459568,
+        "frame_duration_ms_p50": 0.40177550000021256,
+        "frame_duration_ms_p95": 3.738532049999866,
+        "frame_duration_ms_p99": 8.790226280000072
+      },
+      "hasCompletedProjectOnboarding": true
+    },
+    "/home/luytbq/projects/onepay/ipn-go": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": false,
+      "projectOnboardingSeenCount": 2,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "exampleFiles": [
+        "messages.go",
+        "sync_prod_7103",
+        "config.yaml",
+        "sync_prod_7102",
+        "main.go"
+      ],
+      "exampleFilesGeneratedAt": 1773889846339,
+      "hasCompletedProjectOnboarding": true
+    },
+    "/home/luytbq/.bash_functions": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "projectOnboardingSeenCount": 29,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false
+    },
+    "/home/luytbq/projects/onepay/psp-onecredit": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": false,
+      "projectOnboardingSeenCount": 9,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "exampleFiles": [
+        "Util.java",
+        "config.properties",
+        "CyberSourceTask.java",
+        "MpgsTask.java",
+        "OnecreditPaymentServiceProvider.java"
+      ],
+      "exampleFilesGeneratedAt": 1774435888910,
+      "lastCost": 1.1646355000000002,
+      "lastAPIDuration": 165465,
+      "lastAPIDurationWithoutRetries": 165440,
+      "lastToolDuration": 10867,
+      "lastDuration": 178997,
+      "lastLinesAdded": 46,
+      "lastLinesRemoved": 8,
+      "lastTotalInputTokens": 1656,
+      "lastTotalOutputTokens": 7434,
+      "lastTotalCacheCreationInputTokens": 65716,
+      "lastTotalCacheReadInputTokens": 1133345,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 15.91,
+      "lastFpsLow1Pct": 165.68,
+      "lastModelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 1628,
+          "outputTokens": 19,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.0017230000000000001
+        },
+        "claude-opus-4-6": {
+          "inputTokens": 28,
+          "outputTokens": 7415,
+          "cacheReadInputTokens": 1133345,
+          "cacheCreationInputTokens": 65716,
+          "webSearchRequests": 0,
+          "costUSD": 1.1629125000000002
+        }
+      },
+      "lastSessionId": "3b92d8fe-3bc2-402d-b531-d0d94fad2b25",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 2828,
+        "frame_duration_ms_min": 0.07973099999981059,
+        "frame_duration_ms_max": 24.811491000000387,
+        "frame_duration_ms_avg": 0.8755126768034223,
+        "frame_duration_ms_p50": 0.6632720000052359,
+        "frame_duration_ms_p95": 2.295538950001706,
+        "frame_duration_ms_p99": 4.954748300000647,
+        "pre_tool_hook_duration_ms_count": 29,
+        "pre_tool_hook_duration_ms_min": 0,
+        "pre_tool_hook_duration_ms_max": 4,
+        "pre_tool_hook_duration_ms_avg": 0.13793103448275862,
+        "pre_tool_hook_duration_ms_p50": 0,
+        "pre_tool_hook_duration_ms_p95": 0,
+        "pre_tool_hook_duration_ms_p99": 2.8799999999999955,
+        "hook_duration_ms_count": 26,
+        "hook_duration_ms_min": 0,
+        "hook_duration_ms_max": 14,
+        "hook_duration_ms_avg": 0.7692307692307693,
+        "hook_duration_ms_p50": 0,
+        "hook_duration_ms_p95": 1,
+        "hook_duration_ms_p99": 10.75
+      }
+    },
+    "/home/luytbq/projects/onepay/docs/google-apps-script": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": false,
+      "projectOnboardingSeenCount": 0,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "exampleFiles": [],
+      "hasCompletedProjectOnboarding": true,
+      "lastCost": 0,
+      "lastAPIDuration": 0,
+      "lastAPIDurationWithoutRetries": 0,
+      "lastToolDuration": 0,
+      "lastDuration": 7163,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 0,
+      "lastTotalOutputTokens": 0,
+      "lastTotalCacheCreationInputTokens": 0,
+      "lastTotalCacheReadInputTokens": 0,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 5.48,
+      "lastFpsLow1Pct": 211.86,
+      "lastModelUsage": {},
+      "lastSessionId": "c1a1a9d8-f6c0-4244-baba-b5d410411f79",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 32,
+        "frame_duration_ms_min": 0.07923200000004726,
+        "frame_duration_ms_max": 4.719994999999926,
+        "frame_duration_ms_avg": 1.1058374062499912,
+        "frame_duration_ms_p50": 0.4477394999998978,
+        "frame_duration_ms_p95": 4.363141850000101,
+        "frame_duration_ms_p99": 4.691069519999933
+      }
+    }
+  },
+  "statsigModel": {
+    "bedrock": "us.anthropic.claude-3-7-sonnet-20250219-v1:0",
+    "vertex": "claude-3-7-sonnet@20250219",
+    "firstParty": "claude-3-7-sonnet-20250219"
+  },
+  "changelogLastFetched": 1774837836228,
+  "maxSubscriptionNoticeCount": 0,
+  "hasAvailableMaxSubscription": false,
+  "sonnet45MigrationComplete": true,
+  "opus45MigrationComplete": true,
+  "opusProMigrationComplete": true,
+  "thinkingMigrationComplete": true,
+  "cachedChromeExtensionInstalled": false,
+  "autoUpdatesProtectedForNative": true,
+  "lastReleaseNotesSeen": "2.1.87",
+  "hasShownOpus46Notice": {
+    "881cfc75-4c6d-450e-8825-fad0de1aed6a": true,
+    "92ddebd9-f3e5-4c5e-bb58-cbe207dee0b8": true
+  },
+  "penguinModeOrgEnabled": true,
+  "s1mNonSubscriberAccessCache": {
+    "881cfc75-4c6d-450e-8825-fad0de1aed6a": {
+      "hasAccess": false,
+      "timestamp": 1770958162774
+    }
+  },
+  "subscriptionNoticeCount": 1,
+  "officialMarketplaceAutoInstallAttempted": true,
+  "officialMarketplaceAutoInstalled": true,
+  "oauthAccount": {
+    "accountUuid": "d9ab8920-2c51-43d1-a5d9-8236d055090d",
+    "emailAddress": "luytbq43@gmail.com",
+    "organizationUuid": "92ddebd9-f3e5-4c5e-bb58-cbe207dee0b8",
+    "hasExtraUsageEnabled": true,
+    "billingType": "stripe_subscription",
+    "subscriptionCreatedAt": "2026-02-07T02:55:59.434266Z",
+    "displayName": "Luýt",
+    "organizationRole": "admin",
+    "workspaceRole": null,
+    "organizationName": "luytbq43@gmail.com's Organization",
+    "accountCreatedAt": "2025-05-23T02:12:16.640508Z"
+  },
+  "claudeCodeFirstTokenDate": "2025-05-23T02:32:54.385719Z",
+  "anonymousId": "claudecode.v1.e50763a2-3a63-4191-a010-2eacaa24aba0",
+  "skillUsage": {
+    "init": {
+      "usageCount": 9,
+      "lastUsedAt": 1774848328211
+    },
+    "keybindings-help": {
+      "usageCount": 1,
+      "lastUsedAt": 1772097124871
+    },
+    "translate": {
+      "usageCount": 1,
+      "lastUsedAt": 1772256011603
+    },
+    "gen-doc": {
+      "usageCount": 4,
+      "lastUsedAt": 1772794063846
+    },
+    "init-dev-analysis": {
+      "usageCount": 4,
+      "lastUsedAt": 1773222110045
+    },
+    "trace-log": {
+      "usageCount": 5,
+      "lastUsedAt": 1772622460286
+    },
+    "drawio-style-guide": {
+      "usageCount": 1,
+      "lastUsedAt": 1772678526198
+    },
+    "translate-devanalysis": {
+      "usageCount": 3,
+      "lastUsedAt": 1772861550030
+    },
+    "translate-en-vi": {
+      "usageCount": 1,
+      "lastUsedAt": 1773115779054
+    },
+    "read-server-log": {
+      "usageCount": 9,
+      "lastUsedAt": 1774509984453
+    },
+    "ssh-server-execute": {
+      "usageCount": 5,
+      "lastUsedAt": 1774509988649
+    },
+    "mermaid-to-drawio": {
+      "usageCount": 2,
+      "lastUsedAt": 1773717871465
+    },
+    "dotfiles": {
+      "usageCount": 2,
+      "lastUsedAt": 1774866315894
+    }
+  },
+  "clientDataCache": {},
+  "s1mAccessCache": {
+    "92ddebd9-f3e5-4c5e-bb58-cbe207dee0b8": {
+      "hasAccess": false,
+      "hasAccessNotAsDefault": false,
+      "timestamp": 1771901248148
+    }
+  },
+  "groveConfigCache": {
+    "d9ab8920-2c51-43d1-a5d9-8236d055090d": {
+      "grove_enabled": true,
+      "timestamp": 1774836585984
+    }
+  },
+  "hasUsedBackslashReturn": true,
+  "sonnet1m45MigrationComplete": true,
+  "githubRepoPaths": {
+    "luytbq/tswitch": [
+      "/home/luytbq/projects/l/test-ai/tswitch"
+    ],
+    "luytbq/my-custom-google-app-scripts": [
+      "/home/luytbq/projects/onepay/docs/google-apps-script"
+    ]
+  },
+  "cachedExtraUsageDisabledReason": "out_of_credits",
+  "toolUsage": {
+    "Bash": {
+      "usageCount": 534,
+      "lastUsedAt": 1772103881885
+    },
+    "Read": {
+      "usageCount": 1051,
+      "lastUsedAt": 1772103787856
+    },
+    "Task": {
+      "usageCount": 48,
+      "lastUsedAt": 1772102253746
+    },
+    "Write": {
+      "usageCount": 62,
+      "lastUsedAt": 1772102327511
+    },
+    "Edit": {
+      "usageCount": 251,
+      "lastUsedAt": 1772103819957
+    },
+    "Grep": {
+      "usageCount": 109,
+      "lastUsedAt": 1772099591273
+    },
+    "EnterPlanMode": {
+      "usageCount": 6,
+      "lastUsedAt": 1772091738373
+    },
+    "Glob": {
+      "usageCount": 79,
+      "lastUsedAt": 1772102203103
+    },
+    "TaskCreate": {
+      "usageCount": 16,
+      "lastUsedAt": 1771995258735
+    },
+    "TaskUpdate": {
+      "usageCount": 32,
+      "lastUsedAt": 1771995433219
+    },
+    "AskUserQuestion": {
+      "usageCount": 10,
+      "lastUsedAt": 1772091983890
+    },
+    "TaskOutput": {
+      "usageCount": 3,
+      "lastUsedAt": 1772017746587
+    },
+    "mcp__word-document-server__get_document_text": {
+      "usageCount": 3,
+      "lastUsedAt": 1772009205565
+    },
+    "mcp__word-document-server__get_document_outline": {
+      "usageCount": 2,
+      "lastUsedAt": 1771993566332
+    },
+    "Skill": {
+      "usageCount": 1,
+      "lastUsedAt": 1772097124881
+    },
+    "ExitPlanMode": {
+      "usageCount": 1,
+      "lastUsedAt": 1772098357050
+    }
+  },
+  "lastPlanModeUse": 1774429037204,
+  "showSpinnerTree": false,
+  "effortCalloutDismissed": true,
+  "passesEligibilityCache": {
+    "92ddebd9-f3e5-4c5e-bb58-cbe207dee0b8": {
+      "eligible": true,
+      "referral_code_details": {
+        "code": "FYZOLIXuAA",
+        "campaign": "claude_code_guest_pass_a47c",
+        "referral_link": "https://claude.ai/referral/FYZOLIXuAA"
+      },
+      "referrer_reward": {
+        "amount_minor_units": 1000,
+        "currency": "USD"
+      },
+      "remaining_passes": 3,
+      "timestamp": 1774836586993
+    }
+  },
+  "passesUpsellSeenCount": 3,
+  "hasVisitedPasses": false,
+  "passesLastSeenRemaining": 3,
+  "mcpServers": {
+    "word-document-server": {
+      "type": "stdio",
+      "command": "bash",
+      "args": [
+        "-c",
+        "python3 \"$WORD_MCP_SERVER_PATH\""
+      ],
+      "env": {
+        "WORD_MCP_SERVER_PATH": "/home/luytbq/projects/i/Office-Word-MCP-Server/word_mcp_server.py"
+      }
+    },
+    "gitlab-onepay": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@zereight/mcp-gitlab"
+      ],
+      "env": {
+        "GITLAB_PERSONAL_ACCESS_TOKEN": "$GITLAB_PERSONAL_ACCESS_TOKEN",
+        "GITLAB_API_URL": "https://git.onepay.vn",
+        "GITLAB_READ_ONLY_MODE": "true",
+        "USE_GITLAB_WIKI": "true",
+        "USE_MILESTONE": "false",
+        "USE_PIPELINE": "true"
+      }
+    },
+    "onepay_db": {
+      "type": "stdio",
+      "command": "bash",
+      "args": [
+        "-c",
+        "docker run -i --rm -v $HOME/projects/onepay/onepay-database-mcp/.cache:/onepay-mcp/.cache onepay-database-mcp"
+      ],
+      "env": {}
+    },
+    "google-drive-personal": {
+      "command": "bash",
+      "args": [
+        "-c",
+        "GOOGLE_CLIENT_ID=$PERSONAL_GOOGLE_CLIENT_ID GOOGLE_CLIENT_SECRET=$PERSONAL_GOOGLE_CLIENT_SECRET npx -y @a-bonus/google-docs-mcp"
+      ]
+    },
+    "google-drive-work": {
+      "command": "bash",
+      "args": [
+        "-c",
+        "GOOGLE_CLIENT_ID=$PERSONAL_GOOGLE_CLIENT_ID GOOGLE_CLIENT_SECRET=$PERSONAL_GOOGLE_CLIENT_SECRET GOOGLE_MCP_PROFILE=work npx -y @a-bonus/google-docs-mcp"
+      ]
+    }
+  },
+  "shiftEnterKeyBindingInstalled": true,
+  "hasIdeOnboardingBeenShown": {
+    "vscode": true
+  },
+  "remoteDialogSeen": true,
+  "remoteControlAtStartup": false,
+  "effortCalloutV2Dismissed": true,
+  "feedbackSurveyState": {
+    "lastShownTime": 1774423617419
+  },
+  "voiceNoticeSeenCount": 3,
+  "opus1mMergeNoticeSeenCount": 6,
+  "ideHintShownCount": 5,
+  "additionalModelOptionsCache": [],
+  "metricsStatusCache": {
+    "enabled": true,
+    "timestamp": 1774424216789
+  },
+  "overageCreditGrantCache": {
+    "92ddebd9-f3e5-4c5e-bb58-cbe207dee0b8": {
+      "info": {
+        "available": false,
+        "eligible": false,
+        "granted": false,
+        "amount_minor_units": null,
+        "currency": null
+      },
+      "timestamp": 1774866527482
+    }
+  }
+}
