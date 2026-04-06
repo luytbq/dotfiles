@@ -127,6 +127,12 @@ return {
                             },
                         },
                     },
+                    clangd = {
+                        cmd = {
+                            "clangd",
+                            "--query-driver=/opt/homebrew/bin/g++-15",
+                        },
+                    },
                     lua_ls = {
                         settings = {
                             Lua = {
