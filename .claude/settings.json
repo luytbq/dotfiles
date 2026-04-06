@@ -4,7 +4,8 @@
   },
   "includeCoAuthoredBy": false,
   "enabledPlugins": {
-    "jdtls-lsp@claude-plugins-official": true
+    "jdtls-lsp@claude-plugins-official": true,
+    "clangd-lsp@claude-plugins-official": true
   },
   "effortLevel": "medium",
   "skipDangerousModePermissionPrompt": true,
