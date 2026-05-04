@@ -139,7 +139,8 @@ end
 
 ---@return string
 local function get_title()
-    return '=============== ' .. state.curr_buffer.name .. ' / ' .. #state.buffers .. ' ==============='
+    local name = state.curr_buffer and state.curr_buffer.name or '?'
+    return '=============== ' .. name .. ' / ' .. #state.buffers .. ' ==============='
 end
 
 ---@param buffer plugin.float_terminal.buf
@@ -298,10 +299,8 @@ end, { range = true })
 vim.api.nvim_create_autocmd("VimResized", {
     group = vim.api.nvim_create_augroup("float-term-resized", { clear = true }),
     callback = function()
-        local win_config = calculate_win_config()
-        if vim.api.nvim_win_is_valid(state.window.id) then
-            vim.api.nvim_win_set_config(state.window.id, win_config)
-        end
+        if not is_win_open() then return end
+        vim.api.nvim_win_set_config(state.window.id, calculate_win_config())
     end
 })
 

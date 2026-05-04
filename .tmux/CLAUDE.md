@@ -31,6 +31,7 @@ A tmux configuration and AI-powered tool launcher system. Provides popup-based t
 - **Clipboard**: Must support all platforms — `pbcopy` (macOS), `wl-copy` (Wayland), `xclip`/`xsel` (X11)
 - **Terminal cleanup**: Always trap `stty sane` on EXIT to restore terminal state
 - **Raw input**: Use `stty raw -echo` for character-by-character input; handle backspace (`0x7f`/`0x08`) and ESC sequences manually
+- **API error handling**: Every `open_ai_*` call must redirect stderr to a `TMP_ERR` file and check the exit code. On non-zero exit, clear the screen, print the error from `TMP_ERR`, wait for a keypress, and exit — never silently pipe error text into downstream parsing (awk/sed/jq)
 
 ## Dependencies
 

@@ -44,6 +44,18 @@ vim.api.nvim_create_autocmd('BufEnter', {
   end,
 })
 
+-- Snacks diff: highlight rõ dòng thêm/xóa
+-- Phải gọi trực tiếp vì ColorScheme event đã fire trước khi file này load (VeryLazy).
+-- Snacks dùng `default = true` nên chỉ set nếu group chưa tồn tại — gọi sớm để giữ giá trị của mình.
+local function set_snacks_diff_hl()
+  vim.api.nvim_set_hl(0, "SnacksDiffAdd",          { fg = "#9be9a8", bg = "#1f3a2a" })
+  vim.api.nvim_set_hl(0, "SnacksDiffDelete",       { fg = "#ffb3b3", bg = "#3a1f1f" })
+  vim.api.nvim_set_hl(0, "SnacksDiffAddLineNr",    { fg = "#9be9a8", bg = "#1f3a2a" })
+  vim.api.nvim_set_hl(0, "SnacksDiffDeleteLineNr", { fg = "#ffb3b3", bg = "#3a1f1f" })
+end
+set_snacks_diff_hl()
+vim.api.nvim_create_autocmd("ColorScheme", { callback = set_snacks_diff_hl })
+
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "markdown",
   callback = function()

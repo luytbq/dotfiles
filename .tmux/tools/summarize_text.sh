@@ -7,7 +7,8 @@ done
 
 TMP_IN=$(mktemp)
 TMP_OUT=$(mktemp)
-trap 'stty sane </dev/tty; rm -f "$TMP_IN" "$TMP_OUT"' EXIT
+TMP_ERR=$(mktemp)
+trap 'stty sane </dev/tty; rm -f "$TMP_IN" "$TMP_OUT" "$TMP_ERR"' EXIT
 
 clear
 echo "=== Summarize Text ==="
@@ -63,7 +64,17 @@ fi
 echo
 echo "Processing..."
 
-open_ai_summarize < "$TMP_IN" > "$TMP_OUT"
+if ! open_ai_summarize < "$TMP_IN" > "$TMP_OUT" 2> "$TMP_ERR"; then
+    clear
+    echo "=== API Error ==="
+    echo "────────────────────────────"
+    cat "$TMP_ERR"
+    echo
+    echo "────────────────────────────"
+    echo "Press any key to exit."
+    read -rsn1 </dev/tty
+    exit 1
+fi
 
 while true; do
     clear
