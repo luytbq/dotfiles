@@ -56,6 +56,9 @@ return {
                     return {
                         Comment = { fg = colors.green, bg = "NONE", italic = true },
                         ["@property"] = { fg = colors.magenta, bold = true },
+
+                        -- Làm hunk header box ít nổi hơn
+                        FloatBorder = { fg = "#3a3a5a" },
                     }
                 end,
 

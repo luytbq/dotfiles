@@ -7,8 +7,9 @@ done
 
 TMP_IN=$(mktemp)
 TMP_OUT=$(mktemp)
+TMP_ERR=$(mktemp)
 TMP_IMPROVED=$(mktemp)
-trap 'stty sane </dev/tty; rm -f "$TMP_IN" "$TMP_OUT" "$TMP_IMPROVED"' EXIT
+trap 'stty sane </dev/tty; rm -f "$TMP_IN" "$TMP_OUT" "$TMP_ERR" "$TMP_IMPROVED"' EXIT
 
 clear
 echo "=== Improve English ==="
@@ -64,7 +65,17 @@ fi
 echo
 echo "Processing..."
 
-open_ai_improve_english < "$TMP_IN" > "$TMP_OUT"
+if ! open_ai_improve_english < "$TMP_IN" > "$TMP_OUT" 2> "$TMP_ERR"; then
+    clear
+    echo "=== API Error ==="
+    echo "────────────────────────────"
+    cat "$TMP_ERR"
+    echo
+    echo "────────────────────────────"
+    echo "Press any key to exit."
+    read -rsn1 </dev/tty
+    exit 1
+fi
 
 # Extract the improved text (everything after "IMPROVED:" until end or next section)
 # Use awk to get only lines between IMPROVED: and the end, skipping the header

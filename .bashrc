@@ -152,3 +152,10 @@ if [ -d "$HOME/.secrets/" ]; then
     done
     unset file  # Cleanup variable
 fi
+
+# jdtls
+export PATH=$PATH:/home/luytbq/.local/share/nvim/mason/packages/jdtls/
+
+# opencode
+export PATH=~/.opencode/bin:$PATH
+export PATH="$PATH:$(go env GOPATH)/bin"
