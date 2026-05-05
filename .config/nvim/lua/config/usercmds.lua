@@ -156,8 +156,6 @@ vim.api.nvim_create_user_command("JdtlsClean", function()
   print("No -data found in jdtls command")
 end, {})
 
-
-<<<<<<< HEAD
 -- Toggle AI suggestions:
 --   1. copilot.vim   (ghost text from github/copilot.vim)
 --   2. copilot.lua   (suggestion engine from zbirenbaum/copilot.lua, via LazyVim extra)
