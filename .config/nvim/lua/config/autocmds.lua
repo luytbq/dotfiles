@@ -61,5 +61,6 @@ vim.api.nvim_create_autocmd("FileType", {
   callback = function()
     vim.opt_local.conceallevel = 2
     vim.opt_local.concealcursor = 'i'
+    vim.diagnostic.enable(false)
   end,
 })

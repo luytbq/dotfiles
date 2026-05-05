@@ -157,6 +157,16 @@ vim.api.nvim_create_user_command("JdtlsClean", function()
 end, {})
 
 
+vim.api.nvim_create_user_command('ToggleDiagnostic', function()
+    if vim.diagnostic.is_enabled() then
+        vim.diagnostic.enable(false)
+        vim.notify("Diagnostics disabled", vim.log.levels.INFO)
+    else
+        vim.diagnostic.enable()
+        vim.notify("Diagnostics enabled", vim.log.levels.INFO)
+    end
+end, { nargs = 0 })
+
 -- format json
 vim.api.nvim_create_user_command('JsonFormat', function()
   vim.cmd("'<,'>!jq")
