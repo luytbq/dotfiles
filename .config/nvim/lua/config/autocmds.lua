@@ -25,15 +25,6 @@ vim.api.nvim_create_autocmd("BufWritePre", {
   end,
 })
 
--- before writing buffer with specified pattern, re-indent it
--- vim.api.nvim_create_autocmd("BufWritePre", {
---     pattern = { "*.go", "*.lua" },
---     callback = function()
---         vim.lsp.buf.format()
---     end,
--- })
---
-
 -- CopilotChat Auto-command to customize chat buffer behavior
 vim.api.nvim_create_autocmd('BufEnter', {
   pattern = 'copilot-*',
@@ -61,6 +52,7 @@ vim.api.nvim_create_autocmd("FileType", {
   callback = function()
     vim.opt_local.conceallevel = 2
     vim.opt_local.concealcursor = 'i'
+    vim.opt_local.spell = false
     vim.diagnostic.enable(false)
   end,
 })
