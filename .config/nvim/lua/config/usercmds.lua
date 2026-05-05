@@ -217,6 +217,24 @@ vim.api.nvim_create_user_command("ToggleAI", function()
     end
 end, { nargs = 0 })
 
+vim.api.nvim_create_user_command('ToggleSpelling', function()
+    vim.opt_local.spell = not vim.opt_local.spell:get()
+    local state = vim.opt_local.spell:get() and "enabled" or "disabled"
+    vim.notify("Spelling " .. state .. " [" .. vim.opt_local.spelllang:get()[1] .. "]", vim.log.levels.INFO)
+end, { nargs = 0 })
+
+vim.api.nvim_create_user_command('SetSpelllang', function(cmd_args)
+    local lang = cmd_args.args
+    vim.opt_local.spelllang = lang
+    vim.opt_local.spell = true
+    vim.notify("Spelllang set to: " .. lang, vim.log.levels.INFO)
+end, {
+    nargs = 1,
+    complete = function()
+        return { "en", "vi", "en,vi" }
+    end,
+})
+
 vim.api.nvim_create_user_command('ToggleDiagnostic', function()
     if vim.diagnostic.is_enabled() then
         vim.diagnostic.enable(false)
