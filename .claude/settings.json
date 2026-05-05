@@ -8,15 +8,15 @@
   },
   "enabledPlugins": {
     "jdtls-lsp@claude-plugins-official": true,
-    "clangd-lsp@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true
   },
   "effortLevel": "medium",
   "skipDangerousModePermissionPrompt": true,
+  "theme": "light-ansi",
   "teammateMode": "tmux",
+  "remoteControlAtStartup": false,
+  "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
   "gitAttribution": false,
-  "theme": "light-ansi",
-  "remoteControlAtStartup": false,
-  "agentPushNotifEnabled": true
+  "model": "sonnet"
 }
