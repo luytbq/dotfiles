@@ -614,6 +614,40 @@ sync_theme_dev18() {
     return $?
 }
 
+build_theme() {
+    local args
+    declare -A args
+    parse_args args "build_theme" "$@"
+    # Explicitly handle --help request
+    if [[ "${args[help]}" == "true" ]]; then
+        show_help "build_theme"
+        return 0
+    fi
+
+    local theme="${args[theme]:-$(get_theme_name)}"
+    if [[ -z "$theme" ]]; then
+        echo "Error: --theme required or must be in a paygate theme repository" >&2
+        return 1
+    fi
+
+    if ! command -v nvm >/dev/null; then
+        echo "Error: nvm is required" >&2
+        return 1
+    fi
+
+    nvm use 16 || { echo "Error: Failed to switch to Node 16" >&2; return 1; }
+
+    echo "Cleaning dist/..." >&2
+    rm -rf dist/
+
+    echo "Building theme..." >&2
+    local cmd="ng build --configuration production --base-href=/paygate/${theme}/ --output-path=dist/paygate/${theme}/"
+    echo "Running command: $cmd" >&2
+    eval "$cmd" || return 1
+
+    return 0
+}
+
 # Build theme and sync to remote server
 build_theme_and_sync() {
     local args

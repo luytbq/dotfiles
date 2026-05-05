@@ -133,7 +133,6 @@ export NVM_DIR="$HOME/.nvm"
 
 # export PATH=${PATH}:/opt/flutter/bin
 
-export PATH=$PATH:$(go env GOPATH)/bin
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
