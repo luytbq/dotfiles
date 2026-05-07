@@ -8,6 +8,24 @@ Read the file: $ARGUMENTS
 
 Read the input Vietnamese markdown file. Parse the YAML front matter and markdown body, then generate a `.docx` file using the MCP word-document-server tools.
 
+### Global styling
+
+Apply consistently across the entire document:
+
+- **Font:** Arial for all text. Exception: code blocks retain `Courier New`.
+- **Heading color:** All headings (Heading 1–5) must use a single consistent dark color `#1F272E` (near-black charcoal). Never leave some headings black and others blue.
+- **Tables – cell padding:** 0.15 cm on all four sides for every cell.
+- **Tables – font size:** Choose based on content density, apply uniformly to all rows in each table:
+  - Sparse (few columns, short content): 11 pt
+  - Medium: 10 pt
+  - Dense (many columns or long text): 9 pt
+
+After generating the document, apply these styles via a Python script using `python-docx` (bulk operation — do not call MCP tools cell by cell):
+- Set `font.name = 'Arial'` on every run in paragraphs and table cells, skipping runs where `font.name` contains `'Courier'`.
+- Set `font.color.rgb = RGBColor(0x1F, 0x27, 0x2E)` on every run inside heading paragraphs.
+- Set table cell margins to 85 twips (≈ 0.15 cm) using `<w:tcMar>` XML manipulation.
+- Set `font.size = Pt(N)` on every run in each table according to the density rule above.
+
 ### Document structure
 
 Build the document in this exact order:
@@ -78,4 +96,5 @@ Save the document as: `{doc_id} - Dev analysis.docx` in the same directory as th
 
 ### After generation
 
-Report the output file path and a summary of sections included.
+1. Run the Python styling script described in **Global styling** above to apply Arial font, heading colors, and table padding in one pass.
+2. Report the output file path and a summary of sections included.
