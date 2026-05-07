@@ -2,25 +2,7 @@ Initialize a new Dev Analysis markdown file by gathering project metadata from t
 
 ## Instructions
 
-Use the AskUserQuestion tool to collect the following information. Ask all questions in a single call:
-
-1. **Doc ID** — Document identifier (e.g., `MCU_20250310_019`, `TDE_20251222_119`)
-2. **Doc Title** — Short title describing the task (e.g., `Shinhanlife - Verify cardholder name`)
-3. **Product** — Product name (e.g., `Payment Gateway`, `Cổng thanh toán`). Offer common options: `Payment Gateway`, `Merchant Portal`, `Admin Portal`
-4. **Project** — Project/module names (e.g., `msp, wsp`, `theme general/default`)
-5. **Function** — Business function area (e.g., `International card payment`, `Installment payment`)
-6. **Description** — Brief description of what this task does
-
-Use these defaults (do not ask):
-- **Creator**: `LuytBQ`
-- **Reviewer**: (empty)
-- **Changes**: version 1, "Initial creation", today's date in `DD/MM` format
-
-## Output
-
-After collecting answers, create the file `{doc_id}-dev-analysis.md` in the current working directory, where `{doc_id}` is the Doc ID value provided (e.g., `MCU_20250310_019-dev-analysis.md`).
-
-Use this exact template structure:
+Create a new file task-x-dev-analysis.md in the current working directory with the exact content below.
 
 ```markdown
 ---
@@ -38,37 +20,31 @@ changes:
     date: "{today DD/MM}"
 ---
 
-# I - General Description
+# I - Mô tả chung
 
-## Purpose
+## Mục đích
 
-(describe the purpose here)
-
-## Requirements
-
-(describe the requirements here)
+## Yêu cầu
 
 # II - Dev Analysis
 
-## Current Status
+## Hiện trạng
 
-(describe current status here)
+## Giải pháp
 
-## Solution
+## Phạm vi ảnh hưởng
 
-### Summary
+## Kế hoạch deploy
 
-(summarize the solution here)
+## Monitor sau khi deploy
 
-### Detail
+### Query dữ liệu
 
-#### (subtopic 1)
+### Check log nginx API
 
-(detail here)
+### Check log service các luồng ảnh hưởng
 
-## Impact
-
-## Deployment plan
+### Monitor khác nếu có
 
 ## Service Monitoring
 
@@ -78,7 +54,3 @@ changes:
 
 ## Audit Log
 ```
-
-Fill in the front matter with the user's answers. Leave the body sections as placeholder hints in parentheses for the user to fill in later.
-
-Report the output file path when done.
