@@ -148,13 +148,14 @@ function parseMarkdown(md) {
     }
     // table
     if (/^\|/.test(line) && i+1 < lines.length && /^\|[\s\-:|]+\|/.test(lines[i+1])) {
-      const headers = line.split('|').slice(1,-1).map(s => s.trim());
-      const sepCells = lines[i+1].split('|').slice(1,-1).map(s => s.trim());
+      const splitCells = s => s.replace(/\\\|/g, '\x00').split('|').map(c => c.replace(/\x00/g, '|').trim());
+      const headers = splitCells(line).slice(1,-1);
+      const sepCells = splitCells(lines[i+1]).slice(1,-1);
       const align = sepCells.map(s => /^:-+:$/.test(s) ? 'center' : /:-+$/.test(s) ? 'right' : 'left');
       i += 2;
       const rows = [];
       while (i < lines.length && /^\|/.test(lines[i])) {
-        rows.push(lines[i].split('|').slice(1,-1).map(s => s.trim()));
+        rows.push(splitCells(lines[i]).slice(1,-1));
         i++;
       }
       blocks.push({ type: 'table', headers, rows, align });
@@ -232,7 +233,7 @@ function mdTable(block) {
   widths[widths.indexOf(Math.max(...widths))] += diff;
   const fontSize = Math.max(8, cfg.table.rowSize - Math.floor(Math.max(0,cols-3)/2));
   const rows = [
-    new TableRow({ children: block.headers.map((h,i) => tcell(h, { width:widths[i], bold:cfg.table.headerBold, color:cfg.table.headerColor, fill:cfg.table.headerFill, size:cfg.table.headerSize, borders:BORDERS, align:block.align[i] })) }),
+    new TableRow({ children: block.headers.map((h,i) => tcell(h, { width:widths[i], bold:cfg.table.headerBold, color:cfg.table.headerColor, fill:cfg.table.headerFill, size:cfg.table.headerSize, borders:BORDERS, align:'center' })) }),
     ...block.rows.map((row,ri) => new TableRow({ children: row.map((c,i) => tcell(c, { width:widths[i], fill:ri%2===0?cfg.table.oddFill:cfg.table.evenFill, color:cfg.table.rowColor, size:fontSize, borders:BORDERS, align:block.align[i]||'left' })) }))
   ];
   return new Table({ width:{size:CW,type:WidthType.DXA}, columnWidths:widths, rows });
@@ -248,7 +249,7 @@ const children = [];
 if (cfg.title) {
   children.push(new Paragraph({
     alignment: AlignmentType.CENTER,
-    spacing: { before: 0, after: cfg.body.spacingAfter * 40 },
+    spacing: { before: 0, after: get(y,'title.spacing_after', 50) * 20 },
     children: [new TextRun({ text: cfg.title, font: cfg.heading.font, size: get(y,'title.size',24)*2, bold: true, color: cfg.body.color })],
   }));
 }
