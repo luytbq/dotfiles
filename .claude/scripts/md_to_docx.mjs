@@ -1,7 +1,7 @@
 import { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
          HeadingLevel, AlignmentType, BorderStyle, WidthType, ShadingType,
          VerticalAlign, ExternalHyperlink, LevelFormat, UnderlineType, ImageRun
-       } from '/home/luytbq/.npm-local/node_modules/docx/dist/index.mjs';
+       } from '/Users/luytbq/.nvm/versions/node/v22.20.0/lib/node_modules/docx/dist/index.mjs';
 import { writeFileSync, readFileSync, unlinkSync } from 'fs';
 import { dirname, join, basename } from 'path';
 import { execSync } from 'child_process';
