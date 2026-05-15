@@ -8,8 +8,16 @@ import { execSync } from 'child_process';
 
 // ── Input ─────────────────────────────────────────────────────────────────────
 const src = readFileSync(process.argv[2], 'utf8');
-const [, yamlRaw = '', ...bodyParts] = src.split(/^---\s*$/m);
-const body = bodyParts.join('---').trim();
+const parts = src.split(/^---\s*$/m);
+let yamlRaw = '', body;
+if (parts.length >= 3 && parts[0].trim() === '') {
+  // Has YAML frontmatter: --- yaml --- body
+  yamlRaw = parts[1];
+  body = parts.slice(2).join('---').trim();
+} else {
+  // No frontmatter: treat entire file as body
+  body = src.trim();
+}
 
 // ── YAML parser (simple key:value + nested + arrays) ─────────────────────────
 function parseYaml(text) {
