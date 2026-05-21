@@ -3,7 +3,7 @@ import { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
          VerticalAlign, ExternalHyperlink, LevelFormat, UnderlineType, ImageRun
        } from '/Users/luytbq/.nvm/versions/node/v22.20.0/lib/node_modules/docx/dist/index.mjs';
 import { writeFileSync, readFileSync, unlinkSync } from 'fs';
-import { dirname, join, basename } from 'path';
+import { dirname, join, basename, resolve } from 'path';
 import { execSync } from 'child_process';
 
 // ── Input ─────────────────────────────────────────────────────────────────────
@@ -118,7 +118,18 @@ writeFileSync(PUPPETEER_CFG, JSON.stringify({ executablePath: '/usr/bin/google-c
 
 function pngDims(buf) {
   if (buf[0]===0x89 && buf[1]===0x50) return { w: buf.readUInt32BE(16), h: buf.readUInt32BE(20) };
-  return { w: 800, h: 400 };
+  // JPEG: scan for SOF markers (0xFFC0..0xFFC3)
+  if (buf[0]===0xFF && buf[1]===0xD8) {
+    let i = 2;
+    while (i < buf.length - 8) {
+      if (buf[i]!==0xFF) break;
+      const marker = buf[i+1];
+      const len = buf.readUInt16BE(i+2);
+      if (marker>=0xC0 && marker<=0xC3) return { w: buf.readUInt16BE(i+7), h: buf.readUInt16BE(i+5) };
+      i += 2 + len;
+    }
+  }
+  return { w: 800, h: 600 };
 }
 
 function renderMermaid(code) {
@@ -130,6 +141,11 @@ function renderMermaid(code) {
     execSync(`"${MMDC}" -i "${inF}" -o "${outF}" --puppeteerConfigFile "${PUPPETEER_CFG}" -s 2 --backgroundColor white`, { stdio: 'pipe' });
     return readFileSync(outF);
   } catch(e) {
+    const raw = (e.stderr?.toString() || e.message || '').trim();
+    const lines = raw.split('\n').filter(l => l.trim());
+    const errIdx = lines.findIndex(l => l.startsWith('Error:'));
+    const snippet = (errIdx >= 0 ? lines.slice(errIdx, errIdx + 3) : lines.slice(0, 3)).join('\n');
+    process.stderr.write(`[mermaid] render failed:\n${snippet}\n`);
     return null;
   } finally {
     try { unlinkSync(inF); } catch(_) {}
@@ -182,6 +198,24 @@ function parseMarkdown(md) {
     if (nm) { blocks.push({ type: 'numbered', text: nm[2].trim(), indent: Math.min(Math.floor(nm[1].length/4),1) }); i++; continue; }
     // blank
     if (!line.trim()) { blocks.push({ type: 'blank' }); i++; continue; }
+    // image  ![alt](path =WxH)  or  ![alt](path){width=W height=H}
+    const imgm = line.trim().match(/^!\[([^\]]*)\]\(([^)]+)\)(\{([^}]*)\})?$/);
+    if (imgm) {
+      // parse =WxH from URL
+      const sizeM = imgm[2].match(/^(.*?)\s+=(\d*)x(\d*)$/);
+      const src = sizeM ? sizeM[1].trim() : imgm[2].trim();
+      let forceW = sizeM && sizeM[2] ? parseInt(sizeM[2]) : null;
+      let forceH = sizeM && sizeM[3] ? parseInt(sizeM[3]) : null;
+      // parse {width=W height=H} attributes (supports px suffix)
+      if (imgm[4]) {
+        const wm = imgm[4].match(/width=(\d+)/);
+        const hm = imgm[4].match(/height=(\d+)/);
+        if (wm) forceW = parseInt(wm[1]);
+        if (hm) forceH = parseInt(hm[1]);
+      }
+      blocks.push({ type: 'image', alt: imgm[1], src, forceW, forceH });
+      i++; continue;
+    }
     // paragraph — mỗi dòng là 1 paragraph riêng
     blocks.push({ type: 'paragraph', text: line.trim() });
     i++;
@@ -192,7 +226,7 @@ function parseMarkdown(md) {
 // ── Inline parser ─────────────────────────────────────────────────────────────
 function makeRuns(text, base = {}) {
   if (!text) return [new TextRun({ text: '', font: cfg.body.font, ...base })];
-  const re = /(\*\*([^*]+)\*\*|__([^_]+)__|\*([^*]+)\*|_([^_]+)_|`([^`]+)`|\[([^\]]+)\]\((https?:\/\/[^\)]+)\))/g;
+  const re = /(\*\*([^*]+)\*\*|(?<!\w)__([^_]+)__(?!\w)|\*([^*]+)\*|(?<!\w)_([^_]+)_(?!\w)|`([^`]+)`|\[([^\]]+)\]\((https?:\/\/[^\)]+)\))/g;
   const runs = []; let last = 0; let m;
   while ((m = re.exec(text)) !== null) {
     if (m.index > last) runs.push(new TextRun({ text: text.slice(last,m.index), font: cfg.body.font, ...base }));
@@ -225,7 +259,7 @@ function tcell(text, { width, bold=false, italic=false, color, fill, size=cfg.ta
 function codeBlock(lang, code) {
   const paras = [];
   if (cfg.code.labelShow && lang && !['text','plain','none',''].includes(lang)) {
-    paras.push(new Paragraph({ children: [new TextRun({ text: lang, font: cfg.code.font, size: cfg.code.labelSize*2, color: cfg.code.labelColor })], shading: { fill: cfg.code.labelFill, type: ShadingType.CLEAR }, spacing:{before:80,after:0}, indent:{left:cfg.code.indentDXA} }));
+    paras.push(new Paragraph({ style:'CodeBlock', children: [new TextRun({ text: lang, font: cfg.code.font, size: cfg.code.labelSize*2, color: cfg.code.labelColor })], shading: { fill: cfg.code.labelFill, type: ShadingType.CLEAR }, spacing:{before:0,after:0} }));
   }
   for (const line of code.split('\n')) {
     paras.push(new Paragraph({ style:'CodeBlock', children:[new TextRun({ text: line||' ', font:cfg.code.font, size:cfg.code.size*2 })] }));
@@ -288,6 +322,25 @@ for (const b of blocks) {
       }
     } else {
       children.push(...codeBlock(b.lang, b.code), blank());
+    }
+  } else if (b.type==='image') {
+    const imgPath = resolve(dirname(process.argv[2]), b.src);
+    try {
+      const imgBuf = readFileSync(imgPath);
+      const { w, h } = pngDims(imgBuf);
+      const maxW = Math.round(CW / 15);
+      let imgPxW, imgPxH;
+      if (b.forceW && b.forceH) { imgPxW = b.forceW; imgPxH = b.forceH; }
+      else if (b.forceW)        { imgPxW = b.forceW; imgPxH = Math.round(b.forceW * h / w); }
+      else if (b.forceH)        { imgPxH = b.forceH; imgPxW = Math.round(b.forceH * w / h); }
+      else                      { imgPxW = Math.min(maxW, w); imgPxH = Math.round(imgPxW * h / w); }
+      const ext = imgPath.split('.').pop().toLowerCase();
+      const imgType = ext === 'jpg' ? 'jpeg' : ext;
+      children.push(new Paragraph({ alignment: AlignmentType.CENTER, children: [new ImageRun({ data: imgBuf, transformation: { width: imgPxW, height: imgPxH }, type: imgType })], spacing: { after: cfg.body.spacingAfter * 20 } }));
+      if (b.alt) children.push(new Paragraph({ alignment: AlignmentType.CENTER, children: makeRuns(`_${b.alt}_`), spacing: { after: cfg.body.spacingAfter * 20 } }));
+    } catch(e) {
+      process.stderr.write(`[image] không đọc được: ${imgPath}\n`);
+      children.push(new Paragraph({ children: makeRuns(`[Image: ${b.alt || b.src}]`), spacing:{after:cfg.body.spacingAfter*20} }));
     }
   } else if (b.type==='table') {
     children.push(mdTable(b), blank());
