@@ -104,3 +104,4 @@ plugins=(git)
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+export PATH="$HOME/.local/bin:$PATH"
