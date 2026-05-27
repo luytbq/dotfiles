@@ -6,6 +6,11 @@ import { writeFileSync, readFileSync, unlinkSync } from 'fs';
 import { dirname, join, basename, resolve } from 'path';
 import { execSync } from 'child_process';
 
+const FLAG_KEEP_MERMAID_TEXT = '--keep-mermaid-text';
+
+// ── Flags ─────────────────────────────────────────────────────────────────────
+const keepMermaidText = process.argv.includes(FLAG_KEEP_MERMAID_TEXT);
+
 // ── Input ─────────────────────────────────────────────────────────────────────
 const src = readFileSync(process.argv[2], 'utf8');
 const parts = src.split(/^---\s*$/m);
@@ -63,7 +68,7 @@ const y = parseYaml(yamlRaw);
 const cfg = {
   title: get(y, 'title', ''),
   outputFilename: get(y, 'output.filename', ''),
-  page: { size: get(y, 'page.size', 'A4'), margin: get(y, 'page.margin', 2.5) },
+  page: { size: get(y, 'page.size', 'A4'), margin: get(y, 'page.margin', 2) },
   body: { font: get(y, 'body.font', 'Arial'), size: get(y, 'body.size', 11),
           color: get(y, 'body.color', '1F272E'), spacingAfter: get(y, 'body.spacing_after', 6) },
   heading: {
@@ -100,6 +105,12 @@ const cfg = {
     labelSize:  get(y,'code.label.size',8),
   },
   inlineCode: { font: get(y,'inline_code.font','Courier New'), size: get(y,'inline_code.size',0), color: get(y,'inline_code.color','555555') },
+  mermaidCode: {
+    font:  get(y,'mermaid_code.font','Courier New'),
+    size:  get(y,'mermaid_code.size',7),
+    color: get(y,'mermaid_code.color','555555'),
+    fill:  get(y,'mermaid_code.fill','F3F4F5'),
+  },
   list: { indentDXA: Math.round(get(y,'list.indent',0.63)*567), bullets: get(y,'list.bullets',null) || ['•','◦','▪'] },
   link: { color: get(y,'link.color','0563C1') },
 };
@@ -256,6 +267,17 @@ function tcell(text, { width, bold=false, italic=false, color, fill, size=cfg.ta
   return new TableCell(cellOpts);
 }
 
+function mermaidCodeBlock(code) {
+  const paras = [];
+  if (cfg.code.labelShow) {
+    paras.push(new Paragraph({ style:'MermaidCodeBlock', children: [new TextRun({ text: 'mermaid', font: cfg.mermaidCode.font, size: cfg.code.labelSize*2, color: cfg.code.labelColor })], shading: { fill: cfg.code.labelFill, type: ShadingType.CLEAR }, spacing:{before:0,after:0} }));
+  }
+  for (const line of code.split('\n')) {
+    paras.push(new Paragraph({ style:'MermaidCodeBlock', children:[new TextRun({ text: line||' ', font: cfg.mermaidCode.font, size: cfg.mermaidCode.size*2 })] }));
+  }
+  return paras;
+}
+
 function codeBlock(lang, code) {
   const paras = [];
   if (cfg.code.labelShow && lang && !['text','plain','none',''].includes(lang)) {
@@ -287,6 +309,7 @@ const blank = () => new Paragraph({ children:[new TextRun({text:'',font:cfg.body
 // ── Render ────────────────────────────────────────────────────────────────────
 const blocks = parseMarkdown(body);
 const children = [];
+let hasMermaid = false;
 
 if (cfg.title) {
   children.push(new Paragraph({
@@ -310,12 +333,14 @@ for (const b of blocks) {
     children.push(new Paragraph({ numbering:{reference:'number',level:b.indent}, children:makeRuns(b.text), spacing:{after:40} }));
   } else if (b.type==='codeblock') {
     if (b.lang === 'mermaid') {
+      hasMermaid = true;
       const imgBuf = renderMermaid(b.code);
       if (imgBuf) {
         const { w, h } = pngDims(imgBuf);
         const imgPxW = Math.round(CW / 15);
         const imgPxH = Math.round(imgPxW * h / w);
         children.push(new Paragraph({ alignment: AlignmentType.CENTER, children: [new ImageRun({ data: imgBuf, transformation: { width: imgPxW, height: imgPxH }, type: 'png' })], spacing: { after: cfg.body.spacingAfter * 20 } }));
+        if (keepMermaidText) children.push(...mermaidCodeBlock(b.code));
         children.push(blank());
       } else {
         children.push(...codeBlock(b.lang, b.code), blank());
@@ -378,6 +403,9 @@ const doc = new Document({
       { id:'CodeBlock',name:'Code Block',basedOn:'Normal',next:'Normal',
         run:{font:cfg.code.font,size:cfg.code.size*2,color:cfg.code.color},
         paragraph:{shading:{fill:cfg.code.fill,type:ShadingType.CLEAR},spacing:{before:0,after:0},indent:{left:cfg.code.indentDXA,right:cfg.code.indentDXA}} },
+      { id:'MermaidCodeBlock',name:'Mermaid Code Block',basedOn:'Normal',next:'Normal',
+        run:{font:cfg.mermaidCode.font,size:cfg.mermaidCode.size*2,color:cfg.mermaidCode.color},
+        paragraph:{shading:{fill:cfg.mermaidCode.fill,type:ShadingType.CLEAR},spacing:{before:0,after:0},indent:{left:cfg.code.indentDXA,right:cfg.code.indentDXA}} },
     ],
   },
   sections:[{ properties:{page:{size:{width:PAGE[0],height:PAGE[1]},margin:MG}}, children }],
@@ -385,4 +413,10 @@ const doc = new Document({
 
 const stem = basename(process.argv[2]).replace(/\.[^.]+$/,'');
 const outPath = join(dirname(process.argv[2]), (cfg.outputFilename||stem)+'.docx');
-Packer.toBuffer(doc).then(buf => { writeFileSync(outPath,buf); console.log('OUTPUT:'+outPath); });
+Packer.toBuffer(doc).then(buf => {
+  writeFileSync(outPath, buf);
+  console.log('OUTPUT: '+outPath);
+  if (hasMermaid && !keepMermaidText) {
+    console.log(`Tip: Phát hiện tài liệu có mermaid, sử dụng ${FLAG_KEEP_MERMAID_TEXT} để giữ lại mermaid text nếu muốn.`);
+  }
+});
