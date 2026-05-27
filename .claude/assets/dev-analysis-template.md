@@ -31,6 +31,10 @@ table:
 
 ## Yêu cầu
 
+### Yêu cầu nghiệp vụ
+
+### Yêu cầu kỹ thuật
+
 # II - Dev Analysis
 
 ## Hiện trạng
