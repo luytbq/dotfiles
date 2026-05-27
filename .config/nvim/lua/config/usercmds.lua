@@ -78,13 +78,30 @@ vim.api.nvim_create_user_command("MavenTest",
     { nargs = 0 }
 )
 
-vim.api.nvim_create_user_command('CopyPath', function()
-    vim.fn.setreg('+', vim.fn.expand('%:p'))
-end, {})
+local function copy_path(path, cmd_args)
+    local result
+    if cmd_args.args == 'with-line-number' then
+        if cmd_args.line1 == cmd_args.line2 then
+            result = path .. ':' .. cmd_args.line1
+        else
+            result = path .. ':' .. cmd_args.line1 .. '->' .. cmd_args.line2
+        end
+    else
+        result = path
+    end
+    vim.fn.setreg('+', result)
+    vim.notify('Copied: ' .. result, vim.log.levels.INFO)
+end
 
-vim.api.nvim_create_user_command('CopyPathRelative', function()
-    vim.fn.setreg('+', vim.fn.expand('%'))
-end, {})
+local line_number_complete = function() return { 'with-line-number' } end
+
+vim.api.nvim_create_user_command('CopyPath', function(cmd_args)
+    copy_path(vim.fn.expand('%:p'), cmd_args)
+end, { range = true, nargs = '?', complete = line_number_complete })
+
+vim.api.nvim_create_user_command('CopyPathRelative', function(cmd_args)
+    copy_path(vim.fn.expand('%:.'), cmd_args)
+end, { range = true, nargs = '?', complete = line_number_complete })
 
 vim.api.nvim_create_user_command("JdtlsClean", function()
   -- find the jdtls client explicitly
