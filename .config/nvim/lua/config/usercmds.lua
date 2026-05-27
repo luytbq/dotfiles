@@ -84,7 +84,7 @@ local function copy_path(path, cmd_args)
         if cmd_args.line1 == cmd_args.line2 then
             result = path .. ':' .. cmd_args.line1
         else
-            result = path .. ':' .. cmd_args.line1 .. '->' .. cmd_args.line2
+            result = path .. ':' .. cmd_args.line1 .. '-' .. cmd_args.line2
         end
     else
         result = path
@@ -96,11 +96,11 @@ end
 local line_number_complete = function() return { 'with-line-number' } end
 
 vim.api.nvim_create_user_command('CopyPath', function(cmd_args)
-    copy_path(vim.fn.expand('%:p'), cmd_args)
+    copy_path(vim.fn.expand('%:.'), cmd_args)
 end, { range = true, nargs = '?', complete = line_number_complete })
 
-vim.api.nvim_create_user_command('CopyPathRelative', function(cmd_args)
-    copy_path(vim.fn.expand('%:.'), cmd_args)
+vim.api.nvim_create_user_command('CopyPathAbsolute', function(cmd_args)
+    copy_path(vim.fn.expand('%:p'), cmd_args)
 end, { range = true, nargs = '?', complete = line_number_complete })
 
 vim.api.nvim_create_user_command("JdtlsClean", function()
