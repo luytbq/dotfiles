@@ -60,6 +60,17 @@ table:
 )
 
 ## Phạm vi ảnh hưởng
+(
+Phần này không phải là nêu ra những file nào thay đổi mà là:
+  - luồng thanh toán nào, ví dụ VNPay QR VietinBank IPN, ShopeePay v1
+  - API nào (kèm service, có thể bỏ bớt API prefix), ví dụ MSP POST /vietinbank/payments_v2
+  - File nào, ví dụ MSP ShopeePay.java
+  - Thay đổi gì về mặt nghiệp vụ. Nếu không có thay đổi gì về mặt nghiệp vụ thì tại sao lại
+  ảnh hưởng.
+  Mỗi dòng là một nhóm trường hợp cần phải test - nhóm có nghĩa là chỉ cần test đại diện một
+  vài luồng. Ví dụ ảnh hưởng API thanh toán thẻ nội địa luồng Napas thì chỉ cần test vài bank
+  theo luồng Napas, không cần test toàn bộ bank.
+)
 
 ## Kế hoạch deploy
 (cần deploy những service gì, có yêu cầu gì đặc biệt về thứ tự deploy không)

@@ -1,15 +1,17 @@
 import { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
          HeadingLevel, AlignmentType, BorderStyle, WidthType, ShadingType,
-         VerticalAlign, ExternalHyperlink, LevelFormat, UnderlineType, ImageRun
+         VerticalAlign, ExternalHyperlink, InternalHyperlink, Bookmark, LevelFormat, UnderlineType, ImageRun
        } from '/home/luytbq/.npm-local/node_modules/docx/dist/index.mjs';
 import { writeFileSync, readFileSync, unlinkSync } from 'fs';
 import { dirname, join, basename, resolve } from 'path';
 import { execSync } from 'child_process';
 
 const FLAG_KEEP_MERMAID_TEXT = '--keep-mermaid-text';
+const FLAG_SPLIT_TALL = '--split-tall-mermaid';
 
 // ── Flags ─────────────────────────────────────────────────────────────────────
 const keepMermaidText = process.argv.includes(FLAG_KEEP_MERMAID_TEXT);
+const splitTall = process.argv.includes(FLAG_SPLIT_TALL);
 
 // ── Input ─────────────────────────────────────────────────────────────────────
 const src = readFileSync(process.argv[2], 'utf8');
@@ -111,6 +113,22 @@ const cfg = {
     color: get(y,'mermaid_code.color','555555'),
     fill:  get(y,'mermaid_code.fill','F3F4F5'),
   },
+  mermaid: {
+    // mmdc -s scale: PNG được render ở độ phân giải gấp `renderScale` lần
+    renderScale: get(y,'mermaid.render_scale',2),
+    // cỡ font gốc (px) mà mermaid dùng ở scale=1 (mặc định theme ~16px)
+    baseFontPx:  get(y,'mermaid.base_font_px',16),
+    // giới hạn ảnh trong 1 trang (không cao quá vùng nội dung) để không vỡ layout
+    fitPage:     get(y,'mermaid.fit_page',true),
+    // cỡ chữ đích (pt) cho MỌI mermaid diagram. 0 = bám theo cỡ chữ tài liệu (body.size).
+    // Lưu ý: nếu diagram quá cao, bước resize/fit-page có thể thu nhỏ font xuống dưới mức này.
+    fontSize:    get(y,'mermaid.font_size',9.5),
+    // sàn cỡ chữ (pt) khi resize/shrink ảnh — không thu nhỏ chữ dưới mức này
+    minFontPt:   get(y,'mermaid.min_font_pt',7.5),
+    // dung sai chiều cao khi quyết định cắt: diagram chỉ hơi cao hơn 1 trang (≤ tỉ lệ này)
+    // ở cỡ chữ sàn thì ưu tiên resize 1 trang (tràn nhẹ vào lề) thay vì cắt. Hấp thụ jitter render của mermaid.
+    fitTolerance: get(y,'mermaid.fit_tolerance',0.06),
+  },
   list: { indentDXA: Math.round(get(y,'list.indent',0.63)*567), bullets: get(y,'list.bullets',null) || ['•','◦','▪'] },
   link: { color: get(y,'link.color','0563C1') },
 };
@@ -124,8 +142,10 @@ const CW = PAGE[0] - MG.left - MG.right;
 
 // ── Mermaid renderer ─────────────────────────────────────────────────────────
 const MMDC = '/home/luytbq/.npm-global/bin/mmdc';
+const MERMAID_SCALE = cfg.mermaid.renderScale;
 const PUPPETEER_CFG = '/tmp/_mmdoc_puppeteer.json';
 writeFileSync(PUPPETEER_CFG, JSON.stringify({ executablePath: '/usr/bin/google-chrome' }));
+const HAS_CONVERT = (() => { try { execSync('command -v convert', { stdio: 'pipe' }); return true; } catch { return false; } })();
 
 function pngDims(buf) {
   if (buf[0]===0x89 && buf[1]===0x50) return { w: buf.readUInt32BE(16), h: buf.readUInt32BE(20) };
@@ -149,7 +169,7 @@ function renderMermaid(code) {
   const outF = `/tmp/_mermaid_${id}.png`;
   writeFileSync(inF, code);
   try {
-    execSync(`"${MMDC}" -i "${inF}" -o "${outF}" --puppeteerConfigFile "${PUPPETEER_CFG}" -s 2 --backgroundColor white`, { stdio: 'pipe' });
+    execSync(`"${MMDC}" -i "${inF}" -o "${outF}" --puppeteerConfigFile "${PUPPETEER_CFG}" -s ${MERMAID_SCALE} --backgroundColor white`, { stdio: 'pipe' });
     return readFileSync(outF);
   } catch(e) {
     const raw = (e.stderr?.toString() || e.message || '').trim();
@@ -164,15 +184,77 @@ function renderMermaid(code) {
   }
 }
 
+// Cắt ảnh PNG cao thành nhiều dải (mỗi dải ≤ bandSrcH px nguồn) để fit từng trang.
+// Snap điểm cắt vào hàng nền trắng gần nhất để không cắt ngang node/text.
+// Trả về [{buf, srcH}]; nếu lỗi/không có convert → trả về null (caller tự fallback).
+function sliceTall(imgBuf, w, h, bandSrcH) {
+  if (!HAS_CONVERT || bandSrcH < 1 || h <= bandSrcH) return null;
+  const id = Math.random().toString(36).slice(2);
+  const tmp = `/tmp/_mmslice_${id}.png`;
+  const sliceFiles = [];
+  try {
+    writeFileSync(tmp, imgBuf);
+    // Profile độ sáng từng hàng: gom mỗi hàng về 1 px (255 = nền trắng).
+    let prof = null;
+    try {
+      prof = execSync(`convert "${tmp}" -colorspace Gray -resize 1x${h}! -depth 8 gray:-`,
+                      { stdio: ['pipe','pipe','pipe'], maxBuffer: 64*1024*1024 });
+      if (prof.length !== h) prof = null;
+    } catch { prof = null; }
+
+    const nSlices = Math.ceil(h / bandSrcH);
+    const win = Math.max(1, Math.round(bandSrcH * 0.15));
+    // Tính các điểm cắt 0 = cuts[0] < cuts[1] < ... < cuts[n] = h
+    const cuts = [0];
+    for (let k = 1; k < nSlices; k++) {
+      const ideal = Math.min(h, k * bandSrcH);
+      let cut = ideal;
+      if (prof) {
+        // Chỉ snap LÊN TRÊN (≤ ideal): ideal đã là mức tối đa vừa 1 trang,
+        // cắt muộn hơn sẽ làm dải cao quá trang.
+        const lo = Math.max(cuts[cuts.length-1] + 1, ideal - win);
+        let best = -1, bestVal = -1;
+        for (let y = lo; y <= ideal; y++) {
+          const v = prof[y];
+          if (v > bestVal || (v === bestVal && y > best)) { bestVal = v; best = y; }  // tie → gần ideal nhất
+        }
+        if (best >= 0) cut = best;
+      }
+      if (cut <= cuts[cuts.length-1]) cut = Math.min(h, cuts[cuts.length-1] + bandSrcH);
+      cuts.push(cut);
+    }
+    cuts.push(h);
+
+    const bands = [];
+    for (let i = 0; i < cuts.length - 1; i++) {
+      const y0 = cuts[i], bandH = cuts[i+1] - cuts[i];
+      if (bandH <= 0) continue;
+      const out = `/tmp/_mmslice_${id}_${i}.png`;
+      sliceFiles.push(out);
+      execSync(`convert "${tmp}" -crop ${w}x${bandH}+0+${y0} +repage "${out}"`, { stdio: 'pipe' });
+      bands.push({ buf: readFileSync(out), srcH: bandH });
+    }
+    return bands.length ? bands : null;
+  } catch (e) {
+    process.stderr.write(`[mermaid] slice failed: ${(e.message||'').split('\n')[0]}\n`);
+    return null;
+  } finally {
+    try { unlinkSync(tmp); } catch(_) {}
+    for (const f of sliceFiles) { try { unlinkSync(f); } catch(_) {} }
+  }
+}
+
 // ── Markdown parser ───────────────────────────────────────────────────────────
 function parseMarkdown(md) {
   const lines = md.split('\n');
   const blocks = [];
   let i = 0;
+  let listIndentStack = [];  // stack of seen leading-space widths → bullet nesting levels
   while (i < lines.length) {
     const line = lines[i];
     // fenced code block
     if (/^```/.test(line)) {
+      listIndentStack = [];
       const lang = line.slice(3).trim();
       const code = [];
       i++;
@@ -183,6 +265,7 @@ function parseMarkdown(md) {
     }
     // table
     if (/^\|/.test(line) && i+1 < lines.length && /^\|[\s\-:|]+\|/.test(lines[i+1])) {
+      listIndentStack = [];
       const splitCells = s => s.replace(/\\\|/g, '\x00').split('|').map(c => c.replace(/\x00/g, '|').trim());
       const headers = splitCells(line).slice(1,-1);
       const sepCells = splitCells(lines[i+1]).slice(1,-1);
@@ -198,12 +281,18 @@ function parseMarkdown(md) {
     }
     // heading
     const hm = line.match(/^(#{1,6})\s+(.*)/);
-    if (hm) { blocks.push({ type: 'heading', level: hm[1].length, text: hm[2].trim() }); i++; continue; }
+    if (hm) { listIndentStack = []; blocks.push({ type: 'heading', level: hm[1].length, text: hm[2].trim() }); i++; continue; }
     // hr
-    if (/^(\*{3,}|-{3,}|_{3,})$/.test(line.trim())) { blocks.push({ type: 'hr' }); i++; continue; }
-    // bullet
+    if (/^(\*{3,}|-{3,}|_{3,})$/.test(line.trim())) { listIndentStack = []; blocks.push({ type: 'hr' }); i++; continue; }
+    // bullet — derive nesting level from relative indentation (handles 2- or 4-space schemes)
     const bm = line.match(/^(\s*)[-*+]\s+(.*)/);
-    if (bm) { blocks.push({ type: 'bullet', text: bm[2].trim(), indent: Math.min(Math.floor(bm[1].length/2),2) }); i++; continue; }
+    if (bm) {
+      const spaces = bm[1].length;
+      while (listIndentStack.length && listIndentStack[listIndentStack.length-1] > spaces) listIndentStack.pop();
+      if (!listIndentStack.length || listIndentStack[listIndentStack.length-1] < spaces) listIndentStack.push(spaces);
+      blocks.push({ type: 'bullet', text: bm[2].trim(), indent: Math.min(listIndentStack.length-1, 2) });
+      i++; continue;
+    }
     // numbered
     const nm = line.match(/^(\s*)\d+\.\s+(.*)/);
     if (nm) { blocks.push({ type: 'numbered', text: nm[2].trim(), indent: Math.min(Math.floor(nm[1].length/4),1) }); i++; continue; }
@@ -212,6 +301,7 @@ function parseMarkdown(md) {
     // image  ![alt](path =WxH)  or  ![alt](path){width=W height=H}
     const imgm = line.trim().match(/^!\[([^\]]*)\]\(([^)]+)\)(\{([^}]*)\})?$/);
     if (imgm) {
+      listIndentStack = [];
       // parse =WxH from URL
       const sizeM = imgm[2].match(/^(.*?)\s+=(\d*)x(\d*)$/);
       const src = sizeM ? sizeM[1].trim() : imgm[2].trim();
@@ -227,6 +317,12 @@ function parseMarkdown(md) {
       blocks.push({ type: 'image', alt: imgm[1], src, forceW, forceH });
       i++; continue;
     }
+    // lazy continuation — dòng không phải bullet/numbered nhưng nối tiếp ngay sau 1 list item
+    const prev = blocks[blocks.length-1];
+    if (prev && (prev.type==='bullet' || prev.type==='numbered')) {
+      prev.text += ' ' + line.trim();
+      i++; continue;
+    }
     // paragraph — mỗi dòng là 1 paragraph riêng
     blocks.push({ type: 'paragraph', text: line.trim() });
     i++;
@@ -234,10 +330,23 @@ function parseMarkdown(md) {
   return blocks;
 }
 
+// ── Anchor (link nội bộ tới heading) ─────────────────────────────────────────
+// Slug kiểu GitHub: lowercase, bỏ ký tự đặc biệt (giữ chữ unicode/số), space → '-'.
+function slugify(text) {
+  return text
+    .replace(/`([^`]+)`/g, '$1')        // bỏ backtick inline code
+    .replace(/\*\*?|__?/g, '')          // bỏ marker bold/italic
+    .trim().toLowerCase()
+    .replace(/[^\p{L}\p{N}\s-]/gu, '')  // bỏ ký tự đặc biệt
+    .replace(/\s+/g, '-');              // space → '-'
+}
+// slug → bookmark id an toàn cho OOXML (gán ở pre-pass, đọc khi render link)
+const anchorMap = {};
+
 // ── Inline parser ─────────────────────────────────────────────────────────────
 function makeRuns(text, base = {}) {
   if (!text) return [new TextRun({ text: '', font: cfg.body.font, ...base })];
-  const re = /(\*\*([^*]+)\*\*|(?<!\w)__([^_]+)__(?!\w)|\*([^*]+)\*|(?<!\w)_([^_]+)_(?!\w)|`([^`]+)`|\[([^\]]+)\]\((https?:\/\/[^\)]+)\))/g;
+  const re = /(\*\*([^*]+)\*\*|(?<!\w)__([^_]+)__(?!\w)|\*([^*]+)\*|(?<!\w)_([^_]+)_(?!\w)|`([^`]+)`|\[([^\]]+)\]\((https?:\/\/[^\)]+)\)|\[([^\]]+)\]\((#[^\)]+)\))/g;
   const runs = []; let last = 0; let m;
   while ((m = re.exec(text)) !== null) {
     if (m.index > last) runs.push(new TextRun({ text: text.slice(last,m.index), font: cfg.body.font, ...base }));
@@ -245,6 +354,12 @@ function makeRuns(text, base = {}) {
     else if (m[4]||m[5]) runs.push(new TextRun({ text: m[4]||m[5], font: cfg.body.font, italics: true, ...base }));
     else if (m[6]) runs.push(new TextRun({ text: m[6], font: cfg.inlineCode.font, size: (cfg.inlineCode.size || cfg.body.size)*2, color: cfg.inlineCode.color }));
     else if (m[7]) runs.push(new ExternalHyperlink({ link: m[8], children: [new TextRun({ text: m[7], font: cfg.body.font, color: cfg.link.color, underline: { type: UnderlineType.SINGLE }, ...base })] }));
+    else if (m[9]) {
+      const key = decodeURIComponent(m[10].slice(1));
+      const anchorId = anchorMap[key] || anchorMap[slugify(key)];
+      if (anchorId) runs.push(new InternalHyperlink({ anchor: anchorId, children: [new TextRun({ text: m[9], font: cfg.body.font, color: cfg.link.color, underline: { type: UnderlineType.SINGLE }, ...base })] }));
+      else { runs.push(new TextRun({ text: m[9], font: cfg.body.font, ...base })); process.stderr.write(`[link] không tìm thấy section cho ${m[10]}\n`); }
+    }
     last = m.index + m[0].length;
   }
   if (last < text.length) runs.push(new TextRun({ text: text.slice(last), font: cfg.body.font, ...base }));
@@ -310,6 +425,18 @@ const blank = () => new Paragraph({ children:[new TextRun({text:'',font:cfg.body
 const blocks = parseMarkdown(body);
 const children = [];
 let hasMermaid = false;
+let hasTallMermaid = false;
+
+// Pre-pass: gán bookmark id cho mỗi heading, map slug → id (xử lý slug trùng kiểu GitHub: -1, -2…)
+{ const seen = {}; let n = 0;
+  for (const b of blocks) {
+    if (b.type !== 'heading') continue;
+    let slug = slugify(b.text);
+    if (seen[slug] != null) { seen[slug]++; slug = `${slug}-${seen[slug]}`; } else seen[slug] = 0;
+    b.anchorId = `_h${n++}`;
+    anchorMap[slug] = b.anchorId;
+  }
+}
 
 if (cfg.title) {
   children.push(new Paragraph({
@@ -318,11 +445,19 @@ if (cfg.title) {
     children: [new TextRun({ text: cfg.title, font: cfg.heading.font, size: get(y,'title.size',24)*2, bold: true, color: cfg.body.color })],
   }));
 }
+// Mỗi numbered list cần 1 instance riêng để đánh số lại từ đầu (1 reference dùng chung sẽ tăng dồn).
+// List vẫn liền mạch qua dòng trống và bullet con xen giữa (sub-item); chỉ bị ngắt bởi block nội dung
+// thật sự (paragraph, heading, hr, table, code, image) → khi đó numbered list kế tiếp mới reset về 1.
+const RESETS_NUMBERING = b => !['numbered','blank','bullet'].includes(b.type);
+let numInstance = 0;
+let inNumberedList = false;
 for (const b of blocks) {
+  if (RESETS_NUMBERING(b)) inNumberedList = false;
   if (b.type==='heading') {
     const h = cfg.heading.h[b.level];
     const hAlign = h.align === 'center' ? AlignmentType.CENTER : h.align === 'right' ? AlignmentType.RIGHT : undefined;
-    const hPara = { heading: HL[b.level], children: makeRuns(b.text, { bold: h.bold, italics: h.italic, color: h.color, size: h.size*2 }) };
+    const hRuns = makeRuns(b.text, { bold: h.bold, italics: h.italic, color: h.color, size: h.size*2 });
+    const hPara = { heading: HL[b.level], children: b.anchorId ? [new Bookmark({ id: b.anchorId, children: hRuns })] : hRuns };
     if (hAlign) hPara.alignment = hAlign;
     children.push(new Paragraph(hPara));
   } else if (b.type==='paragraph') {
@@ -330,16 +465,53 @@ for (const b of blocks) {
   } else if (b.type==='bullet') {
     children.push(new Paragraph({ numbering:{reference:'bullet',level:b.indent}, children:makeRuns(b.text), spacing:{after:40} }));
   } else if (b.type==='numbered') {
-    children.push(new Paragraph({ numbering:{reference:'number',level:b.indent}, children:makeRuns(b.text), spacing:{after:40} }));
+    if (!inNumberedList) { numInstance++; inNumberedList = true; }
+    children.push(new Paragraph({ numbering:{reference:'number',level:b.indent,instance:numInstance}, children:makeRuns(b.text), spacing:{after:40} }));
   } else if (b.type==='codeblock') {
     if (b.lang === 'mermaid') {
       hasMermaid = true;
       const imgBuf = renderMermaid(b.code);
       if (imgBuf) {
         const { w, h } = pngDims(imgBuf);
-        const imgPxW = Math.round(CW / 15);
-        const imgPxH = Math.round(imgPxW * h / w);
-        children.push(new Paragraph({ alignment: AlignmentType.CENTER, children: [new ImageRun({ data: imgBuf, transformation: { width: imgPxW, height: imgPxH }, type: 'png' })], spacing: { after: cfg.body.spacingAfter * 20 } }));
+        // Scale ảnh sao cho chữ trong diagram hiển thị ~ bằng cỡ font đích của mermaid.
+        // Cỡ đích = mermaid.font_size nếu set, ngược lại bám theo cỡ chữ tài liệu (body.size).
+        // PNG render ở MERMAID_SCALE lần, font gốc baseFontPx px → font trong PNG = baseFontPx*MERMAID_SCALE px.
+        const mermaidFontPt = cfg.mermaid.fontSize || cfg.body.size;
+        const targetFontPx = mermaidFontPt * 96 / 72;
+        const fontScale = targetFontPx / (cfg.mermaid.baseFontPx * MERMAID_SCALE);
+        // Tỉ lệ hiển thị nhỏ nhất tương ứng với sàn cỡ chữ minFontPt (font hiển thị tỉ lệ tuyến tính với scale).
+        const sMin = fontScale * cfg.mermaid.minFontPt / mermaidFontPt;
+        let imgPxW = Math.round(w * fontScale);
+        let imgPxH = Math.round(h * fontScale);
+        // Không vượt quá bề rộng vùng nội dung (CW/15 = content width tính theo px @96dpi).
+        const maxW = Math.round(CW / 15);
+        if (imgPxW > maxW) { imgPxH = Math.round(imgPxH * maxW / imgPxW); imgPxW = maxW; }
+        const maxH = Math.round((PAGE[1] - MG.top - MG.bottom) / 15);  // chiều cao vùng nội dung 1 trang (px)
+        let bands = null;
+        // Còn resize được trong giới hạn sàn font không? Nếu shrink tới sMin mà (gần như) vừa 1 trang
+        // thì chỉ resize (xử lý ở nhánh else), KHÔNG cắt. Chỉ cắt khi tới sàn font vẫn quá cao.
+        // fitTolerance hấp thụ jitter render của mermaid + cho phép tràn nhẹ vào lề để tránh cắt thừa.
+        const fitsAtMinFont = h * sMin <= maxH * (1 + cfg.mermaid.fitTolerance);
+        if (imgPxH > maxH && !fitsAtMinFont) {
+          hasTallMermaid = true;
+          const s = imgPxW / w;  // tỉ lệ hiển thị cuối (đã áp cap bề rộng) — cắt ở cỡ chữ tài liệu
+          if (splitTall) bands = sliceTall(imgBuf, w, h, Math.floor(maxH / s));
+        }
+        if (bands) {
+          // Cắt thành nhiều ảnh, mỗi ảnh fit 1 trang; Word tự xuống dòng giữa các slice.
+          const s = imgPxW / w;
+          for (const band of bands) {
+            children.push(new Paragraph({ alignment: AlignmentType.CENTER, children: [new ImageRun({ data: band.buf, transformation: { width: imgPxW, height: Math.round(band.srcH * s) }, type: 'png' })], spacing: { after: 0 } }));
+          }
+        } else {
+          // Không cắt: nếu vẫn cao quá 1 trang thì shrink (fit_page) để tránh vỡ layout,
+          // nhưng không thu nhỏ dưới sàn cỡ chữ (sMin) — thà tràn trang còn hơn chữ không đọc được.
+          if (imgPxH > maxH && cfg.mermaid.fitPage) {
+            const sFit = Math.max(maxH / h, sMin);
+            imgPxW = Math.round(w * sFit); imgPxH = Math.round(h * sFit);
+          }
+          children.push(new Paragraph({ alignment: AlignmentType.CENTER, children: [new ImageRun({ data: imgBuf, transformation: { width: imgPxW, height: imgPxH }, type: 'png' })], spacing: { after: cfg.body.spacingAfter * 20 } }));
+        }
         if (keepMermaidText) children.push(...mermaidCodeBlock(b.code));
         children.push(blank());
       } else {
@@ -418,5 +590,8 @@ Packer.toBuffer(doc).then(buf => {
   console.log('OUTPUT: '+outPath);
   if (hasMermaid && !keepMermaidText) {
     console.log(`Tip: Phát hiện tài liệu có mermaid, sử dụng ${FLAG_KEEP_MERMAID_TEXT} để giữ lại mermaid text nếu muốn.`);
+  }
+  if (hasTallMermaid && !splitTall) {
+    console.log(`Tip: Phát hiện mermaid quá cao cho 1 trang; dùng ${FLAG_SPLIT_TALL} để cắt thành nhiều ảnh fit A4 (giữ nguyên cỡ chữ).`);
   }
 });
