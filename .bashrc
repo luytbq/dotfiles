@@ -158,3 +158,5 @@ export PATH=$PATH:/home/luytbq/.local/share/nvim/mason/packages/jdtls/
 # opencode
 export PATH=~/.opencode/bin:$PATH
 export PATH="$PATH:$(go env GOPATH)/bin"
+
+export PATH="/home/luytbq/.local/bin:$PATH"
