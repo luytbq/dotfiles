@@ -158,6 +158,15 @@
                 "python3 \"$WORD_MCP_SERVER_PATH\""
             ],
             "enabled": true
+        },
+        "codegraph": {
+          "type": "local",
+          "command": [
+            "codegraph",
+            "serve",
+            "--mcp"
+          ],
+          "enabled": true
         }
     },
     "model": "anthropic/claude-opus-4.5",

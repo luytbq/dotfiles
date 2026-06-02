@@ -51,6 +51,11 @@ map({ "v" }, "<c-_>", "<cmd>FloatTermVisual<cr>", { desc = "Send selected text t
 
 map({ "n", "v" }, "<leader>ca", "<cmd>lua vim.lsp.buf.code_action()<cr>", { desc = "LSP buffer code action" })
 
+vim.schedule(function()
+  map({ "n", "v" }, "<leader>cp", "<cmd>CopyPathAbsolute<cr>", { desc = "Copy Path Absolute" })
+  map({ "n", "v" }, "<leader>cP", "<cmd>CopyPathAbsolute with-line-number<cr>", { desc = "Copy Path Absolute with line number" })
+end)
+
 -- map({ "n", "i", "v" }, "<c-x>", "<cmd>CopilotChatToggle<cr>", { desc = "CopilotChatToggle" })
 vim.g.copilot_no_tab_map = true
 vim.api.nvim_set_keymap("i", "<c-e>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
