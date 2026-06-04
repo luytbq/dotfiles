@@ -1,7 +1,5 @@
 ---
 title: "{DOC_ID} {DOC_TITLE}"
-output:
-  filename: "{DOC_ID}-dev-analysis"
 
 page:
   margin: 2
@@ -14,7 +12,7 @@ table:
 
 | | | |
 |---|---|---|
-| **Product:** {PRODUCT} | **Creator:** {CREATOR} | **Date:** {DATE} |
+| **Product:** {PRODUCT} | **Creator:** LuytBQ | **Date:** {DATE} |
 | **Project:** {PROJECT} | | |
 | **Function:** {FUNCTION} | **Reviewer:** | Date: |
 | **Mô tả:** {DESCRIPTION} | | Date: |
