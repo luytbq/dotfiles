@@ -53,12 +53,20 @@ map({ "n", "v" }, "<leader>ca", "<cmd>lua vim.lsp.buf.code_action()<cr>", { desc
 
 vim.schedule(function()
   map({ "n", "v" }, "<leader>cp", "<cmd>CopyPathAbsolute<cr>", { desc = "Copy Path Absolute" })
-  map({ "n", "v" }, "<leader>cP", "<cmd>CopyPathAbsolute with-line-number<cr>", { desc = "Copy Path Absolute with line number" })
+  map("n", "<leader>cP", "<cmd>CopyPathAbsolute with-line-number<cr>", { desc = "Copy Path Absolute with line number" })
+  -- Use ':' (not <Cmd>) in visual mode so the '<,'> range is passed to the command
+  map("v", "<leader>cP", ":CopyPathAbsolute with-line-number<cr>", { desc = "Copy Path Absolute with line number" })
 end)
 
 -- map({ "n", "i", "v" }, "<c-x>", "<cmd>CopilotChatToggle<cr>", { desc = "CopilotChatToggle" })
 vim.g.copilot_no_tab_map = true
 vim.api.nvim_set_keymap("i", "<c-e>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
+
+-- Treesitter incremental selection (the `main` branch dropped the built-in module)
+local ts_inc = require("config/ts-incremental")
+map("n", "<C-space>", ts_inc.init, { desc = "TS: init selection" })
+map("x", "<C-space>", ts_inc.increment, { desc = "TS: increment selection" })
+map("x", "<bs>", ts_inc.decrement, { desc = "TS: decrement selection" })
 
 require("config/usercmds")
 require("config/luasnip")
