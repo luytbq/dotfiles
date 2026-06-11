@@ -11,7 +11,7 @@ You must follow these instructions strictly whenever generating git commit messa
 
 ## Format Specification
 Every commit must match this pattern:
-<type>(<scope>): <short summary>
+<type> <scope>: <short summary>
 
 [optional body describing the 'why' and 'what', not the 'how']
 

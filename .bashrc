@@ -160,3 +160,4 @@ export PATH=~/.opencode/bin:$PATH
 export PATH="$PATH:$(go env GOPATH)/bin"
 
 export PATH="/home/luytbq/.local/bin:$PATH"
+. "$HOME/.cargo/env"
