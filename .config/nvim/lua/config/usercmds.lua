@@ -262,6 +262,26 @@ vim.api.nvim_create_user_command('ToggleDiagnostic', function()
     end
 end, { nargs = 0 })
 
+-- Strip a markdown marker from a line range.
+-- Visual mode: applies to the selected lines. Normal mode (no range): cursor row.
+local function strip_marker(cmd_args, pattern)
+    local lines = vim.api.nvim_buf_get_lines(0, cmd_args.line1 - 1, cmd_args.line2, false)
+    for i, line in ipairs(lines) do
+        lines[i] = line:gsub(pattern, '')
+    end
+    vim.api.nvim_buf_set_lines(0, cmd_args.line1 - 1, cmd_args.line2, false, lines)
+end
+
+-- Remove markdown bold markers (**):  **text** -> text
+vim.api.nvim_create_user_command('RemoveBold', function(cmd_args)
+    strip_marker(cmd_args, '%*%*')
+end, { range = true })
+
+-- Remove markdown inline-code markers (`):  `variableA` -> variableA
+vim.api.nvim_create_user_command('RemoveCode', function(cmd_args)
+    strip_marker(cmd_args, '`')
+end, { range = true })
+
 -- format json
 vim.api.nvim_create_user_command('JsonFormat', function()
   vim.cmd("'<,'>!jq")
