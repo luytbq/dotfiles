@@ -45,3 +45,5 @@ Don't suggest teams for sequential work or simple single-service tasks.
 - Each subdirectory is an independent git repo
 - Check for project-level CLAUDE.md before diving into code
 - If a project lacks CLAUDE.md, run `/init-project-claude` to generate one
+
+@RTK.md
