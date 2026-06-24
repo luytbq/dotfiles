@@ -1,5 +1,9 @@
 # Global Instructions
 
+## Writing Guidelines
+- Never use the em dash (—) in any output. Always use a hyphen (-) instead.
+- Never use arrows (→) in any output. Always use (-->) instead.
+
 ## Skill/Command Self-Improvement
 
 When a skill or command output doesn't satisfy the user and a fix is applied to the current output:
