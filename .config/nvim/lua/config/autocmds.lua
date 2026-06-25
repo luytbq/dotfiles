@@ -25,16 +25,6 @@ vim.api.nvim_create_autocmd("BufWritePre", {
   end,
 })
 
--- CopilotChat Auto-command to customize chat buffer behavior
-vim.api.nvim_create_autocmd('BufEnter', {
-  pattern = 'copilot-*',
-  callback = function()
-    vim.opt_local.relativenumber = false
-    vim.opt_local.number = false
-    vim.opt_local.conceallevel = 0
-  end,
-})
-
 -- Snacks diff: highlight rõ dòng thêm/xóa
 -- Phải gọi trực tiếp vì ColorScheme event đã fire trước khi file này load (VeryLazy).
 -- Snacks dùng `default = true` nên chỉ set nếu group chưa tồn tại — gọi sớm để giữ giá trị của mình.

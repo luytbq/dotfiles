@@ -58,9 +58,6 @@ vim.schedule(function()
   map("v", "<leader>cP", ":CopyPathAbsolute with-line-number<cr>", { desc = "Copy Path Absolute with line number" })
 end)
 
--- map({ "n", "i", "v" }, "<c-x>", "<cmd>CopilotChatToggle<cr>", { desc = "CopilotChatToggle" })
-vim.g.copilot_no_tab_map = true
-vim.api.nvim_set_keymap("i", "<c-e>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
 
 -- Treesitter incremental selection (the `main` branch dropped the built-in module)
 local ts_inc = require("config/ts-incremental")

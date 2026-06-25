@@ -173,67 +173,6 @@ vim.api.nvim_create_user_command("JdtlsClean", function()
   print("No -data found in jdtls command")
 end, {})
 
--- Toggle AI suggestions:
---   1. copilot.vim   (ghost text from github/copilot.vim)
---   2. copilot.lua   (suggestion engine from zbirenbaum/copilot.lua, via LazyVim extra)
---   3. copilot-cmp   (cmp source from zbirenbaum/copilot-cmp, via LazyVim extra)
-vim.g.ai_suggestions_enabled = true
-vim.api.nvim_create_user_command("ToggleAI", function()
-    vim.g.ai_suggestions_enabled = not vim.g.ai_suggestions_enabled
-    if vim.g.ai_suggestions_enabled then
-        -- 1. copilot.vim
-        vim.g.copilot_enabled = true
-        vim.cmd("silent! Copilot enable")
-
-        -- 2. copilot.lua (zbirenbaum)
-        local ok_suggestion, suggestion = pcall(require, "copilot.suggestion")
-        if ok_suggestion then
-            require("copilot.command").enable()
-        end
-
-        -- 3. copilot-cmp source
-        local ok_cmp, cmp = pcall(require, "cmp")
-        if ok_cmp then
-            local sources = cmp.get_config().sources or {}
-            local has_copilot = false
-            for _, s in ipairs(sources) do
-                if s.name == "copilot" then has_copilot = true break end
-            end
-            if not has_copilot then
-                table.insert(sources, 1, { name = "copilot", group_index = 1, priority = 100 })
-                cmp.setup({ sources = sources })
-            end
-        end
-
-        print("AI suggestions: ON")
-    else
-        -- 1. copilot.vim
-        vim.g.copilot_enabled = false
-        vim.cmd("silent! Copilot disable")
-        vim.cmd("silent! call copilot#Clear()")
-
-        -- 2. copilot.lua (zbirenbaum)
-        local ok_suggestion, suggestion = pcall(require, "copilot.suggestion")
-        if ok_suggestion then
-            suggestion.dismiss()
-            require("copilot.command").disable()
-        end
-
-        -- 3. copilot-cmp source
-        local ok_cmp, cmp = pcall(require, "cmp")
-        if ok_cmp then
-            local sources = cmp.get_config().sources or {}
-            local filtered = {}
-            for _, s in ipairs(sources) do
-                if s.name ~= "copilot" then table.insert(filtered, s) end
-            end
-            cmp.setup({ sources = filtered })
-        end
-
-        print("AI suggestions: OFF")
-    end
-end, { nargs = 0 })
-
 vim.api.nvim_create_user_command('ToggleSpelling', function()
     vim.opt_local.spell = not vim.opt_local.spell:get()
     local state = vim.opt_local.spell:get() and "enabled" or "disabled"
