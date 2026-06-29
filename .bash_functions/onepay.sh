@@ -203,10 +203,12 @@ Options:
   --host, -h          SSH host (required)
   --port, -p          SSH port (default: 7602)
   --service, -s       Service name (required)
+  --lib, -l           Also sync lib directory (opt-in, includes meld for lib)
   --help              Show this help message
 
 Example:
   sync_java --host 10.0.0.1 --user root --service my-service
+  sync_java --host 10.0.0.1 --service my-service --lib
 EOF
             ;;
         *)
@@ -248,6 +250,7 @@ parse_args() {
     result[title]=""
     result[description]=""
     result[service]=""
+    result[lib]="false"
     result[help]="false"
 
     while [[ $# -gt 0 ]]; do
@@ -311,6 +314,10 @@ parse_args() {
                 [[ -z "$2" ]] && { echo "Error: --service requires a value" >&2; return 1; }
                 result[service]="$2"
                 shift 2
+                ;;
+            --lib|-l)
+                result[lib]="true"
+                shift
                 ;;
             *)
                 echo "Unknown argument: $1" >&2
@@ -829,8 +836,10 @@ sync_java() {
     local host="${args[host]}"
     local port="${args[port]}"
     local service_name="${args[service]}"
+    local sync_lib="${args[lib]}"
 
     mkdir -p "./prod/classes" || return 1
+    [[ "$sync_lib" == "true" ]] && { mkdir -p "./prod/lib" || return 1; }
 
     # Backup remote
     ssh -p "${port}" "${user}@${host}" "mkdir -p /opt/backup/ && cp -R /opt/${service_name}/ /opt/backup/${service_name}-$(date +%Y%m%d_%H%M%S)/"
@@ -839,9 +848,15 @@ sync_java() {
     rsync --rsync-path='sudo rsync' -av --progress --delete --delete-excluded \
         --rsh="ssh -p ${port}" \
         "${user}@${host}:/opt/${service_name}/classes/" "prod/classes/" || return 1
+    if [[ "$sync_lib" == "true" ]]; then
+        rsync --rsync-path='sudo rsync' -av --progress --delete --delete-excluded \
+            --rsh="ssh -p ${port}" \
+            "${user}@${host}:/opt/${service_name}/lib/" "prod/lib/" || return 1
+    fi
 
     # Meld for manual comparison/merge
     meld "target/classes" "prod/classes" || return 1
+    [[ "$sync_lib" == "true" ]] && { meld "target/dependency" "prod/lib" || return 1; }
 
     # Confirmation step
     echo "Meld complete. Proceed sync and restart? (y/N)" >&2
@@ -851,10 +866,15 @@ sync_java() {
         return 0
     fi
 
-    # Sync local -> remote (only classes)
+    # Sync local -> remote
     rsync --rsync-path='sudo rsync' -av --progress \
         --rsh="ssh -p ${port}" \
-        "prod/classes" "${user}@${host}:/opt/${service_name}/"
+        "prod/classes/" "${user}@${host}:/opt/${service_name}/classes/"
+    if [[ "$sync_lib" == "true" ]]; then
+        rsync --rsync-path='sudo rsync' -av --progress \
+            --rsh="ssh -p ${port}" \
+            "prod/lib/" "${user}@${host}:/opt/${service_name}/lib/"
+    fi
 
     # Restart service remotely
     ssh -p "${port}" "${user}@${host}" "systemctl restart ${service_name}"

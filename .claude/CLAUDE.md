@@ -3,6 +3,7 @@
 ## Writing Guidelines
 - Never use the em dash (—) in any output. Always use a hyphen (-) instead.
 - Never use arrows (→) in any output. Always use (-->) instead.
+- In Markdown output: never use inline code; limit bold and italic to 1–2 instances per paragraph at most; default to plain prose.
 
 ## Skill/Command Self-Improvement
 
