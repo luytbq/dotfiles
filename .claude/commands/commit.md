@@ -30,6 +30,6 @@ Every commit must match this pattern:
 ## Guidelines for Claude
 1. Run `git diff --cached` to see staged changes before writing the message.
 2. If no changes are staged, run `git diff` to analyze unstaged changes.
-3. Determine the `<scope>` based on the primary directory or module modified (e.g., `auth`, `ui`, `api`). Leave it blank if it spans the whole project.
+3. Determine the `<scope>` based on the **feature name** (short, e.g., `refund`, `payment-notification`, `otp`, `qr-code`). NEVER use a project name as scope. Leave it blank if the change spans multiple features or is cross-cutting.
 4. Focus the body on the **motivation** behind the change, not a literal translation of the diff lines.
 
