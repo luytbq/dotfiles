@@ -103,6 +103,46 @@ vim.api.nvim_create_user_command('CopyPathAbsolute', function(cmd_args)
     copy_path(vim.fn.expand('%:p'), cmd_args)
 end, { range = true, nargs = '?', complete = line_number_complete })
 
+-- Returns the (start, end) line numbers to use, exiting visual mode if active.
+-- Relies on <Cmd> mappings not leaving the current mode before the handler runs,
+-- so mode()/line('v')/line('.') still reflect the pending visual selection.
+local function get_line_range()
+    local mode = vim.fn.mode()
+    if mode == 'v' or mode == 'V' or mode == '\22' then
+        local l1 = vim.fn.line('v')
+        local l2 = vim.fn.line('.')
+        if l1 > l2 then l1, l2 = l2, l1 end
+        vim.cmd('normal! \27')
+        return l1, l2
+    end
+    local l = vim.fn.line('.')
+    return l, l
+end
+
+vim.api.nvim_create_user_command('CopyPathMenu', function()
+    local l1, l2 = get_line_range()
+    local line_suffix = (l1 == l2) and (':' .. l1) or (':' .. l1 .. '-' .. l2)
+
+    local items = {
+        { label = 'Copy file name',                           get = function() return vim.fn.expand('%:t') end },
+        { label = 'Copy file name with line number',          get = function() return vim.fn.expand('%:t') .. line_suffix end },
+        { label = 'Copy related file path',                   get = function() return vim.fn.expand('%:.') end },
+        { label = 'Copy related file path with line number',  get = function() return vim.fn.expand('%:.') .. line_suffix end },
+        { label = 'Copy absolute file path',                  get = function() return vim.fn.expand('%:p') end },
+        { label = 'Copy absolute file path with line number', get = function() return vim.fn.expand('%:p') .. line_suffix end },
+    }
+
+    vim.ui.select(items, {
+        prompt = 'Copy path',
+        format_item = function(item) return item.label end,
+    }, function(choice)
+        if not choice then return end
+        local result = choice.get()
+        vim.fn.setreg('+', result)
+        vim.notify('Copied: ' .. result, vim.log.levels.INFO)
+    end)
+end, {})
+
 vim.api.nvim_create_user_command("JdtlsClean", function()
   -- find the jdtls client explicitly
   local jdtls_client

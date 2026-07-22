@@ -52,10 +52,7 @@ map({ "v" }, "<c-_>", "<cmd>FloatTermVisual<cr>", { desc = "Send selected text t
 map({ "n", "v" }, "<leader>ca", "<cmd>lua vim.lsp.buf.code_action()<cr>", { desc = "LSP buffer code action" })
 
 vim.schedule(function()
-  map({ "n", "v" }, "<leader>cp", "<cmd>CopyPathAbsolute<cr>", { desc = "Copy Path Absolute" })
-  map("n", "<leader>cP", "<cmd>CopyPathAbsolute with-line-number<cr>", { desc = "Copy Path Absolute with line number" })
-  -- Use ':' (not <Cmd>) in visual mode so the '<,'> range is passed to the command
-  map("v", "<leader>cP", ":CopyPathAbsolute with-line-number<cr>", { desc = "Copy Path Absolute with line number" })
+  map({ "n", "v" }, "<leader>cp", "<cmd>CopyPathMenu<cr>", { desc = "Copy path (menu)" })
 end)
 
 
