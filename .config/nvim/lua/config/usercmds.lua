@@ -130,6 +130,8 @@ vim.api.nvim_create_user_command('CopyPathMenu', function()
         { label = 'Copy related file path with line number',  get = function() return vim.fn.expand('%:.') .. line_suffix end },
         { label = 'Copy absolute file path',                  get = function() return vim.fn.expand('%:p') end },
         { label = 'Copy absolute file path with line number', get = function() return vim.fn.expand('%:p') .. line_suffix end },
+        { label = 'Copy related dir path',                    get = function() return vim.fn.expand('%:.:h') end },
+        { label = 'Copy absolute dir path',                   get = function() return vim.fn.expand('%:p:h') end },
     }
 
     vim.ui.select(items, {
