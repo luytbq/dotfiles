@@ -82,6 +82,19 @@ opts = {
     },
     picker = {
         ui_select = true,
+        sources = {
+            explorer = {
+                win = {
+                    list = {
+                        keys = {
+                            -- Vietnamese input methods (e.g., ibus-bamboo using Telex) send a Backspace key event when the user types j, causing unwanted explorer_up behavior.
+                            ["<BS>"] = false,
+                            ["-"] = "explorer_up",
+                        },
+                    },
+                },
+            },
+        },
         win = {
             input = {
                 keys = {
