@@ -2,6 +2,8 @@
 
 Read after Step 2 of the core workflow, when the medium is cli.
 
+These are defaults for a surface with mixed drivers. When Step 0 named a single expert driver, an item here can be the wrong trade; name the item you are overriding and why, rather than skipping it silently.
+
 ## Arguments and flags
 
 - Positional arguments are acceptable only for the one obvious subject of the command, and only when its meaning survives being read alone. Everything else takes a named flag.
@@ -24,6 +26,8 @@ Read after Step 2 of the core workflow, when the medium is cli.
 - Help shows a working example for the most common task, not only a flag table. Most users copy the example.
 - Help states the default value of every flag that has one.
 - Error messages for bad usage point at the specific flag, and say what was expected, not just "invalid arguments".
+- The tool's list of nouns comes from the system it manages, not an array in the source. If adding one entity requires editing the tool, that is a finding.
+- Where the nouns are long or system-generated, ship shell completion fed by the tool's own machine-readable list output, so the names stay typeable without inventing short aliases for them.
 
 ## Streams and exit codes
 
@@ -63,3 +67,5 @@ A tool that cannot be fully driven by flags alone cannot be used in CI.
 | A flag nobody has set on purpose | Delete it |
 | Help exists but nobody reads it | Add a copyable example at the top |
 | Script wrapping it parses human text | Add a stable machine output mode |
+| Users invent aliases for the tool's own nouns | Ship completion fed by the tool's list output |
+| Adding one entity means editing the tool | Read the list from the system at runtime |

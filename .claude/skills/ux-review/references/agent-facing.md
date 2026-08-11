@@ -2,6 +2,8 @@
 
 Read after Step 2 of the core workflow, when the medium is agent. Applies to skills, slash commands, MCP tool definitions, and any tool an LLM calls rather than a person.
 
+These are defaults for a surface with mixed drivers. When Step 0 named a single expert driver, an item here can be the wrong trade; name the item you are overriding and why, rather than skipping it silently.
+
 The driver here is a model with no memory of yesterday, no ability to ask a follow-up mid-call, and a hard budget on context. Those three constraints set every item below.
 
 ## Selection: does it get chosen at the right time?
@@ -22,6 +24,7 @@ An agent-facing interface fails first at selection, not at execution. If the des
 - No parameter's meaning depends on another parameter's value.
 - Types constrain what is possible. A string where an enum belongs invites free text.
 - Defaults are stated in the description, because the model decides whether to pass a value based on that text alone.
+- A list of valid targets written into the description goes stale silently, because nothing fails when the system it describes changes. Enumerate it from that system, or have the tool return the current list.
 
 ## Output
 
