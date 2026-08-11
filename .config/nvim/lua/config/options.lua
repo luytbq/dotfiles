@@ -10,8 +10,10 @@ vim.b.autoformat = false
 vim.g.autoformat = false
 vim.g.editorconfig = false
 
-vim.opt.tabstop = 2
-vim.opt.shiftwidth = 2
+local tabWidth = 4
+vim.opt.tabstop = tabWidth
+vim.opt.shiftwidth = tabWidth
+vim.opt.softtabstop = tabWidth
 vim.o.expandtab = true
 
 vim.g.ftplugin_sql_omni_key = '<leader>sql'
