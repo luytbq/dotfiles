@@ -811,6 +811,30 @@ ssh_fzf_sync_and_execute() {
     return $?
 }
 
+# Locate the build output holding dependency jars; layout varies per project
+find_local_lib_dir() {
+    local dir
+    for dir in "target/dependency" "target/lib"; do
+        [[ -d "$dir" ]] && { echo "$dir"; return 0; }
+    done
+    echo "Error: no local lib directory found (looked for target/dependency, target/lib)" >&2
+    echo "Hint: run 'mvn dependency:copy-dependencies' first" >&2
+    return 1
+}
+
+# meld reports only "Cannot compare a mixture of files and directories" on a
+# missing path, so check both sides first to say which one is actually missing
+meld_dirs() {
+    local left="$1" right="$2" dir
+    for dir in "$left" "$right"; do
+        if [[ ! -d "$dir" ]]; then
+            echo "Error: '$dir' is not a directory" >&2
+            return 1
+        fi
+    done
+    meld "$left" "$right"
+}
+
 sync_java() {
     local args
     declare -A args
@@ -855,8 +879,12 @@ sync_java() {
     fi
 
     # Meld for manual comparison/merge
-    meld "target/classes" "prod/classes" || return 1
-    [[ "$sync_lib" == "true" ]] && { meld "target/dependency" "prod/lib" || return 1; }
+    meld_dirs "target/classes" "prod/classes" || return 1
+    if [[ "$sync_lib" == "true" ]]; then
+        local local_lib
+        local_lib=$(find_local_lib_dir) || return 1
+        meld_dirs "$local_lib" "prod/lib" || return 1
+    fi
 
     # Confirmation step
     echo "Meld complete. Proceed sync and restart? (y/N)" >&2
@@ -867,13 +895,15 @@ sync_java() {
     fi
 
     # Sync local -> remote
-    rsync --rsync-path='sudo rsync' -av --progress \
+    # prod/ là mirror của remote (tải về bằng --delete), nên xóa file trong lúc
+    # meld phải được đẩy lên; thiếu --delete thì file bỏ đi vẫn còn trên remote
+    rsync --rsync-path='sudo rsync' -av --progress --delete \
         --rsh="ssh -p ${port}" \
-        "prod/classes/" "${user}@${host}:/opt/${service_name}/classes/"
+        "prod/classes/" "${user}@${host}:/opt/${service_name}/classes/" || return 1
     if [[ "$sync_lib" == "true" ]]; then
-        rsync --rsync-path='sudo rsync' -av --progress \
+        rsync --rsync-path='sudo rsync' -av --progress --delete \
             --rsh="ssh -p ${port}" \
-            "prod/lib/" "${user}@${host}:/opt/${service_name}/lib/"
+            "prod/lib/" "${user}@${host}:/opt/${service_name}/lib/" || return 1
     fi
 
     # Restart service remotely
