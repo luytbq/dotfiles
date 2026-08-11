@@ -2,6 +2,8 @@
 
 Read after Step 2 of the core workflow, when the medium is gui.
 
+These are defaults for a surface with mixed drivers. When Step 0 named a single expert driver, an item here can be the wrong trade; name the item you are overriding and why, rather than skipping it silently.
+
 For a screen, the invocation from Step 1 is the click path: every action the user must take, in order, to finish the task. Count the steps and count the decisions. Both are costs.
 
 ## Task flow
@@ -9,6 +11,7 @@ For a screen, the invocation from Step 1 is the click path: every action the use
 - The primary action on any screen is identifiable in one second, without reading everything.
 - The number of steps matches the difficulty of the task. An easy task behind five screens is a finding.
 - Nothing is required of the user that the system already knows.
+- Options hardcoded in the front end for data the backend owns will disagree with the backend eventually, and the user meets that disagreement as a failed submit.
 - The user can leave and come back without losing work.
 - Every dead end offers a way forward, not just an explanation of the wall.
 

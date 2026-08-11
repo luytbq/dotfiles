@@ -2,6 +2,8 @@
 
 Read after Step 2 of the core workflow, when the medium is api.
 
+These are defaults for a surface with mixed drivers. When Step 0 named a single expert driver, an item here can be the wrong trade; name the item you are overriding and why, rather than skipping it silently.
+
 ## Naming and shape
 
 - Paths name resources as plural nouns; the HTTP method carries the verb. A path segment that is a verb usually means the resource is missing.
@@ -10,6 +12,7 @@ Read after Step 2 of the core workflow, when the medium is api.
 - Required and optional fields are distinguishable without trying the call.
 - A field whose meaning depends on the value of another field needs either splitting into two endpoints or a discriminator the caller sets explicitly.
 - Enumerated values are closed, documented strings, not free text and not opaque integers.
+- An enum hardcoded in the handler that shadows a table or an upstream list will drift, and the caller sees the drift as a bug. Serve it from the same source the rest of the system reads.
 
 ## Status codes and errors
 

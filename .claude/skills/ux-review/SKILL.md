@@ -43,7 +43,7 @@ Not for pure visual and aesthetic critique of a screen. This skill judges the co
 
 Review and propose only. Do not change the interface as part of the review. Public interfaces have callers, so the decision to break them belongs to the owner. Output findings; let the owner choose.
 
-Write the report in English regardless of the language of the conversation.
+Write the report in English regardless of the language of the conversation. Proposed strings that the interface itself shows to its own users stay in the language that interface already speaks.
 
 ## Arguments
 
@@ -67,6 +67,8 @@ Driver. Who or what produces the calls, because this reorders every priority bel
 | Expert human, uses it daily | Economy of keystrokes, consistency, composability |
 | Script or another program | Stable contract, machine-readable output, exit codes, idempotency |
 | LLM agent | Self-describing names, cheap output, errors it can recover from alone |
+
+Then find the real callers. Grep the repo, dotfiles, CI config, and neighbouring scripts for actual invocations. The count sets the price of every proposal: no callers means propose freely, many means each After needs a migration path. It also corrects the driver you assumed.
 
 Then write down the top three tasks a driver actually comes here to accomplish. If you cannot name three, ask the owner rather than guessing.
 
@@ -92,13 +94,21 @@ The same test generalizes past CLIs:
 
 An interface passes this test when a reader can reconstruct the intent from a single call, with no documentation and no source.
 
+Then run them. An invocation you can execute safely, execute: it converts an opinion into an observation, and observed findings are the ones an owner acts on.
+
+- Read-only paths (status, list, get, --help, GET) run directly.
+- Mutating paths: shim the external command the target drives, put the shim first on PATH, and drive the real interface against it. This exercises the real dispatch, ordering, messages, and exit codes with no real side effects.
+- Never mutate shared, production, or another person's state to produce a finding. If a path cannot be reached safely, say so and leave it inferred.
+
+Tag each finding observed if you reproduced it, inferred if you only read it off the source. Say in the report which mutating paths you did not exercise.
+
 ### Step 2: Score the ten axes
 
 These are Nielsen's ten heuristics restated so they apply to any interface, not only to screens.
 
 | Axis | Check |
 |---|---|
-| Discoverability | Can the driver learn what is possible from the interface itself, without reading source? |
+| Discoverability | Can the driver learn what is possible from the interface itself, without reading source? And does that list of possibilities come from the system, or from a copy baked into the source? |
 | Vocabulary | Do names match the domain language? One concept, one word, used consistently. |
 | Explicitness | Does a single call explain itself, or does meaning hide in position and order? |
 | Defaults and economy | Does the common case need zero configuration, and does every option that exists justify itself? |
@@ -139,6 +149,8 @@ A short list of blocking findings beats a wall of polish. If a rank is empty, sa
 
 Every finding must carry a concrete proposed signature. A finding without a specific After is not a finding, it is a feeling. Delete it.
 
+The After is the part that gets applied, so it costs the most when wrong. When it depends on the behaviour of an external command, API, or library, probe that behaviour before writing it. If you cannot, still write the After, and mark it unverified. A confident wrong After is worse than a missing finding: it reads as authoritative and it ships.
+
 ```markdown
 ## UX Review: [surface name]
 
@@ -153,9 +165,9 @@ Every finding must carry a concrete proposed signature. A finding without a spec
 | [task] | [literal call] | [yes / no, and which token fails] |
 
 ### Blocking
-| # | Finding | Axis | Before | After |
-|---|---------|------|--------|-------|
-| 1 | [what breaks, for whom] | [axis] | [current signature] | [proposed signature] |
+| # | Finding | Axis | Evidence | Before | After |
+|---|---------|------|----------|--------|-------|
+| 1 | [what breaks, for whom] | [axis] | [observed / inferred] | [current signature] | [proposed signature] |
 
 ### Recurring friction
 [same table shape]
@@ -164,18 +176,22 @@ Every finding must carry a concrete proposed signature. A finding without a spec
 [same table shape]
 
 ### Polish
-[one line each, no table]
+[one line each, continuing the same numbering, no table]
 
 ### Migration notes
 [Which proposals break existing callers, and how to ship them: alias the old form,
-accept both for a release, or gate behind a major version. Omit if nothing breaks.]
+accept both for a release, or gate behind a major version. Name the callers found
+in Step 0. Omit if nothing breaks.]
+
+### Not exercised
+[Paths you could not run safely, and what would settle them. Omit if you ran everything.]
 ```
 
 For a merge request comment, collapse to the three highest-ranked findings as a flat list, each one line: finding, then before, then after.
 
 ## Best Practices
 
-- Run the Invocation Test before opening any checklist. It finds most of what matters and costs one minute.
+- Run the Invocation Test before opening any checklist. It finds most of what matters, and running the invocations is what separates a finding from a guess.
 - Review against a real task, not a feature list. Feature lists hide the fact that the common case takes six flags.
 - Name the driver out loud. "Good UX" is meaningless without knowing who is driving.
 - Prefer one strong proposal over three weak options. If you genuinely cannot choose, say which you would ship and why.
