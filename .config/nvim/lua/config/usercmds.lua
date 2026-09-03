@@ -145,74 +145,69 @@ vim.api.nvim_create_user_command('CopyPathMenu', function()
     end)
 end, {})
 
-vim.api.nvim_create_user_command("JdtlsClean", function()
-  -- find the jdtls client explicitly
-  local jdtls_client
-  for _, client in pairs(vim.lsp.get_active_clients()) do
-    if client.name == "jdtls" then
-      jdtls_client = client
-      break
+-- Default workspace used by lua/plugins/nvim-jdtls.lua when no client is running.
+local function jdtls_default_workspace()
+  local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
+  return vim.fn.stdpath("cache") .. "/jdtls/" .. project_name .. "/workspace"
+end
+
+local function jdtls_workspace_of(client)
+  local cmd = client.config.cmd
+  if type(cmd) ~= "table" then
+    return nil
+  end
+  for i, v in ipairs(cmd) do
+    if v == "-data" and cmd[i + 1] then
+      return cmd[i + 1]
     end
   end
+  return nil
+end
 
-  if not jdtls_client then
-    -- print("No active jdtls client")
-    -- if no active jdtls client, try to find default data path:
-    -- ~/.cache/nvim/jdtls/{project_name}/workspace where project_name is the name of the current working directory
-    -- then prompt to delete that
-
-    local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
-    local workspace_dir = vim.fn.stdpath("cache") .. "/jdtls/" .. project_name .. "/workspace"
-    local confirm = vim.fn.confirm(
-      "Delete jdtls workspace?\n" .. workspace_dir,
-      "&Yes\n&No",
-      2
-    )
-    if confirm == 1 then
-      vim.fn.system({ "rm", "-rf", workspace_dir })
-      print("Deleted " .. workspace_dir)
-
-    -- restart jdtls by automaticaly running :LspRestart
-    vim.defer_fn(function()
-        vim.cmd("LspRestart")
-        print("Jdtls restarting...")
-    end, 500)
-
-    else
-      print("Cancelled")
+-- client:stop() only asks the server to exit; deleting the workspace or starting a
+-- new server while the old one is still alive races with it.
+local function jdtls_when_stopped(callback)
+  local waited = 0
+  local timer = assert(vim.uv.new_timer())
+  timer:start(0, 100, vim.schedule_wrap(function()
+    waited = waited + 100
+    if #vim.lsp.get_clients({ name = "jdtls" }) > 0 and waited < 5000 then
+      return
     end
+    timer:stop()
+    timer:close()
+    callback()
+  end))
+end
+
+vim.api.nvim_create_user_command("JdtlsClean", function()
+  local client = vim.lsp.get_clients({ name = "jdtls" })[1]
+  local workspace_dir = (client and jdtls_workspace_of(client)) or jdtls_default_workspace()
+
+  local confirm = vim.fn.confirm("Delete jdtls workspace?\n" .. workspace_dir, "&Yes\n&No", 2)
+  if confirm ~= 1 then
+    print("Cancelled")
     return
   end
 
-  local cmd = jdtls_client.config.cmd or {}
-  for i, v in ipairs(cmd) do
-    if v == "-data" and cmd[i + 1] then
-      local path = cmd[i + 1]
-      local confirm = vim.fn.confirm(
-        "Delete jdtls workspace?\n" .. path,
-        "&Yes\n&No",
-        2
-      )
-      if confirm == 1 then
-        vim.fn.system({ "rm", "-rf", path })
-        print("Deleted " .. path)
-
-        -- stop only jdtls
-        jdtls_client.stop()
-
-        -- reattach (LazyVim auto-triggers on buffer)
-        vim.defer_fn(function()
-          vim.cmd("edit") -- reopen current buffer to trigger LSP attach
-          print("Jdtls restarting...")
-        end, 500)
-      else
-        print("Cancelled")
-      end
-      return
-    end
+  -- nvim-jdtls is ft=java, so the config only exists once a Java buffer has been
+  -- opened; re-enabling otherwise would launch lspconfig's default jdtls instead.
+  local configured = vim.lsp.is_enabled("jdtls")
+  if configured then
+    vim.lsp.enable("jdtls", false)
   end
 
-  print("No -data found in jdtls command")
+  jdtls_when_stopped(function()
+    vim.fn.system({ "rm", "-rf", workspace_dir })
+    print("Deleted " .. workspace_dir)
+
+    if configured then
+      vim.lsp.enable("jdtls", true)
+      print("Jdtls restarting...")
+    else
+      print("Open a Java file to start jdtls")
+    end
+  end)
 end, {})
 
 vim.api.nvim_create_user_command('ToggleSpelling', function()
