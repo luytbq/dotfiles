@@ -642,7 +642,7 @@ build_theme() {
         return 1
     fi
 
-    nvm use 16 || { echo "Error: Failed to switch to Node 16" >&2; return 1; }
+    # nvm use 16 || { echo "Error: Failed to switch to Node 16" >&2; return 1; }
 
     echo "Cleaning dist/..." >&2
     rm -rf dist/
