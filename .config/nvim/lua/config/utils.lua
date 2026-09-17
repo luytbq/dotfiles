@@ -18,21 +18,9 @@ m.get_all_projects_config = function()
   return all_projects
 end
 
+-- Returns nil when cwd has no saved config, so callers keep the defaults from options.lua
 m.get_project_config = function()
-  local cwd = vim.loop.cwd()
-  local config = {}
-
-  local all_projects = m.get_all_projects_config()
-  if all_projects[cwd] then
-    config = all_projects[cwd]
-  else
-    -- If no config exists for the current project, create a default one
-    config = {
-      tabstop = 2,
-      wrap = false
-    }
-  end
-  return config
+  return m.get_all_projects_config()[vim.loop.cwd()]
 end
 
 m.save_project_config = function(config)
