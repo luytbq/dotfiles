@@ -57,9 +57,10 @@ xlsx:
 
 ## Cách tool xếp hình
 
-1. Xếp hàng: tool duyệt theo thứ tự topo, cùng mức thì ưu tiên thứ tự dòng trong bảng, và bỏ qua cạnh back=true. Đích cùng lane nằm ở hàng dưới nguồn. Đích khác lane chỉ có một nguồn thì được đặt cùng hàng để mũi tên đi ngang, miễn là các ô trên đường đi còn trống.
-2. Cột con: cạnh ra cuối cùng của một node được coi là nhánh chính và giữ nguyên cột. Các nhánh phụ cùng lane lần lượt sang phải rồi sang trái. Nếu một mặt đã có mũi tên ngang thì mọi nhánh phụ dồn sang mặt còn lại. Condition có từ 2 nhánh phụ trở lên thì không nhận mũi tên ngang, để giữ cả hai mặt bên cho các nhánh.
-3. db và text đứng ở ô ngay cạnh node được attach, cùng hàng, về phía không có cạnh nối.
+1. Xếp hàng: tool duyệt theo thứ tự topo, cùng mức thì ưu tiên thứ tự dòng trong bảng, và bỏ qua cạnh back=true. Đích chỉ có một nguồn thì được đặt cùng hàng với nguồn để mũi tên đi ngang, miễn là các ô trên đường đi còn trống; điều này áp dụng cho cả đích khác lane lẫn nhánh phụ cùng lane, nên một nhánh phụ không bắt buộc phải tụt xuống dưới node đã rẽ ra nó. Riêng condition có từ 2 nhánh phụ trở lên thì không nhận mũi tên ngang.
+   Node có nhiều nhánh cùng lane đi vào thì quay về cột của node rẽ gần nhất mà mọi nhánh đều đi qua, thay vì bám theo cột của nhánh được xếp sau cùng. Nhờ vậy luồng chung sau khi hợp nhánh nằm thẳng cột với chỗ đã rẽ ra. Không có node rẽ chung thì giữ cách cũ.
+2. Cột con: cạnh ra cuối cùng của một node được coi là nhánh chính và giữ nguyên cột. Mỗi nhánh phụ được đặt về phía lane mà nhánh đó rốt cuộc dẫn tới: tool đi dọc nhánh tới cạnh đầu tiên rời khỏi lane, và dừng ở node hợp nhánh vì từ đó là luồng chung. Nhờ vậy một nhánh chỉ để trả lỗi về lane bên trái sẽ nằm bên trái, mũi tên ra khỏi nó không phải vòng ngược qua các node khác. Nhánh không rời lane thì không rõ hướng, và các nhánh như vậy lần lượt sang phải rồi sang trái. Nếu một mặt đã có mũi tên ngang thì mọi nhánh phụ dồn sang mặt còn lại. Condition có từ 2 nhánh phụ trở lên thì không nhận mũi tên ngang, để giữ cả hai mặt bên cho các nhánh.
+3. db và text đứng cùng hàng với node được attach, về phía không có cạnh nối, và bám sát node đó đúng --attach-gap. Ô sát bên được ưu tiên hơn phía thuận: mặt thuận đã kín thì tool lấy ô sát bên mặt kia trước khi lùi ra xa. Mặt đang đỡ một db hoặc text không được dùng làm cổng ra, nên cạnh đi ra sẽ chọn mặt khác hoặc đi xuống đáy; nhờ vậy không có đoạn dây nào cắt qua chỗ đã chừa. Máng bên cạnh được nới thêm đúng phần chừa đó, và dây chạy ở phía ngoài. Khi mặt đó đã có dây ngang không tránh được, hoặc node có nhiều hơn một db/text cùng phía, thì phần tử không bám sát được và quay về cách cũ là căn giữa ô bên cạnh.
 4. Đi dây: có 4 kiểu.
    - A: thẳng đứng.
    - B: thẳng ngang.
@@ -107,6 +108,7 @@ Mọi trường của Config đều có cờ CLI tương ứng, ví dụ --track
 | --track-gap | 12 | khoảng cách giữa hai track |
 | --gutter-margin / --channel-margin | 15 / 12 | lề từ mép máng/kênh tới track đầu |
 | --min-gutter / --min-channel | 24 / 30 | khoảng trống tối thiểu giữa hai cột / hai hàng |
+| --attach-gap | 40 | khoảng cách từ db/text tới node nó attach |
 
 ## Giới hạn đã biết
 

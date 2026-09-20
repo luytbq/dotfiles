@@ -699,6 +699,7 @@ class Config:
     channel_margin: int = 12
     min_gutter: int = 24
     min_channel: int = 30
+    attach_gap: int = 40
     lane_header: int = 30
     pool_header: int = 30
     min_lane_w: int = 120
@@ -865,23 +866,87 @@ class Layout:
             self.warnings.append('có vòng lặp chưa đánh dấu back=true, xếp theo thứ tự bảng: ' + ', '.join(rest))
         return out + rest
 
-    def branch_slot(self, e):
-        """Cột tương đối của đích so với nguồn cho cạnh cùng lane.
+    def branch_drift(self, e):
+        """Nhánh này rốt cuộc đi sang lane bên nào: -1 trái, 1 phải, 0 chưa rõ.
+
+        Đi dọc nhánh cho tới cạnh đầu tiên rời khỏi lane. Dừng ở node hợp nhánh
+        vì từ đó trở đi là luồng chung, không còn là hướng của riêng nhánh này.
+        """
+        v = self.items[e.dst]
+        seen = {v.id}
+        queue = [v.id]
+        while queue:
+            nid = queue.pop(0)
+            for x in sorted(self.outs[nid], key=lambda x: x.order):
+                if x.back:
+                    continue
+                w = self.items[x.dst]
+                if w.lane != v.lane:
+                    return -1 if w.lane < v.lane else 1
+                if w.id in seen:
+                    continue
+                if len([y for y in self.ins[w.id] if not y.back]) > 1:
+                    continue
+                seen.add(w.id)
+                queue.append(w.id)
+        return 0
+
+    def branch_slots(self, nid):
+        """Cột tương đối cho mọi cạnh ra cùng lane của một node.
 
         Nhánh chính (cạnh ra cuối cùng) giữ cột 0. Các nhánh phụ, gần nhánh chính
-        trước, lần lượt sang phải rồi trái (1, -1, 2, -2...). Mặt nào đã có mũi
-        tên ngang thì mọi nhánh phụ dồn sang mặt còn lại.
+        trước, nhận cột lệch sang phía mà nhánh đó dẫn tới, để mũi tên rời nhánh
+        không phải vòng ngược qua node khác. Nhánh không rõ hướng thì xen kẽ phải
+        rồi trái. Mặt nào đã có mũi tên ngang thì mọi nhánh phụ dồn sang mặt kia.
         """
-        off = self.branch_offset(e)
-        if off == 0:
-            return 0
-        busy = self.hside[e.src]
-        if 'R' in busy and 'L' not in busy:
-            return -off
-        if 'L' in busy and 'R' not in busy:
-            return off
-        k = (off + 1) // 2
-        return k if off % 2 else -k
+        u = self.items[nid]
+        same = [x for x in self.outs[nid] if not x.back and self.items[x.dst].lane == u.lane]
+        res = {}
+        if not same:
+            return res
+        res[same[-1].id] = 0
+        busy = self.hside[nid]
+        only_left = 'R' in busy and 'L' not in busy
+        only_right = 'L' in busy and 'R' not in busy
+        nxt = {1: 1, -1: 1}
+        for e in reversed(same[:-1]):
+            if only_left:
+                side = -1
+            elif only_right:
+                side = 1
+            else:
+                side = self.branch_drift(e) or (1 if nxt[1] <= nxt[-1] else -1)
+            res[e.id] = side * nxt[side]
+            nxt[side] += 1
+        return res
+
+    def branch_slot(self, e):
+        return self.branch_slots(e.src).get(e.id, 0)
+
+    def merge_col(self, same, v):
+        """Cột cho node có nhiều nhánh cùng lane đi vào.
+
+        Các nhánh đó rẽ ra từ một node chung; luồng chung nên quay về đúng cột
+        của node rẽ gần nhất, thay vì bám theo cột của nhánh được xếp sau cùng.
+        Không tìm được node chung thì trả None để dùng cách cũ.
+        """
+        sets = []
+        for e in same:
+            seen, stack = set(), [e.src]
+            while stack:
+                n = stack.pop()
+                if n in seen:
+                    continue
+                seen.add(n)
+                for x in self.ins[n]:
+                    w = self.items[x.src]
+                    if not x.back and w.lane == v.lane and w.row is not None:
+                        stack.append(x.src)
+            sets.append(seen)
+        common = set.intersection(*sets)
+        if not common:
+            return None
+        return self.items[max(common, key=lambda i: (self.items[i].row, self.items[i].order))].col
 
     def side_branches(self, v):
         return sum(1 for e in self.outs[v.id]
@@ -933,6 +998,10 @@ class Layout:
                 slot = self.branch_slot(e0)
                 col = self.items[e0.src].col + slot
                 side_branch = (slot > 0) - (slot < 0)
+                if len(same) > 1:
+                    mc = self.merge_col(same, v)
+                    if mc is not None:
+                        col, side_branch = mc, 0
             if preds:
                 row = max(self.items[e.src].row + 1 for e in preds)
             else:
@@ -940,7 +1009,8 @@ class Layout:
             placed = False
             nonback_in = [e for e in self.ins[vid] if not e.back]
             needs_sides = v.kind in NON_RECT and self.side_branches(v) >= 2
-            if len(preds) == 1 and not same and len(nonback_in) == 1 and not needs_sides:
+            if (len(preds) == 1 and len(nonback_in) == 1 and not needs_sides
+                    and (not same or side_branch)):
                 u = self.items[preds[0].src]
                 r = u.row
                 a, b = sorted([self.gkey(u), (v.lane, col)])
@@ -966,7 +1036,7 @@ class Layout:
             max_row = max(max_row, row)
             for a in attachments[vid]:
                 side = self.attach_side(v)
-                cands = [side, 2 * side, -side, -2 * side]
+                cands = [side, -side, 2 * side, -2 * side]
                 c = next((col + d for d in cands if not blocked(v.lane, col + d, row)), None)
                 if c is None:
                     c = next(col + d for d in range(3, 50) if (v.lane, col + d, row) not in occ)
@@ -974,6 +1044,7 @@ class Layout:
                 a.row, a.col = row, c
                 occ[(v.lane, c, row)] = a.id
         self.occ = occ
+        self.attachments = attachments
         self.nrows = max_row + 1
         self.cols = defaultdict(list)
         for (lane, c, _r) in occ:
@@ -1051,6 +1122,8 @@ class Layout:
                 continue
             if self.side_out[(v.id, OPP[s])] or self.side_in[(v.id, OPP[s])]:
                 continue
+            if s in self.attach_sides(u) or OPP[s] in self.attach_sides(v):
+                continue
             cells = self.cells_between(self.gkey(u), self.gkey(v), u.row)
             if all(c not in occ and not cells_h[c] for c in cells):
                 e.case, e.exit_side, e.entry_side = 'B', s, OPP[s]
@@ -1066,6 +1139,8 @@ class Layout:
                 continue
             s = face(u, v)
             if self.side_out[(u.id, s)] or self.side_in[(u.id, s)]:
+                continue
+            if s in self.attach_sides(u):
                 continue
             turn = (v.lane, v.col, u.row)
             hcells = self.cells_between(self.gkey(u), self.gkey(v), u.row) + [turn]
@@ -1130,7 +1205,13 @@ class Layout:
         self.assign_ports()
         self.assign_tracks()
 
+    def attach_sides(self, u):
+        """Các mặt của u đang có db hoặc text đứng sát."""
+        return {('R' if a.col > u.col else 'L') for a in self.attachments.get(u.id, ())}
+
     def side_free(self, u, side):
+        if side in self.attach_sides(u):
+            return False
         if self.side_in[(u.id, side)]:
             return False
         used = self.side_out[(u.id, side)]
@@ -1247,13 +1328,40 @@ class Layout:
                     lz_g[key] = max(lz_g[key], deficit)
         return lz_g, lz_c
 
+    def hug_plan(self):
+        """db/text nào được đặt bám sát node neo, và ở mặt nào.
+
+        Chỉ bám khi mặt đó không có dây nào ra hoặc vào: đoạn dây ngang sát node
+        sẽ cắt qua chỗ định đặt. Mặt bận thì giữ cách cũ, tức căn giữa ô bên cạnh.
+        """
+        hugs = {}
+        for aid, atts in self.attachments.items():
+            u = self.items[aid]
+            for side in ('L', 'R'):
+                near = [a for a in atts if (a.col > u.col) == (side == 'R')
+                        and abs(a.col - u.col) == 1]
+                if len(near) != 1:
+                    continue
+                if self.side_out[(u.id, side)] or self.side_in[(u.id, side)]:
+                    continue
+                hugs[near[0].id] = (u, side)
+        return hugs
+
     def compute_geometry(self, lz_g, lz_c):
         cfg = self.cfg
+        self.hugs = self.hug_plan()
         col_w = defaultdict(float)
         row_h = defaultdict(float)
         for it in self.items.values():
-            col_w[(it.lane, it.col)] = max(col_w[(it.lane, it.col)], it.w)
+            if it.id not in self.hugs:
+                col_w[(it.lane, it.col)] = max(col_w[(it.lane, it.col)], it.w)
             row_h[it.row] = max(row_h[it.row], it.h)
+        az_g = defaultdict(float)
+        for aid, (u, side) in self.hugs.items():
+            gi = self.gutter(u.lane, u.col, side)
+            key = (u.lane, gi, 'l' if side == 'R' else 'r')
+            az_g[key] = max(az_g[key], cfg.attach_gap + self.items[aid].w)
+        self.az_g = az_g
         self.gut_x, self.gut_w, self.col_x = {}, {}, {}
         self.lane_x, self.lane_w = [], []
         x = 0.0
@@ -1264,7 +1372,8 @@ class Layout:
                 n = self.ntracks.get(('G', lane, gi), 0)
                 inner = 2 * cfg.gutter_margin + (n - 1) * cfg.track_gap if n else 0
                 lzl, lzr = lz_g.get((lane, gi, 'l'), 0), lz_g.get((lane, gi, 'r'), 0)
-                widths.append(lzl + lzr + max(cfg.min_gutter, inner))
+                azl, azr = az_g.get((lane, gi, 'l'), 0), az_g.get((lane, gi, 'r'), 0)
+                widths.append(azl + azr + lzl + lzr + max(cfg.min_gutter, inner))
             total = sum(widths) + sum(col_w[(lane, c)] for c in cols)
             head = self.tm.w(lrow.text) + 30
             need = max(cfg.min_lane_w, head) - total
@@ -1303,10 +1412,14 @@ class Layout:
             ry0, rh = self.row_y[it.row]
             it.x = cx0 + (cw - it.w) / 2
             it.y = ry0 + (rh - it.h) / 2
+        for aid, (u, side) in self.hugs.items():
+            a = self.items[aid]
+            a.x = u.x + u.w + cfg.attach_gap if side == 'R' else u.x - cfg.attach_gap - a.w
 
     def track_x(self, s):
         _, lane, gi = s.res
-        return (self.gut_x[(lane, gi)] + self.lz_g.get((lane, gi, 'l'), 0)
+        return (self.gut_x[(lane, gi)] + self.az_g.get((lane, gi, 'l'), 0)
+                + self.lz_g.get((lane, gi, 'l'), 0)
                 + self.cfg.gutter_margin + s.track * self.cfg.track_gap)
 
     def track_y(self, s):
