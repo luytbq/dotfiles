@@ -129,6 +129,157 @@ class TrackTest(unittest.TestCase):
         self.assertNotEqual(a.track, c.track)
 
 
+class AttachTest(unittest.TestCase):
+    def layout(self, *rows):
+        t = ft.read_markdown_text(table(*rows))
+        assert not [i for i in ft.validate(t.rows) if i.level == 'error']
+        return ft.Layout(t.rows).run()
+
+    def gap(self, lay, anchor, att):
+        u, a = lay.items[anchor], lay.items[att]
+        lo, hi = (u, a) if u.x < a.x else (a, u)
+        return hi.x - (lo.x + lo.w)
+
+    def test_db_sits_attach_gap_from_its_anchor(self):
+        lay = self.layout(
+            '| A | lane | | A | |', '| B | lane | | B | |',
+            '| A-1 | start | A | bat dau | |',
+            '| E1 | edge | | nhan dai de noi rong mang | from=A-1; to=B-1 |',
+            '| B-1 | task | B | xu ly | |',
+            '| B-2 | db | B | DB.X | attach=B-1 |',
+            '| E2 | edge | | | from=B-1; to=B-3 |',
+            '| B-3 | end | B | xong | |')
+        self.assertAlmostEqual(self.gap(lay, 'B-1', 'B-2'), lay.cfg.attach_gap)
+
+    def test_attach_gap_is_configurable(self):
+        rows = ('| A | lane | | A | |', '| A-1 | start | A | bat dau | |',
+                '| A-1.1 | text | A | ghi chu | attach=A-1 |',
+                '| E1 | edge | | | from=A-1; to=A-2 |', '| A-2 | end | A | xong | |')
+        t = ft.read_markdown_text(table(*rows))
+        lay = ft.Layout(t.rows, ft.Config(attach_gap=90)).run()
+        self.assertAlmostEqual(self.gap(lay, 'A-1', 'A-1.1'), 90)
+
+    def test_attachment_takes_the_side_the_edge_does_not_use(self):
+        lay = self.layout(
+            '| A | lane | | A | |', '| B | lane | | B | |',
+            '| A-1 | start | A | bat dau | |',
+            '| A-1.1 | db | A | DB.X | attach=A-1 |',
+            '| E1 | edge | | | from=A-1; to=B-1 |',
+            '| B-1 | end | B | xong | |')
+        self.assertLess(lay.items['A-1.1'].x, lay.items['A-1'].x)
+        self.assertEqual(lay.edges[0].exit_side, 'R')
+        self.assertAlmostEqual(self.gap(lay, 'A-1', 'A-1.1'), lay.cfg.attach_gap)
+        self.assertFalse([m for lv, m in lay.check() if lv == 'error'])
+
+    def test_edge_leaves_by_the_bottom_when_its_side_holds_an_attachment(self):
+        lay = self.layout(
+            '| A | lane | | A | |', '| B | lane | | B | |', '| C | lane | | C | |',
+            '| A-1 | start | A | bat dau | |',
+            '| E1 | edge | | | from=A-1; to=B-1 |',
+            '| B-1 | task | B | xu ly | |',
+            '| B-2 | db | B | DB.X | attach=B-1 |',
+            '| E2 | edge | | | from=B-1; to=C-1 |',
+            '| C-1 | end | C | xong | |')
+        self.assertEqual(lay.items['B-2'].col, 1)
+        self.assertEqual([e for e in lay.edges if e.id == 'E2'][0].exit_side, 'B')
+        self.assertAlmostEqual(self.gap(lay, 'B-1', 'B-2'), lay.cfg.attach_gap)
+        self.assertFalse([m for lv, m in lay.check() if lv == 'error'])
+
+    def test_only_the_neighbouring_attachment_hugs(self):
+        lay = self.layout(
+            '| A | lane | | A | |', '| B | lane | | B | |',
+            '| A-1 | start | A | bat dau | |',
+            '| E1 | edge | | | from=A-1; to=B-1 |',
+            '| B-1 | task | B | xu ly | |',
+            '| B-2 | db | B | DB.X | attach=B-1 |',
+            '| B-3 | db | B | DB.Y | attach=B-1 |',
+            '| E2 | edge | | | from=B-1; to=B-4 |',
+            '| B-4 | end | B | xong | |')
+        self.assertEqual(list(lay.hugs), ['B-2'])
+        self.assertAlmostEqual(self.gap(lay, 'B-1', 'B-2'), lay.cfg.attach_gap)
+        self.assertFalse([m for lv, m in lay.check() if lv == 'error'])
+
+
+class BranchSideTest(unittest.TestCase):
+    def layout(self, *rows):
+        t = ft.read_markdown_text(table(*rows))
+        assert not [i for i in ft.validate(t.rows) if i.level == 'error']
+        return ft.Layout(t.rows).run()
+
+    def test_branch_goes_to_the_side_its_target_lane_is_on(self):
+        """Nhánh phụ dẫn sang lane bên trái thì đặt bên trái, để mũi tên ra khỏi
+        nhánh không phải vòng ngược qua node khác."""
+        lay = self.layout(
+            '| L | lane | | L | |', '| M | lane | | M | |',
+            '| M-1 | start | M | bat dau | |',
+            '| E1 | edge | | | from=M-1; to=M-2 |',
+            '| M-2 | condition | M | chia? | |',
+            '| E2 | edge | | No | from=M-2; to=M-3 |',
+            '| E3 | edge | | Yes | from=M-2; to=M-4 |',
+            '| M-3 | task | M | tra loi | |',
+            '| E4 | edge | | | from=M-3; to=L-1 |',
+            '| L-1 | end | L | nhan loi | |',
+            '| M-4 | end | M | xong | |')
+        self.assertLess(lay.items['M-3'].col, lay.items['M-2'].col)
+        self.assertFalse([m for lv, m in lay.check() if lv == 'error'])
+
+    def test_branch_with_no_lane_change_keeps_alternating(self):
+        lay = self.layout(
+            '| M | lane | | M | |',
+            '| M-1 | start | M | bat dau | |',
+            '| E1 | edge | | | from=M-1; to=M-2 |',
+            '| M-2 | condition | M | chia? | |',
+            '| E2 | edge | | a | from=M-2; to=M-3 |',
+            '| E3 | edge | | b | from=M-2; to=M-4 |',
+            '| E4 | edge | | c | from=M-2; to=M-5 |',
+            '| M-3 | end | M | mot | |', '| M-4 | end | M | hai | |',
+            '| M-5 | end | M | ba | |')
+        cols = sorted(lay.items[i].col for i in ('M-3', 'M-4', 'M-5'))
+        self.assertEqual(cols, [-1, 0, 1])
+
+
+class MergeAndRowTest(unittest.TestCase):
+    def layout(self, *rows):
+        t = ft.read_markdown_text(table(*rows))
+        assert not [i for i in ft.validate(t.rows) if i.level == 'error']
+        return ft.Layout(t.rows).run()
+
+    def diamond(self):
+        return self.layout(
+            '| M | lane | | M | |',
+            '| M-1 | start | M | bat dau | |',
+            '| E1 | edge | | | from=M-1; to=M-2 |',
+            '| M-2 | condition | M | chia? | |',
+            '| E2 | edge | | No | from=M-2; to=M-3 |',
+            '| E3 | edge | | Yes | from=M-2; to=M-4 |',
+            '| M-3 | task | M | ghi log | |',
+            '| E4 | edge | | | from=M-3; to=M-4 |',
+            '| M-4 | end | M | xong | |')
+
+    def test_side_branch_may_share_the_row_of_the_node_it_leaves(self):
+        lay = self.diamond()
+        self.assertEqual(lay.items['M-3'].row, lay.items['M-2'].row)
+        self.assertNotEqual(lay.items['M-3'].col, lay.items['M-2'].col)
+        self.assertEqual([e for e in lay.edges if e.id == 'E2'][0].case, 'B')
+
+    def test_merge_node_returns_to_the_column_it_branched_from(self):
+        lay = self.diamond()
+        self.assertEqual(lay.items['M-4'].col, lay.items['M-2'].col)
+        self.assertGreater(lay.items['M-4'].row, lay.items['M-3'].row)
+        self.assertFalse([m for lv, m in lay.check() if lv == 'error'])
+
+    def test_merge_without_a_common_branch_point_keeps_the_old_column(self):
+        lay = self.layout(
+            '| M | lane | | M | |',
+            '| M-1 | start | M | mot | |',
+            '| E1 | edge | | | from=M-1; to=M-3 |',
+            '| M-3 | end | M | chung | |',
+            '| T | text | M | Phần còn lại | |',
+            '| M-2 | start | M | hai | |',
+            '| E2 | edge | | | from=M-2; to=M-3 |')
+        self.assertFalse([m for lv, m in lay.check() if lv == 'error'])
+
+
 class LayoutTest(unittest.TestCase):
     def test_order_placement(self):
         lay = build('order.md')
