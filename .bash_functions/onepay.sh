@@ -552,9 +552,10 @@ watch_angular() {
 
     check_dependencies "nvm" "ng" || return 1
 
-    nvm use 16 || { echo "Error: Failed to switch to Node.js v16" >&2; return 1; }
+    nvm use 22 || { echo "Error: Failed to switch to Node.js v16" >&2; return 1; }
 
-    local cmd="ng build --configuration production --base-href=/paygate/${theme}/ --output-path=dist/paygate/${theme}/ --watch --optimization=false --build-optimizer=false"
+    # local cmd="ng build --configuration production --base-href=/paygate/${theme}/ --output-path=dist/paygate/${theme}/ --watch --optimization=false --build-optimizer=false"
+    local cmd="ng build --configuration production --base-href=/paygate/${theme}/ --output-path=dist/paygate/${theme}/ --watch --optimization=false"
     echo "Running command: $cmd" >&2
     eval "$cmd"
 }
