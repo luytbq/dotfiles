@@ -8,3 +8,6 @@ venv/
 !.env.example
 *.jsonl
 .DS_Store
+*.db
+*.db-wal
+*.db-shm
