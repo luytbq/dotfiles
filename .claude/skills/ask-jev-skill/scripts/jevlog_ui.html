@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jev Call Log</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f6f6f4;
+  --surface: #fcfcfb;
+  --surface-2: #f0efec;
+  --border: #e2e1dc;
+  --text: #0b0b0b;
+  --text-2: #52514e;
+  --text-3: #7a7974;
+  --accent: #2a78d6;
+  --accent-soft: #e3eefb;
+  --series-1: #2a78d6;
+  --grid: #e8e7e3;
+  --good: #0ca30c;
+  --warning: #b07800;
+  --critical: #d03b3b;
+  --good-soft: #e3f4e3;
+  --warning-soft: #fbf0d6;
+  --critical-soft: #f9e2e2;
+  --neutral-soft: #ecebe7;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #121211; --surface: #1a1a19; --surface-2: #232321; --border: #33332f;
+    --text: #f0efec; --text-2: #c3c2b7; --text-3: #8f8e86;
+    --accent: #3987e5; --accent-soft: #1d2a3b; --series-1: #3987e5; --grid: #2a2a27;
+    --good: #2fbf2f; --warning: #fab219; --critical: #e66767;
+    --good-soft: #17301a; --warning-soft: #352a10; --critical-soft: #3a1c1c; --neutral-soft: #2a2a27;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121211; --surface: #1a1a19; --surface-2: #232321; --border: #33332f;
+  --text: #f0efec; --text-2: #c3c2b7; --text-3: #8f8e86;
+  --accent: #3987e5; --accent-soft: #1d2a3b; --series-1: #3987e5; --grid: #2a2a27;
+  --good: #2fbf2f; --warning: #fab219; --critical: #e66767;
+  --good-soft: #17301a; --warning-soft: #352a10; --critical-soft: #3a1c1c; --neutral-soft: #2a2a27;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.5 var(--sans); }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+header.top { display: flex; align-items: center; gap: 24px; padding: 12px 24px; border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 0; z-index: 5; }
+header.top h1 { font-size: 15px; margin: 0; font-weight: 650; letter-spacing: -0.01em; }
+header.top h1 span { color: var(--text-3); font-weight: 400; }
+nav.tabs { display: flex; gap: 4px; }
+nav.tabs a { padding: 6px 12px; border-radius: 6px; color: var(--text-2); }
+nav.tabs a.on { background: var(--accent-soft); color: var(--accent); font-weight: 600; text-decoration: none; }
+.theme-btn { margin-left: auto; }
+main { max-width: 1280px; margin: 0 auto; padding: 20px 24px 60px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+.card h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-2); margin: 0 0 12px; font-weight: 600; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+button:hover:not(:disabled) { border-color: var(--text-3); }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+button.danger { background: var(--critical); border-color: var(--critical); color: #fff; font-weight: 600; }
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+input[type=text], input[type=date], input[type=number], select, textarea { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; }
+input:focus, select:focus, textarea:focus, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+textarea { width: 100%; font-family: var(--mono); font-size: 13px; resize: vertical; min-height: 64px; }
+.filters { display: grid; gap: 10px; margin-bottom: 20px; }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.row label { color: var(--text-2); font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
+.grow { flex: 1 1 240px; }
+.grow input { width: 100%; }
+.seg button { border-radius: 0; margin-left: -1px; }
+.seg button:first-child { border-radius: 6px 0 0 6px; margin-left: 0; }
+.seg button:last-child { border-radius: 0 6px 6px 0; }
+.err { color: var(--critical); background: var(--critical-soft); border-radius: 6px; padding: 8px 10px; font-family: var(--mono); font-size: 12.5px; white-space: pre-wrap; }
+.muted { color: var(--text-3); }
+.small { font-size: 12.5px; }
+.cols { font-family: var(--mono); font-size: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 16px; margin: 8px 0; }
+.cols b { font-weight: 600; color: var(--text); }
+.examples code { display: block; font-family: var(--mono); font-size: 12px; padding: 4px 8px; margin: 4px 0; background: var(--surface-2); border-radius: 4px; cursor: pointer; white-space: pre-wrap; }
+.examples code:hover { outline: 1px solid var(--accent); }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.kpi .v { font-size: 26px; font-weight: 650; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.kpi .l { color: var(--text-2); font-size: 12.5px; }
+.kpi .s { color: var(--text-3); font-size: 12px; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 16px; margin-bottom: 16px; }
+.grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+svg.chart { width: 100%; height: auto; display: block; overflow: visible; }
+svg.chart text { fill: var(--text-3); font-size: 11px; font-family: var(--sans); }
+svg.chart .gridline { stroke: var(--grid); stroke-width: 1; }
+svg.chart .bar { fill: var(--series-1); }
+svg.chart .hit { fill: transparent; cursor: default; }
+svg.chart .hit:hover + .bar, svg.chart g.m:hover .bar { opacity: 0.8; }
+svg.chart .thr { stroke: var(--text-2); stroke-dasharray: 4 3; stroke-width: 1; }
+svg.chart .thr-l { fill: var(--text-2); }
+#tip { position: fixed; pointer-events: none; background: var(--text); color: var(--surface); padding: 6px 9px; border-radius: 6px; font-size: 12px; z-index: 20; display: none; white-space: nowrap; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { color: var(--text-2); font-weight: 600; font-size: 12.5px; white-space: nowrap; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+tbody tr.click { cursor: pointer; }
+tbody tr.click:hover { background: var(--surface-2); }
+.mono { font-family: var(--mono); font-size: 12.5px; }
+.clip { max-width: 420px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 1px 7px; border-radius: 99px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.b-good { color: var(--good); background: var(--good-soft); }
+.b-warn { color: var(--warning); background: var(--warning-soft); }
+.b-bad { color: var(--critical); background: var(--critical-soft); }
+.b-neutral { color: var(--text-2); background: var(--neutral-soft); }
+.minibar { height: 6px; background: var(--surface-2); border-radius: 3px; min-width: 60px; }
+.minibar i { display: block; height: 100%; background: var(--series-1); border-radius: 3px; }
+.pager { display: flex; align-items: center; gap: 10px; justify-content: flex-end; margin-top: 12px; }
+.detail-head { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: baseline; margin-bottom: 12px; }
+.detail-head h2 { margin: 0; font-size: 18px; text-transform: none; letter-spacing: 0; color: var(--text); }
+dl.meta { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 0; }
+dl.meta dt { color: var(--text-2); }
+dl.meta dd { margin: 0; font-family: var(--mono); font-size: 12.5px; word-break: break-all; }
+.why { font-size: 15px; padding: 10px 12px; border-left: 3px solid var(--accent); background: var(--accent-soft); border-radius: 0 6px 6px 0; margin: 12px 0; }
+.q { border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 10px; }
+.q .qh { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 6px; }
+.q .instr { font-weight: 600; margin-bottom: 8px; }
+.crit { display: grid; grid-template-columns: max-content 1fr; gap: 3px 12px; font-size: 13px; }
+.crit .k { font-family: var(--mono); color: var(--text-2); }
+.crit .picked { color: var(--accent); font-weight: 700; }
+.crit .picked::after { content: " (đã chọn)"; font-weight: 400; font-family: var(--sans); font-size: 12px; }
+pre { margin: 0; background: var(--surface-2); border-radius: 6px; padding: 10px; overflow: auto; max-height: 480px; font: 12.5px/1.45 var(--mono); white-space: pre-wrap; word-break: break-word; }
+details > summary { cursor: pointer; color: var(--text-2); margin: 8px 0; }
+.stack { display: grid; gap: 16px; }
+.empty { padding: 32px; text-align: center; color: var(--text-3); }
+@media (max-width: 640px) {
+  header.top { flex-wrap: wrap; gap: 8px; padding: 10px 16px; }
+  main { padding: 16px 16px 48px; }
+  .grid2 { grid-template-columns: 1fr; }
+  .hide-sm { display: none; }
+  .clip { max-width: 180px; }
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Jev Call Log <span id="dbline"></span></h1>
+  <nav class="tabs">
+    <a href="#/dashboard" data-tab="dashboard">Tổng quan</a>
+    <a href="#/calls" data-tab="calls">Lời gọi</a>
+    <a href="#/purge" data-tab="purge">Dọn dẹp</a>
+  </nav>
+  <button class="theme-btn" id="themeBtn" title="Đổi giao diện sáng/tối">Giao diện</button>
+</header>
+<main>
+  <section id="filters" class="card filters">
+    <div class="row">
+      <label>Từ <input type="date" id="fFrom"></label>
+      <label>Đến <input type="date" id="fTo"></label>
+      <span class="seg">
+        <button data-range="1">Hôm nay</button><button data-range="7">7 ngày</button><button data-range="30">30 ngày</button><button data-range="0">Tất cả</button>
+      </span>
+      <label><input type="checkbox" id="fEval"> gồm cả eval</label>
+    </div>
+    <div class="row">
+      <span class="grow"><input type="text" id="fQuick" placeholder="Tìm nhanh trong why, tag, state, câu hỏi, quyết định, lỗi (không phân biệt hoa thường, dấu)"></span>
+      <select id="fSaved"><option value="">Truy vấn đã lưu</option></select>
+      <button id="saveQ" title="Lưu ô tìm nhanh + WHERE hiện tại">Lưu</button>
+      <button id="delQ" title="Xoá truy vấn đang chọn">Xoá</button>
+      <button class="primary" id="apply">Áp dụng</button>
+    </div>
+    <details id="advBox">
+      <summary>WHERE nâng cao (SQLite, chạy read-only trên view search_v)</summary>
+      <textarea id="fWhere" spellcheck="false" placeholder="why LIKE '%crawl%' AND state NOT LIKE '%captcha%'   (Ctrl+Enter để chạy)"></textarea>
+      <details>
+        <summary class="small">Cột và ví dụ</summary>
+        <div class="cols" id="colList"></div>
+        <div class="examples small" id="examples"></div>
+        <p class="small muted">Hàm thêm: <span class="mono">ulike(col, '%mẫu%')</span> giống LIKE nhưng không phân biệt hoa thường và dấu tiếng Việt; <span class="mono">col REGEXP 'pattern'</span> theo regex Python. Truy vấn quá 2 giây sẽ bị dừng.</p>
+      </details>
+      <details>
+        <summary class="small">DDL (view search_v, bảng calls, questions)</summary>
+        <p class="small muted">Nội dung ô WHERE được chèn vào câu lệnh dưới đây. Có thể dùng subquery tới bảng <span class="mono">calls</span> và <span class="mono">questions</span>, ví dụ <span class="mono">id IN (SELECT call_id FROM questions WHERE type = 'score' AND confidence &lt; 0.5)</span>.</p>
+        <pre id="ddl"></pre>
+      </details>
+    </details>
+    <div id="fErr" class="err" hidden></div>
+  </section>
+
+  <section id="view-dashboard" hidden></section>
+  <section id="view-calls" hidden></section>
+  <section id="view-call" hidden></section>
+  <section id="view-purge" hidden></section>
+</main>
+<div id="tip"></div>
+
+<script>
+"use strict";
+const $ = (s, el = document) => el.querySelector(s);
+const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmtN = (n) => (n == null ? "-" : Number(n).toLocaleString("vi-VN"));
+const pct = (a, b) => (b ? (100 * a / b).toFixed(1) + "%" : "-");
+const fmtBytes = (b) => b < 1024 ? b + " B" : b < 1048576 ? (b / 1024).toFixed(1) + " KB" : (b / 1048576).toFixed(2) + " MB";
+const fmtTs = (iso) => iso ? new Date(iso).toLocaleString("sv-SE").slice(0, 19) : "-";
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* storage unavailable */ } },
+};
+
+// Local calendar day -> UTC ISO in the same shape the DB stores, so string comparison is exact.
+function dayToUtc(day, plusDays = 0) {
+  if (!day) return "";
+  const [y, m, d] = day.split("-").map(Number);
+  return new Date(y, m - 1, d + plusDays).toISOString().replace("Z", "+00:00");
+}
+function localDay(offsetDays = 0) {
+  const t = new Date(); t.setDate(t.getDate() + offsetDays);
+  return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, "0")}-${String(t.getDate()).padStart(2, "0")}`;
+}
+
+async function api(path, opts) {
+  const res = await fetch(path, opts);
+  const data = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+  if (!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);
+  return data;
+}
+
+// ------------------------------------------------------------------ filters
+const state = { page: 0, pageSize: 50 };
+function filterParams() {
+  const p = new URLSearchParams();
+  const from = $("#fFrom").value, to = $("#fTo").value;
+  if (from) p.set("from", dayToUtc(from));
+  if (to) p.set("to", dayToUtc(to, 1));
+  if ($("#fEval").checked) p.set("include_eval", "1");
+  if ($("#fQuick").value.trim()) p.set("q", $("#fQuick").value.trim());
+  if ($("#fWhere").value.trim()) p.set("where", $("#fWhere").value.trim());
+  return p;
+}
+function showErr(msg) { const el = $("#fErr"); el.hidden = !msg; el.textContent = msg || ""; }
+function setRange(days) {
+  $("#fTo").value = days ? localDay() : "";
+  $("#fFrom").value = days ? localDay(-(days - 1)) : "";
+  store.set("jevlog.range", days);
+}
+document.querySelectorAll("[data-range]").forEach((b) => b.addEventListener("click", () => { setRange(+b.dataset.range); refresh(); }));
+$("#apply").addEventListener("click", () => { state.page = 0; refresh(); });
+$("#fQuick").addEventListener("keydown", (e) => { if (e.key === "Enter") { state.page = 0; refresh(); } });
+$("#fWhere").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { state.page = 0; refresh(); } });
+$("#fEval").addEventListener("change", () => refresh());
+
+function loadSaved() {
+  const saved = store.get("jevlog.saved", []);
+  $("#fSaved").innerHTML = `<option value="">Truy vấn đã lưu (${saved.length})</option>` +
+    saved.map((s, i) => `<option value="${i}">${esc(s.name)}</option>`).join("");
+}
+$("#fSaved").addEventListener("change", (e) => {
+  const s = store.get("jevlog.saved", [])[e.target.value];
+  if (!s) return;
+  $("#fQuick").value = s.quick || ""; $("#fWhere").value = s.where || "";
+  if (s.where) $("#advBox").open = true;
+  state.page = 0; refresh();
+});
+$("#saveQ").addEventListener("click", () => {
+  const quick = $("#fQuick").value.trim(), where = $("#fWhere").value.trim();
+  if (!quick && !where) return showErr("Chưa có gì để lưu: ô tìm nhanh và WHERE đều trống.");
+  const name = window.prompt("Tên truy vấn:", where ? where.slice(0, 40) : quick);
+  if (!name) return;
+  const saved = store.get("jevlog.saved", []).filter((s) => s.name !== name);
+  saved.push({ name, quick, where }); store.set("jevlog.saved", saved); loadSaved();
+});
+$("#delQ").addEventListener("click", () => {
+  const i = $("#fSaved").value; if (i === "") return;
+  const saved = store.get("jevlog.saved", []); saved.splice(+i, 1); store.set("jevlog.saved", saved); loadSaved();
+});
+
+const EXAMPLES = [
+  "why LIKE '%crawl%' AND state LIKE '%login%' AND state NOT LIKE '%captcha%'",
+  "(questions_text LIKE '%timeout%' OR questions_text LIKE '%retry%') AND min_conf < 0.6",
+  "gates LIKE '%escalate%' OR gates LIKE '%uncertain%'",
+  "ulike(why, '%loi thanh toan%')",
+  "status != 'ok'",
+  "id IN (SELECT call_id FROM questions WHERE type = 'choice' AND decision = 'other')",
+  "raw REGEXP '\"choice\":\\s*\"browser\"'",
+  "repo = 'paygate' AND ts_local >= '2026-10-01' AND duration_ms > 2000",
+];
+
+// ------------------------------------------------------------------ charts
+const tip = $("#tip");
+function bindTips(root) {
+  root.querySelectorAll("[data-tip]").forEach((el) => {
+    el.addEventListener("mousemove", (e) => {
+      tip.innerHTML = el.dataset.tip; tip.style.display = "block";
+      const r = tip.getBoundingClientRect();
+      tip.style.left = Math.min(e.clientX + 12, innerWidth - r.width - 8) + "px";
+      tip.style.top = (e.clientY - r.height - 10) + "px";
+    });
+    el.addEventListener("mouseleave", () => { tip.style.display = "none"; });
+  });
+}
+function niceMax(v) { if (v <= 5) return 5; const p = 10 ** Math.floor(Math.log10(v)); return Math.ceil(v / p) * p; }
+
+// bars: [{label, value, tip}]; thresholds: [{x (0..1 of plot width), label}]
+function barChart(bars, { width = 640, height = 180, thresholds = [], labelEvery = 1 } = {}) {
+  if (!bars.length) return `<div class="empty">Không có dữ liệu</div>`;
+  const W = width, H = height, L = 36, R = 8, T = 10, B = 24;
+  const pw = W - L - R, ph = H - T - B;
+  const max = niceMax(Math.max(...bars.map((b) => b.value), 1));
+  const slot = pw / bars.length, bw = Math.max(2, Math.min(slot - 2, 48));
+  let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img">`;
+  for (let i = 0; i <= 4; i++) {
+    const y = T + ph - (ph * i) / 4;
+    s += `<line class="gridline" x1="${L}" x2="${W - R}" y1="${y}" y2="${y}"/><text x="${L - 6}" y="${y + 4}" text-anchor="end">${fmtN(Math.round((max * i) / 4))}</text>`;
+  }
+  bars.forEach((b, i) => {
+    const h = (ph * b.value) / max, x = L + i * slot + (slot - bw) / 2, y = T + ph - h;
+    const r = Math.min(4, bw / 2, h);
+    // Rounded top corners only; the bar stays anchored flat on the baseline.
+    const d = h > 0 ? `M${x},${T + ph} V${y + r} Q${x},${y} ${x + r},${y} H${x + bw - r} Q${x + bw},${y} ${x + bw},${y + r} V${T + ph} Z` : "";
+    s += `<g class="m" data-tip="${esc(b.tip)}"><rect class="hit" x="${L + i * slot}" y="${T}" width="${slot}" height="${ph}"/>${d ? `<path class="bar" d="${d}"/>` : ""}</g>`;
+    if (i % labelEvery === 0) s += `<text x="${x + bw / 2}" y="${H - 6}" text-anchor="middle">${esc(b.label)}</text>`;
+  });
+  thresholds.forEach((t) => {
+    const x = L + pw * t.x;
+    s += `<line class="thr" x1="${x}" x2="${x}" y1="${T}" y2="${T + ph}"/><text class="thr-l" x="${x + 4}" y="${T + 10}">${esc(t.label)}</text>`;
+  });
+  return s + "</svg>";
+}
+function histBars(rows) {
+  const bins = Array.from({ length: 10 }, (_, i) => ({ bin: i, n: 0 }));
+  rows.forEach((r) => { bins[r.bin].n = r.n; });
+  const total = bins.reduce((a, b) => a + b.n, 0);
+  return bins.map((b) => ({
+    label: (b.bin / 10).toFixed(1), value: b.n,
+    tip: `${(b.bin / 10).toFixed(1)} - ${((b.bin + 1) / 10).toFixed(1)}: <b>${fmtN(b.n)}</b> (${pct(b.n, total)})`,
+  }));
+}
+function topTable(rows, title) {
+  const max = Math.max(1, ...rows.map((r) => r.n));
+  return `<div class="card"><h2>${esc(title)}</h2>${rows.length ? `<table><tbody>${rows.map((r) => `
+    <tr><td class="clip mono">${esc(r.key)}</td><td style="width:40%"><div class="minibar"><i style="width:${(100 * r.n) / max}%"></i></div></td><td class="num">${fmtN(r.n)}</td></tr>`).join("")}</tbody></table>` : `<div class="empty">-</div>`}</div>`;
+}
+
+const GATE_CLASS = { act: "b-good", yes: "b-good", no: "b-neutral", escalate: "b-warn", uncertain: "b-warn", unknown: "b-bad" };
+const STATUS_CLASS = { ok: "b-good", disabled: "b-neutral", http_error: "b-bad", error: "b-bad" };
+const badge = (text, cls) => `<span class="badge ${cls || "b-neutral"}">${esc(text)}</span>`;
+
+// ------------------------------------------------------------------ views
+async function renderDashboard() {
+  const el = $("#view-dashboard");
+  const d = await api("/api/stats?" + filterParams());
+  const t = d.totals, ok = t.ok || 0;
+  const days = d.per_day.map((r) => ({
+    label: r.day.slice(5), value: r.n,
+    tip: `${r.day}: <b>${fmtN(r.n)}</b> lời gọi${r.failed ? `, ${fmtN(r.failed)} lỗi` : ""}`,
+  }));
+  const gateRows = d.gates;
+  const byType = {};
+  gateRows.forEach((g) => { (byType[g.type] ||= []).push(g); });
+  el.innerHTML = `
+    <div class="kpis">
+      <div class="card kpi"><div class="l">Lời gọi</div><div class="v">${fmtN(t.calls)}</div><div class="s">${fmtN(ok)} thành công</div></div>
+      <div class="card kpi"><div class="l">Không thành công</div><div class="v">${pct(t.failed || 0, t.calls)}</div><div class="s">${fmtN(t.failed || 0)} lỗi hoặc bị tắt</div></div>
+      <div class="card kpi"><div class="l">Có câu cần escalate</div><div class="v">${pct(t.escalated_calls || 0, ok)}</div><div class="s">${fmtN(t.escalated_calls || 0)} / ${fmtN(ok)} lời gọi thành công</div></div>
+      <div class="card kpi"><div class="l">Độ trễ p50 / p95</div><div class="v">${t.p50_ms == null ? "-" : fmtN(t.p50_ms) + " ms"}</div><div class="s">p95 ${t.p95_ms == null ? "-" : fmtN(t.p95_ms) + " ms"}</div></div>
+      <div class="card kpi"><div class="l">Token vào / ra</div><div class="v">${fmtN(t.input_tokens)}</div><div class="s">ra ${fmtN(t.output_tokens)}</div></div>
+    </div>
+    <div class="card" style="margin-bottom:16px"><h2>Lời gọi theo ngày</h2>${barChart(days, { width: 1220, height: 220, labelEvery: Math.max(1, Math.ceil(days.length / 14)) })}</div>
+    <div class="grid2">
+      <div class="card"><h2>Confidence (choice / score)</h2>${barChart(histBars(d.confidence_hist), { thresholds: [{ x: 0.6, label: "ngưỡng 0.6" }] })}</div>
+      <div class="card"><h2>Noul</h2>${barChart(histBars(d.noul_hist), { thresholds: [{ x: 0.3, label: "no ≤ 0.3" }, { x: 0.7, label: "yes ≥ 0.7" }] })}</div>
+    </div>
+    <div class="card" style="margin-bottom:16px"><h2>Kết quả gate theo loại câu hỏi</h2>
+      ${gateRows.length ? `<table><thead><tr><th>Loại</th><th>Gate</th><th class="num">Số câu</th><th class="num">Tỉ lệ trong loại</th><th class="hide-sm"></th></tr></thead><tbody>
+      ${Object.entries(byType).map(([type, rows]) => {
+        const total = rows.reduce((a, r) => a + r.n, 0);
+        return rows.map((r, i) => `<tr><td>${i ? "" : esc(type)}</td><td>${badge(r.gate, GATE_CLASS[r.gate])}</td><td class="num">${fmtN(r.n)}</td><td class="num">${pct(r.n, total)}</td>
+          <td class="hide-sm" style="width:30%"><div class="minibar"><i style="width:${(100 * r.n) / total}%"></i></div></td></tr>`).join("");
+      }).join("")}</tbody></table>` : `<div class="empty">Không có dữ liệu</div>`}
+    </div>
+    <div class="grid3">
+      ${topTable(d.by_repo, "Repo")}${topTable(d.by_tag, "Tag")}${topTable(d.by_cmd, "Lệnh")}
+      ${topTable(d.by_status, "Trạng thái")}${topTable(d.by_model, "Model")}
+    </div>`;
+  bindTips(el);
+}
+
+async function renderCalls() {
+  const el = $("#view-calls");
+  const p = filterParams();
+  p.set("limit", state.pageSize); p.set("offset", state.page * state.pageSize);
+  const d = await api("/api/calls?" + p);
+  const pages = Math.max(1, Math.ceil(d.total / state.pageSize));
+  el.innerHTML = `<div class="card">
+    <h2>${fmtN(d.total)} lời gọi</h2>
+    ${d.rows.length ? `<div style="overflow-x:auto"><table><thead><tr>
+      <th>Thời gian</th><th>Lệnh</th><th>Why</th><th>Quyết định</th><th class="num">Min conf</th><th>Gate</th><th class="hide-sm">Repo / tag</th><th class="num hide-sm">ms</th><th>Trạng thái</th>
+    </tr></thead><tbody>${d.rows.map((r) => `
+      <tr class="click" data-id="${r.id}">
+        <td class="mono" style="white-space:nowrap">${esc(fmtTs(r.ts))}</td>
+        <td>${esc(r.cmd)}${r.source === "eval" ? ` ${badge("eval")}` : ""}</td>
+        <td class="clip" title="${esc(r.why)}">${r.why ? esc(r.why) : `<span class="muted">-</span>`}</td>
+        <td class="mono clip" title="${esc(r.decisions)}">${esc(r.decisions || "")}</td>
+        <td class="num">${r.min_conf == null ? "-" : r.min_conf.toFixed(2)}</td>
+        <td>${(r.gates || "").split(",").filter(Boolean).map((g) => badge(g, GATE_CLASS[g])).join(" ")}</td>
+        <td class="hide-sm mono small">${esc(r.repo || "")}${r.tag ? ` / ${esc(r.tag)}` : ""}</td>
+        <td class="num hide-sm">${fmtN(r.duration_ms)}</td>
+        <td>${badge(r.status, STATUS_CLASS[r.status])}</td>
+      </tr>`).join("")}</tbody></table></div>
+    <div class="pager"><button id="prev" ${state.page ? "" : "disabled"}>Trước</button><span class="muted">Trang ${state.page + 1} / ${pages}</span><button id="next" ${state.page + 1 < pages ? "" : "disabled"}>Sau</button></div>`
+    : `<div class="empty">Không có lời gọi nào khớp bộ lọc</div>`}</div>`;
+  el.querySelectorAll("tr[data-id]").forEach((tr) => tr.addEventListener("click", () => { location.hash = "#/call/" + tr.dataset.id; }));
+  $("#prev", el)?.addEventListener("click", () => { state.page--; renderCalls().catch((e) => showErr(e.message)); });
+  $("#next", el)?.addEventListener("click", () => { state.page++; renderCalls().catch((e) => showErr(e.message)); });
+}
+
+function pretty(v) {
+  if (typeof v === "string") { try { return JSON.stringify(JSON.parse(v), null, 2); } catch { return v; } }
+  return JSON.stringify(v, null, 2);
+}
+
+async function renderCall(id) {
+  const el = $("#view-call");
+  const c = await api("/api/calls/" + id);
+  const answers = (c.response_json && c.response_json.answers) || {};
+  const qs = c.questions.map((q) => {
+    const ans = answers[q.qid] || {};
+    const crit = q.criteria;
+    let critHtml = "";
+    if (crit && !Array.isArray(crit) && typeof crit === "object") {
+      critHtml = `<div class="crit">${Object.entries(crit).map(([k, v]) => `<span class="k ${k === q.decision ? "picked" : ""}">${esc(k)}</span><span>${esc(v)}</span>`).join("")}</div>`;
+    } else if (Array.isArray(crit)) {
+      critHtml = `<div class="crit">${crit.map((v, i) => `<span class="k ${String(v) === q.decision || String(i) === q.decision ? "picked" : ""}">${i}</span><span>${esc(v)}</span>`).join("")}</div>`;
+    }
+    const metric = q.type === "noul" ? `noul ${q.noul == null ? "-" : q.noul.toFixed(3)}` : `confidence ${q.confidence == null ? "-" : q.confidence.toFixed(3)}`;
+    return `<div class="q">
+      <div class="qh"><span class="mono muted">${esc(q.qid)}</span>${badge(q.type)}${q.gate ? badge(q.gate, GATE_CLASS[q.gate]) : ""}
+        <span class="mono">${q.decision != null ? "quyết định: <b>" + esc(q.decision) + "</b>" : ""}</span><span class="muted mono">${metric}</span></div>
+      <div class="instr">${esc(q.instructions)}</div>${critHtml}
+      ${Object.keys(ans).length ? `<details><summary class="small">Câu trả lời gốc</summary><pre>${esc(pretty(ans))}</pre></details>` : ""}
+    </div>`;
+  }).join("");
+  el.innerHTML = `<div class="stack"><div class="card">
+    <div class="detail-head"><a href="#/calls">Quay lại danh sách</a><h2>Lời gọi #${c.id}</h2>${badge(c.status, STATUS_CLASS[c.status])}
+      <span class="muted">${esc(fmtTs(c.ts))}</span><button id="copyJson" style="margin-left:auto">Copy JSON</button></div>
+    ${c.why ? `<div class="why">${esc(c.why)}</div>` : `<p class="muted small">Không có why.</p>`}
+    ${c.error ? `<div class="err">${esc(c.error)}</div>` : ""}
+    <dl class="meta">
+      <dt>Lệnh</dt><dd>${esc(c.cmd)} (${esc(c.source)})</dd><dt>Model</dt><dd>${esc(c.model)}</dd>
+      <dt>Tag</dt><dd>${esc(c.tag || "-")}</dd><dt>Repo</dt><dd>${esc(c.repo || "-")}</dd><dt>Cwd</dt><dd>${esc(c.cwd)}</dd>
+      <dt>Thời gian</dt><dd>${fmtN(c.duration_ms)} ms, ${fmtN(c.attempts)} lần thử${c.http_status ? `, HTTP ${c.http_status}` : ""}</dd>
+      <dt>Gate</dt><dd>min_confidence ${c.min_confidence ?? "-"}, act_all ${c.act_all ?? "-"}, exit ${c.exit_code ?? "-"}</dd>
+      <dt>Token</dt><dd>vào ${fmtN(c.input_tokens)}, ra ${fmtN(c.output_tokens)}</dd>
+    </dl></div>
+    <div class="card"><h2>Câu hỏi (${c.questions.length})</h2>${qs || `<div class="empty">-</div>`}</div>
+    <div class="card"><h2>State</h2><pre>${esc(c.state_text == null ? "-" : pretty(c.state_text))}</pre></div>
+    <div class="card"><h2>Raw</h2>
+      <details><summary>Request</summary><pre>${esc(pretty(c.request_json))}</pre></details>
+      <details><summary>Response</summary><pre>${esc(pretty(c.response_json))}</pre></details>
+    </div></div>`;
+  $("#copyJson").addEventListener("click", async (e) => {
+    const { state_text, questions_text, decisions, types, gates, min_conf, max_conf, ...rest } = c;
+    try { await navigator.clipboard.writeText(JSON.stringify(rest, null, 2)); e.target.textContent = "Đã copy"; }
+    catch { e.target.textContent = "Không copy được"; }
+    setTimeout(() => { e.target.textContent = "Copy JSON"; }, 1500);
+  });
+}
+
+async function renderPurge() {
+  const el = $("#view-purge");
+  const info = await api("/api/info");
+  el.innerHTML = `<div class="stack">
+    <div class="card"><h2>Cơ sở dữ liệu</h2><dl class="meta">
+      <dt>File</dt><dd>${esc(info.path)}</dd><dt>Dung lượng</dt><dd>${fmtBytes(info.bytes)}</dd>
+      <dt>Số lời gọi</dt><dd>${fmtN(info.calls)}</dd><dt>Cũ nhất</dt><dd>${esc(fmtTs(info.oldest))}</dd><dt>Mới nhất</dt><dd>${esc(fmtTs(info.newest))}</dd>
+    </dl></div>
+    <div class="card"><h2>Xoá log theo khoảng thời gian</h2>
+      <div class="row" style="margin-bottom:10px">
+        <label><input type="radio" name="pm" value="range" checked> Khoảng ngày</label>
+        <label>Từ <input type="date" id="pFrom"></label><label>Đến hết ngày <input type="date" id="pTo"></label>
+      </div>
+      <div class="row" style="margin-bottom:10px">
+        <label><input type="radio" name="pm" value="older"> Cũ hơn</label><input type="number" id="pDays" min="0" value="90" style="width:80px"><span class="muted">ngày</span>
+      </div>
+      <div class="row" style="margin-bottom:12px">
+        <label>Nguồn <select id="pSource"><option value="">tất cả</option><option value="cli">cli</option><option value="eval">eval</option></select></label>
+        <button id="pPreview">Xem trước</button>
+      </div>
+      <div id="pResult"></div>
+    </div></div>`;
+  const body = () => {
+    const mode = el.querySelector("input[name=pm]:checked").value;
+    const src = $("#pSource").value;
+    if (mode === "older") {
+      const t = new Date(); t.setDate(t.getDate() - Number($("#pDays").value || 0));
+      return { from: null, to: t.toISOString().replace("Z", "+00:00"), source: src };
+    }
+    return { from: dayToUtc($("#pFrom").value) || null, to: dayToUtc($("#pTo").value, 1) || null, source: src };
+  };
+  const post = (payload) => api("/api/purge", { method: "POST", headers: { "Content-Type": "application/json", "X-Jevlog": "1" }, body: JSON.stringify(payload) });
+  $("#pPreview").addEventListener("click", async () => {
+    const out = $("#pResult");
+    try {
+      const b = body(); const r = await post(b);
+      if (!r.matched) { out.innerHTML = `<p class="muted">Không có lời gọi nào trong khoảng này.</p>`; return; }
+      out.innerHTML = `<p>Sẽ xoá <b>${fmtN(r.matched)}</b> lời gọi (dữ liệu khoảng ${fmtBytes(r.approx_bytes)}). Sau khi xoá sẽ chạy VACUUM để thu hồi dung lượng.</p>
+        <div class="row"><label>Gõ <b class="mono">XOA</b> để xác nhận <input type="text" id="pConfirm" autocomplete="off" style="width:90px"></label>
+        <button class="danger" id="pDo" disabled>Xoá ${fmtN(r.matched)} lời gọi</button></div>`;
+      $("#pConfirm").addEventListener("input", (e) => { $("#pDo").disabled = e.target.value !== "XOA"; });
+      $("#pDo").addEventListener("click", async () => {
+        try {
+          const done = await post({ ...b, confirm: true });
+          out.innerHTML = `<p>${badge("đã xoá", "b-good")} ${fmtN(done.deleted)} lời gọi. Dung lượng ${fmtBytes(done.bytes_before)} còn ${fmtBytes(done.bytes_after)}.</p>`;
+          loadDbLine(); setTimeout(() => renderPurge().catch((e) => showErr(e.message)), 2500);
+        } catch (e) { out.innerHTML = `<div class="err">${esc(e.message)}</div>`; }
+      });
+    } catch (e) { out.innerHTML = `<div class="err">${esc(e.message)}</div>`; }
+  });
+}
+
+// ------------------------------------------------------------------ routing
+function route() {
+  const h = location.hash || "#/dashboard";
+  const m = h.match(/^#\/call\/(\d+)/);
+  const view = m ? "call" : (h.slice(2) || "dashboard");
+  return { view: ["dashboard", "calls", "call", "purge"].includes(view) ? view : "dashboard", id: m && m[1] };
+}
+async function refresh() {
+  const { view, id } = route();
+  document.querySelectorAll("nav.tabs a").forEach((a) => a.classList.toggle("on", a.dataset.tab === (view === "call" ? "calls" : view)));
+  document.querySelectorAll("main > section[id^=view-]").forEach((s) => { s.hidden = s.id !== "view-" + view; });
+  $("#filters").hidden = view === "call" || view === "purge";
+  showErr("");
+  try {
+    if (view === "dashboard") await renderDashboard();
+    else if (view === "calls") await renderCalls();
+    else if (view === "call") await renderCall(id);
+    else await renderPurge();
+  } catch (e) { showErr(e.message); if (view !== "dashboard" && view !== "calls") $("#view-" + view).innerHTML = `<div class="err">${esc(e.message)}</div>`; }
+}
+async function loadDbLine() {
+  try {
+    const info = await api("/api/info");
+    $("#dbline").textContent = `· ${fmtN(info.calls)} lời gọi · ${fmtBytes(info.bytes)}`;
+    return info;
+  } catch { return null; }
+}
+
+// ------------------------------------------------------------------ boot
+(function applyTheme() {
+  const t = store.get("jevlog.theme", null);
+  if (t) document.documentElement.dataset.theme = t;
+  $("#themeBtn").addEventListener("click", () => {
+    const dark = document.documentElement.dataset.theme
+      ? document.documentElement.dataset.theme === "dark"
+      : matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.dataset.theme = dark ? "light" : "dark";
+    store.set("jevlog.theme", document.documentElement.dataset.theme);
+  });
+})();
+setRange(store.get("jevlog.range", 30));
+loadSaved();
+$("#examples").innerHTML = EXAMPLES.map((x) => `<code>${esc(x)}</code>`).join("");
+$("#examples").querySelectorAll("code").forEach((c) => c.addEventListener("click", () => { $("#fWhere").value = c.textContent; $("#fWhere").focus(); }));
+loadDbLine().then((info) => {
+  if (!info) return;
+  $("#colList").innerHTML = info.columns.map(([n, d]) => `<div><b>${esc(n)}</b> <span class="muted">${esc(d)}</span></div>`).join("");
+  const wrapper = "-- Câu lệnh UI chạy với ô WHERE:\nSELECT * FROM search_v\nWHERE (\n  <ô WHERE>\n)\nORDER BY ts DESC LIMIT 50;";
+  $("#ddl").textContent = [wrapper, ...info.ddl.map((d) => d.sql.trim() + ";")].join("\n\n");
+});
+addEventListener("hashchange", () => { state.page = route().view === "calls" ? state.page : 0; refresh(); });
+refresh();
+</script>
+</body>
+</html>

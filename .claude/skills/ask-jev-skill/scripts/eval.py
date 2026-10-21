@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -915,6 +916,8 @@ def disable_probe() -> dict[str, Any]:
 
 
 def main() -> int:
+    # Logged calls from this suite are tagged so the log UI can exclude them from real usage.
+    os.environ["ASKJEV_SOURCE"] = "eval"
     reason = askjev.disabled_reason()
     if reason:
         print(json.dumps({"disabled": True, "reason": reason}, indent=2))
