@@ -1,0 +1,39 @@
+flowchart TD
+    subgraph MSP1["MSP - tạo link"]
+        A["Nhận payment authorization_required<br/>kèm links.approval"] --> B["Lưu authorization và links<br/>vào tb_authorization"]
+        B --> C["Tạo link<br/>link_id ngẫu nhiên, lưu link_id_hash<br/>expire_time = mốc sớm hơn giữa 10 phút và hạn invoice<br/>state = created"]
+        C --> D["Trả VPC mã 300<br/>vpc_RedirectUrl = /paygate/continue/link_id<br/>vpc_ExpiryTime = expire_time"]
+    end
+
+    D --> E["Merchant chuyển chủ thẻ<br/>tới vpc_RedirectUrl"]
+    E --> F["Trình duyệt GET /paygate/continue/link_id"]
+    F --> G["WSP gọi msp open link_id"]
+
+    subgraph MSP2["MSP - open"]
+        G --> H{"Payment đã ở<br/>trạng thái cuối?"}
+        H -- "rồi" --> I["Kết quả FINISHED"]
+        H -- "chưa" --> J{"Link còn hạn<br/>và state = created?"}
+        J -- "không" --> K["Kết quả EXPIRED<br/>hoặc CONSUMED"]
+        J -- "có" --> L["Ghi first_open_time nếu còn trống<br/>Sinh link_proof<br/>Kết quả SHOW_PAGE"]
+    end
+
+    I --> M["WSP 302 về trang invoice"]
+    K --> N["WSP trả trang thông báo<br/>phiên thanh toán đã kết thúc"]
+    L --> O["WSP trả trang chờ<br/>form POST về chính link<br/>trường ẩn mang link_proof<br/>JavaScript tự submit"]
+
+    O --> P["Trình duyệt POST /paygate/continue/link_id<br/>kèm link_proof"]
+    P --> Q["WSP chuyển link_proof sang msp"]
+
+    subgraph MSP3["MSP - consume"]
+        Q --> R{"link_proof hợp lệ?<br/>chữ ký khớp và ts còn hạn"}
+        R -- "không" --> S["Từ chối, không đụng bản ghi link"]
+        R -- "có" --> T["Cập nhật có điều kiện<br/>state = consumed, consume_time = now<br/>với điều kiện state = created và còn hạn"]
+        T --> U{"Số dòng cập nhật<br/>bằng 1?"}
+        U -- "không" --> V["Đọc lại bản ghi<br/>trả kết quả từ chối tương ứng"]
+        U -- "bằng 1" --> W["Trả approval<br/>href, method, content"]
+    end
+
+    S --> X["WSP trả trang báo lỗi<br/>mời chủ thẻ mở lại link"]
+    V --> N
+    W --> Y["WSP dựng form từ approval<br/>escape HTML, JavaScript tự submit"]
+    Y --> Z["Trình duyệt sang trang 3DS của OnePay<br/>cardinal.op, mpgs3ds2.op hoặc fingerprint của OCB"]

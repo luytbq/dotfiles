@@ -1,0 +1,13 @@
+flowchart TD
+    Start([Gửi yêu cầu]) --> Call[Gọi bank]
+    Call --> R{Kết quả bank}
+    R -->|timeout| Inc[Tăng số lần thử]
+    Inc --> Max{Quá 3 lần?}
+    Max -->|chưa| Call
+    Max -->|rồi| Fail[Trả lỗi]
+    R -->|lỗi| Fail
+    R -->|thành công| Ok[Trả kết quả]
+    Ok --> Poll[Poll trạng thái]
+    Poll --> Poll
+    Fail --> Done([Nhận kết quả])
+    Ok --> Done

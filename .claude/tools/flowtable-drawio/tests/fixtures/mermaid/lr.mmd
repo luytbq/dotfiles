@@ -1,0 +1,10 @@
+flowchart LR
+    A[Client] --> B
+    subgraph S1["Dịch vụ thanh toán"]
+        B[API] --> C{Xác thực}
+        C -->|ok| D[Tạo giao dịch]
+        C -->|lỗi| X[Trả 401]
+    end
+    D --> E[(DB)]
+    E --> F[Phản hồi]
+    X --> F

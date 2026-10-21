@@ -313,6 +313,15 @@ class LayoutTest(unittest.TestCase):
                 for a, b in zip(e.pts, e.pts[1:]):
                     self.assertTrue(abs(a[0] - b[0]) < 0.01 or abs(a[1] - b[1]) < 0.01, (name, e.id))
 
+    def test_crowded_condition_never_exits_through_incoming_side(self):
+        # MSP-48: mặt trái nhận E3 đi ngang vào, mặt phải đỡ ghi chú MSP-49, mặt dưới đã có E7.
+        lay = build('crowded-condition.md')
+        self.assertEqual([m for lvl, m in lay.check() if lvl == 'error'], [])
+        e = {x.id: x for x in lay.edges}
+        self.assertEqual((e['E3'].case, e['E3'].entry_side), ('B', 'L'))
+        self.assertEqual(e['E6'].exit_side, 'B')
+        self.assertEqual(e['E6'].pts[0], e['E7'].pts[0])
+
     def test_output_is_deterministic(self):
         a = ft.to_drawio(build('retry.md'), 't')
         b = ft.to_drawio(build('retry.md'), 't')

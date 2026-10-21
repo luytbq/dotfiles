@@ -1,0 +1,16 @@
+flowchart TB
+    U[Người dùng bấm thanh toán] --> GW1
+    subgraph GW[Gateway]
+        GW1[Nhận request] --> GW2{Hợp lệ?}
+        subgraph RISK[Kiểm tra rủi ro]
+            R1[Chấm điểm] --> R2{Điểm cao?}
+        end
+        GW2 -->|có| R1
+        R2 -->|không| GW3[Gọi ngân hàng]
+    end
+    GW2 -->|không| E1[Trả lỗi 400]
+    R2 -->|có| E2[Chặn giao dịch]
+    GW3 --> BANK[(Ngân hàng)]
+    BANK --> U2[Hiển thị kết quả]
+    E1 --> U2
+    E2 --> U2
