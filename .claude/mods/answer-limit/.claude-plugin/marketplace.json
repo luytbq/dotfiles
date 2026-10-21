@@ -1,5 +1,0 @@
-{
-  "name": "luytbq-mods",
-  "owner": { "name": "luytbq" },
-  "plugins": [{ "name": "answer-limit", "source": "./" }]
-}

@@ -91,6 +91,8 @@ export const register: Register = on => {
     if (e.props.hasSurvey) {
       return next(e)
     }
+    // The band is shared by every plugin: draw the tree of the plugins beneath too, not over it
+    const below = await next(e)
     const limits = await read($, limitsAtom)
     const last = await read($, lastAtom)
     const { Box, Button, Text } = $.ui.resolve(e)
@@ -125,12 +127,15 @@ export const register: Register = on => {
     }
 
     return (
-      <Box>
+      <Box flexDirection="column">
+        <Box>
         <Text dimColor>Answer limit: </Text>
         {controls('lines', 'Lines', ['a', 's', 'd'])}
         <Text dimColor> · </Text>
         {controls('tools', 'Tool calls', ['j', 'k', 'l'])}
         {last !== null ? <Text dimColor>  last: {last.lines} lines, {last.tools} tools</Text> : null}
+        </Box>
+        {below}
       </Box>
     )
   })
