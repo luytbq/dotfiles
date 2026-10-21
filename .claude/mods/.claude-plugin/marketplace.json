@@ -3,6 +3,7 @@
   "owner": { "name": "luytbq" },
   "plugins": [
     { "name": "answer-limit", "source": "./answer-limit" },
-    { "name": "usage-quota", "source": "./usage-quota", "description": "Fork of anantraghunath/claude-code-usage-quota-mod 0.1.6 whose band also draws the plugins beneath it", "license": "MIT" }
+    { "name": "usage-quota", "source": "./usage-quota", "description": "Fork of anantraghunath/claude-code-usage-quota-mod 0.1.6 whose band also draws the plugins beneath it", "license": "MIT" },
+    { "name": "dock", "source": "./dock" }
   ]
 }
