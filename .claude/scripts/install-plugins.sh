@@ -8,8 +8,8 @@ set -euo pipefail
 
 MARKETPLACES=(
   anthropics/claude-plugins-official
-  # answer-limit, and a fork of anantraghunath/claude-code-usage-quota-mod whose band
-  # also draws the plugins beneath it, so both bands show
+  # dock (plan usage and answer limits as tabs of one band); answer-limit and
+  # usage-quota stay listed there but are no longer installed
   "$HOME/.claude/mods"
 )
 
@@ -18,8 +18,7 @@ PLUGINS=(
   gopls-lsp@claude-plugins-official
   jdtls-lsp@claude-plugins-official
   frontend-design@claude-plugins-official
-  usage-quota@luytbq-mods
-  answer-limit@luytbq-mods
+  dock@luytbq-mods
 )
 
 for m in "${MARKETPLACES[@]}"; do
