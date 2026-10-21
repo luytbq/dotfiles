@@ -123,26 +123,76 @@ vim.api.nvim_create_user_command('CopyPathMenu', function()
     local l1, l2 = get_line_range()
     local line_suffix = (l1 == l2) and (':' .. l1) or (':' .. l1 .. '-' .. l2)
 
+    local name, rel, abs = vim.fn.expand('%:t'), vim.fn.expand('%:.'), vim.fn.expand('%:p')
+
+    -- Lowercase key copies the bare path, uppercase appends the line number.
+    -- Dir entries have no line-number variant; 'h' mirrors the :h modifier of %:p:h.
+    -- Keys must stay single-char: a 'd' prefix gets taken by the delete operator and which-key.
     local items = {
-        { label = 'Copy file name',                           get = function() return vim.fn.expand('%:t') end },
-        { label = 'Copy file name with line number',          get = function() return vim.fn.expand('%:t') .. line_suffix end },
-        { label = 'Copy related file path',                   get = function() return vim.fn.expand('%:.') end },
-        { label = 'Copy related file path with line number',  get = function() return vim.fn.expand('%:.') .. line_suffix end },
-        { label = 'Copy absolute file path',                  get = function() return vim.fn.expand('%:p') end },
-        { label = 'Copy absolute file path with line number', get = function() return vim.fn.expand('%:p') .. line_suffix end },
-        { label = 'Copy related dir path',                    get = function() return vim.fn.expand('%:.:h') end },
-        { label = 'Copy absolute dir path',                   get = function() return vim.fn.expand('%:p:h') end },
+        { key = 'f', label = 'File name',                           value = name },
+        { key = 'F', label = 'File name with line number',          value = name .. line_suffix },
+        { key = 'r', label = 'Related file path',                   value = rel },
+        { key = 'R', label = 'Related file path with line number',  value = rel .. line_suffix },
+        { key = 'a', label = 'Absolute file path',                  value = abs },
+        { key = 'A', label = 'Absolute file path with line number', value = abs .. line_suffix },
+        { key = 'd', label = 'Related dir path',                  value = vim.fn.expand('%:.:h') },
+        { key = 'h', label = 'Absolute dir path',                value = vim.fn.expand('%:p:h') },
     }
 
-    vim.ui.select(items, {
-        prompt = 'Copy path',
-        format_item = function(item) return item.label end,
-    }, function(choice)
-        if not choice then return end
-        local result = choice.get()
-        vim.fn.setreg('+', result)
-        vim.notify('Copied: ' .. result, vim.log.levels.INFO)
-    end)
+    local function copy(picker, item)
+        picker:close()
+        -- An unnamed buffer still yields ':12' or '.' for some entries.
+        if not item or name == '' then
+            vim.notify('Buffer has no file name', vim.log.levels.WARN)
+            return
+        end
+        vim.fn.setreg('+', item.value)
+        vim.notify('Copied: ' .. item.value, vim.log.levels.INFO)
+    end
+
+    local actions, list_keys = {}, {}
+    for i, item in ipairs(items) do
+        item.idx = i
+        item.text = item.label
+        actions['copy_' .. item.key] = function(picker) copy(picker, item) end
+        list_keys[item.key] = 'copy_' .. item.key
+    end
+
+    Snacks.picker.pick({
+        title = 'Copy path',
+        items = items,
+        -- Start in the list so a single key copies; '/' or 'i' switches to fuzzy filtering.
+        focus = 'list',
+        format = function(item)
+            return { { '[' .. item.key .. '] ', 'Special' }, { item.label } }
+        end,
+        preview = function(ctx)
+            ctx.preview:reset()
+            ctx.preview:minimal()
+            ctx.preview:wo({ wrap = true })
+            ctx.preview:set_lines({ name == '' and '(empty)' or ctx.item.value })
+        end,
+        layout = {
+            preview = true,
+            layout = {
+                backdrop = false,
+                width = 0.5,
+                min_width = 80,
+                max_width = 100,
+                height = #items + 6,
+                box = 'vertical',
+                border = true,
+                title = '{title}',
+                title_pos = 'center',
+                { win = 'input', height = 1, border = 'bottom' },
+                { win = 'list', border = 'none' },
+                { win = 'preview', title = 'Will copy', height = 2, border = 'top' },
+            },
+        },
+        actions = actions,
+        win = { list = { keys = list_keys } },
+        confirm = copy,
+    })
 end, {})
 
 -- Default workspace used by lua/plugins/nvim-jdtls.lua when no client is running.
