@@ -9,6 +9,7 @@ set -euo pipefail
 MARKETPLACES=(
   anthropics/claude-plugins-official
   anantraghunath/claude-code-usage-quota-mod
+  "$HOME/.claude/mods/answer-limit"
 )
 
 PLUGINS=(
@@ -17,6 +18,7 @@ PLUGINS=(
   jdtls-lsp@claude-plugins-official
   frontend-design@claude-plugins-official
   usage-quota@claude-code-usage-quota-mod
+  answer-limit@luytbq-mods
 )
 
 for m in "${MARKETPLACES[@]}"; do
