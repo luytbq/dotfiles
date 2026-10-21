@@ -1,0 +1,1 @@
+{ "name": "answer-limit", "version": "0.1.0", "description": "Band above the prompt to cap answer lines and tool calls per turn", "types": "./types/index.d.ts" }
