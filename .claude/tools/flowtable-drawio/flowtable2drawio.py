@@ -1165,7 +1165,12 @@ class Layout:
             s = face(u, v)
             e.case = 'D'
             choices = [s, OPP[s]] if e.back or v.row <= u.row else [s, 'B', OPP[s]]
-            e.exit_side = next((c for c in choices if self.side_free(u, c)), s)
+            e.exit_side = next((c for c in choices if self.side_free(u, c)), None)
+            if e.exit_side is None:
+                # Hết mặt trống: dùng chung cổng với dây ra khác (cùng nguồn nên được phép chồng),
+                # không bao giờ lấy mặt có dây đi vào, vì dây ra sẽ trùng đúng đoạn dây vào đó.
+                e.exit_side = next((c for c in choices if c not in self.attach_sides(u)
+                                    and not self.side_in[(u.id, c)]), s)
             self.side_out[(u.id, e.exit_side)].append(e)
             self.side_in[(v.id, 'T')].append(e)
             vcol = ('col', v.lane, v.col)
@@ -2454,12 +2459,28 @@ def verify_svg(lay, svg_path, tol=2.0):
             continue
         nums = [float(n) for n in PATH_NUM_RE.findall(path.get('d'))]
         got = [(nums[i] - dx, nums[i + 1] - dy) for i in range(0, len(nums) - 1, 2)]
+        # draw.io có thể chèn điểm đi tới rồi lùi lại trên cùng một trục (gặp ở cạnh có
+        # mũi tên đầu); các điểm thẳng hàng như vậy không đổi hình dây nên bỏ trước khi so.
+        k = 1
+        while k < len(got) - 1:
+            a, b, c = got[k - 1], got[k], got[k + 1]
+            if (abs(a[0] - b[0]) < tol and abs(b[0] - c[0]) < tol) or (abs(a[1] - b[1]) < tol and abs(b[1] - c[1]) < tol):
+                del got[k]
+            else:
+                k += 1
         want = e.pts
         # Đầu mũi tên làm draw.io rút ngắn đoạn cuối, chỉ so các điểm trước đó.
         if len(got) != len(want):
             problems.append(f'{e.id}: draw.io vẽ {len(got)} điểm, tính ra {len(want)} điểm')
             continue
         for k, (a, b) in enumerate(zip(got[:-1], want[:-1])):
+            if k == 0 and getattr(e, 'start_arrow', False):
+                # Mũi tên ở đầu cũng rút ngắn đoạn đầu: chỉ so trục vuông góc với đoạn đó.
+                axis = 0 if abs(want[0][0] - want[1][0]) < 0.01 else 1
+                if abs(a[axis] - b[axis]) > tol:
+                    problems.append(f'{e.id}: đoạn đầu lệch trục')
+                    break
+                continue
             if abs(a[0] - b[0]) > tol or abs(a[1] - b[1]) > tol:
                 problems.append(f'{e.id}: điểm {k} lệch, vẽ ({a[0]:.0f},{a[1]:.0f}) thay vì ({b[0]:.0f},{b[1]:.0f})')
                 break
