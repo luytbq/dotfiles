@@ -7,6 +7,6 @@ A band above the Claude Code prompt that holds tabs, one kind of information per
 
 Each tab label carries a short summary and an icon: a dim check when all is well, a yellow triangle when it needs attention (a limit or the context getting full, a cap turned on), a red cross when it is critical (90% of a limit, 80% of the context, a cap hit last turn).
 
-Click a tab or the arrows at either end to switch. With the band focused (ctrl+x tab), Tab and the arrow keys move between controls and Enter presses one. Type /dock to hide or show the band.
+Click a tab or the arrows at either end to switch. Keys, as bound in ~/.claude/keybindings.json: alt+a collapses or expands the band, alt+shift+a focuses it; in the band, left/right or Tab move between controls, Enter or Space presses one, Esc returns to the prompt. The engine's own chords (ctrl+x ctrl+a, ctrl+x tab) do the same but lose ctrl+a to a tmux prefix of C-a. Type /dock to hide or show the dock across sessions.
 
 Adding a tab: write a module under hooks/tabs that exports a TabInfo and a handler (see hooks/tab.ts), then add it to TABS and to dispatch in hooks/register.tsx.

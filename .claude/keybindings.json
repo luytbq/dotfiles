@@ -20,6 +20,8 @@
         "meta+p": "chat:modelPicker",
         "meta+o": "chat:fastMode",
         "meta+t": "chat:thinkingToggle",
+        "meta+a": "abovePrompt:toggle",
+        "meta+shift+a": "abovePrompt:focus",
         "enter": "chat:submit",
         "up": "history:previous",
         "down": "history:next",
