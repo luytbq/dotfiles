@@ -20,7 +20,9 @@ def _ans(resp: dict[str, Any], qid: str) -> dict[str, Any]:
 
 def noul_gte(qid: str, floor: float) -> CaseExpect:
     def check(resp: dict[str, Any]) -> tuple[bool, str]:
-        val = float(_ans(resp, qid).get("noul") or 0.0)
+        val = askjev._as_float(_ans(resp, qid).get("noul"))
+        if val is None:
+            return False, f"noul missing (need >= {floor})"
         return val >= floor, f"noul={val:.3f} (need >= {floor})"
 
     return check
@@ -28,7 +30,9 @@ def noul_gte(qid: str, floor: float) -> CaseExpect:
 
 def noul_lte(qid: str, ceil: float) -> CaseExpect:
     def check(resp: dict[str, Any]) -> tuple[bool, str]:
-        val = float(_ans(resp, qid).get("noul") or 0.0)
+        val = askjev._as_float(_ans(resp, qid).get("noul"))
+        if val is None:
+            return False, f"noul missing (need <= {ceil})"
         return val <= ceil, f"noul={val:.3f} (need <= {ceil})"
 
     return check
