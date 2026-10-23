@@ -119,6 +119,15 @@ def system_one(payload: dict[str, Any], timeout: float = 15.0) -> dict[str, Any]
     return call(payload, timeout)[0]
 
 
+def _as_float(value: Any) -> float | None:
+    if isinstance(value, bool):
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
 def verdicts(answers: dict[str, Any], min_conf: float) -> dict[str, Any]:
     out: dict[str, Any] = {}
     for qid, ans in answers.items():
@@ -144,8 +153,11 @@ def verdicts(answers: dict[str, Any], min_conf: float) -> dict[str, Any]:
                 "gate": "act" if act else "escalate",
             }
         elif kind == "noul":
-            noul = float(ans.get("noul") or 0.0)
-            if noul >= NOUL_YES:
+            # A missing value must escalate; defaulting to 0.0 would read as a confident "no".
+            noul = _as_float(ans.get("noul"))
+            if noul is None:
+                gate, act, decision = "uncertain", False, None
+            elif noul >= NOUL_YES:
                 gate, act, decision = "yes", True, True
             elif noul <= NOUL_NO:
                 gate, act, decision = "no", True, False
