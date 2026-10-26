@@ -1,9 +1,15 @@
 # Global Instructions
 
+## Multi-Project Awareness
+- When working in `~/projects/onepay/`, always read the root CLAUDE.md first
+- Each subdirectory is an independent git repo
+- Check for project-level CLAUDE.md before diving into code
+- If a project lacks CLAUDE.md, run `/init-project-claude` to generate one
+
 ## Writing Guidelines
 - Never use the em dash (—) in any output. Always use a hyphen (-) instead.
 - Never use arrows (→) in any output. Always use (-->) instead.
-- In Markdown output: never use inline code; limit bold and italic to 1–2 instances per paragraph at most; default to plain prose.
+- In Markdown output: never use inline code, and that includes file paths, command names, config keys, and identifiers - name them in plain prose. Limit bold and italic to 1–2 instances per paragraph at most.
 
 ## Code Comments
 
@@ -51,10 +57,21 @@ When a skill or command output doesn't satisfy the user and a fix is applied to 
 1. Fix the immediate output first
 2. Then **suggest updating the skill/command definition itself** so future runs don't have the same issue
 
+## Editing Files
+
+Prefer the Edit tool for changing an existing file. A script (python/sed) is fine for bulk
+mechanical changes, but show the resulting diff afterwards.
+
+## Secrets
+
+When dumping config, env, or systemd unit files, scan the output for credential-looking
+strings and redact them before they land in the transcript. A commented-out key is still a
+live key.
+
 ## Workflow Patterns
 
 ### Plan Mode
-- Enter plan mode for ANY non-trivial task (3+ steps or architectural decisions)
+- Enter plan mode for tasks with architectural decisions; for routine multi-step work, a numbered plan in chat is enough
 - If something goes sideways, STOP and re-plan immediately — don't keep pushing
 - Write detailed specs upfront to reduce ambiguity
 
@@ -84,11 +101,5 @@ Don't suggest teams for sequential work or simple single-service tasks.
 - Never mark a task complete without proving it works
 - Build, run tests, check logs, demonstrate correctness
 - Ask yourself: "Would a staff engineer approve this?"
-
-### Multi-Project Awareness
-- When working in `~/projects/onepay/`, always read the root CLAUDE.md first
-- Each subdirectory is an independent git repo
-- Check for project-level CLAUDE.md before diving into code
-- If a project lacks CLAUDE.md, run `/init-project-claude` to generate one
 
 @RTK.md
