@@ -73,6 +73,16 @@ Payload shape (same as TypeSafe HTTP, plus an optional `meta` that is logged and
 }
 ```
 
+`criteria` shape differs per question type; a wrong key is rejected with HTTP 422 `Field required ... criteria`:
+
+| Type | `criteria` |
+|---|---|
+| `choice` | object `{option_id: description}` |
+| `score` | list of level strings, lowest first: `["none: ...", "minor: ...", "major: ..."]`. `decision` comes back as a float index into this list (e.g. `1.73`), not a label |
+| `noul` | optional object `{"true": "...", "false": "..."}`; omit when the instruction already defines yes/no |
+
+Several questions of different types can share one payload; they are answered in one call.
+
 Helpers:
 
 ```
@@ -104,6 +114,9 @@ python3 "$HOME/.claude/skills/ask-jev-skill/scripts/eval.py"
 6. **Log one line** in your reply when Jev moved the decision: `call_id`, question, decision, confidence/noul, whether you acted. Skip the essay.
 
 ## Pitfalls
+
+- Do not run `askjev.py` with `python3 -I`: isolated mode drops the script's own directory from `sys.path` and the import of the sibling `jevlog` module fails. Same when calling it from another script via `subprocess`.
+- Batch classification (one call per item over many items): call the script from a small driver with a thread pool (4-6 workers is fine). Pilot on 10-20 items you have labelled by hand before trusting the run, and treat Noul `uncertain` as "needs a human look", not as "no".
 
 - Jev does not explain itself. If you need a rationale, you already have it in `state`; do not prompt Jev for prose.
 - Docs examples can disagree with the current `jev-*` version. Trust live `confidence` more than a remembered label.
