@@ -9,6 +9,12 @@ Claude vẫn là người chịu trách nhiệm cuối. Harness khác là đồn
 
 ## Trước khi giao việc
 
+0. Cần có acpx và quota-axi trên PATH; thiếu thì đề nghị user cài:
+
+```sh
+npm install -g acpx quota-axi
+```
+
 1. Đọc [harnesses.md](harnesses.md): lệnh gọi, model, chi phí, điểm mạnh của từng harness.
 2. Xem quota thật, không đoán:
 
