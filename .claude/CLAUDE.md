@@ -1,11 +1,5 @@
 # Global Instructions
 
-## Multi-Project Awareness
-- When working in `~/projects/onepay/`, always read the root CLAUDE.md first
-- Each subdirectory is an independent git repo
-- Check for project-level CLAUDE.md before diving into code
-- If a project lacks CLAUDE.md, run `/init-project-claude` to generate one
-
 ## Writing Guidelines
 - Never use the em dash (—) in any output. Always use a hyphen (-) instead.
 - Never use arrows (→) in any output. Always use (-->) instead.
