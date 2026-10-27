@@ -2,6 +2,13 @@
 
 File này do user tự sửa. Claude đọc để đề xuất; mục "Mạnh ở" chỉ là gợi ý, không phải luật. Khi kết quả thực tế cho thấy một nhận định ở đây sai, đề xuất user sửa file.
 
+## Cài trên máy mới
+
+- Node 22 trở lên, rồi npm install -g acpx quota-axi.
+- opencode bản 1.18 trở lên (model free cần bản này). ~/.acpx/config.json trỏ thẳng tới "opencode acp": chưa cài opencode thì acpx báo lỗi, không tự chạy qua npx.
+- agy: cài và đăng nhập Google. Trên Linux adapter antigravity của acpx không chạy (thiếu agy_acp_server.par); macOS chưa kiểm tra, thử acpx antigravity exec "reply with exactly: OK" trước khi dùng CLI thay thế.
+- tmux: tùy chọn, chỉ để mở pane watch.
+
 ## opencode
 
 - Gọi qua acpx: agent opencode. Có session thường trực.
@@ -15,7 +22,7 @@ File này do user tự sửa. Claude đọc để đề xuất; mục "Mạnh �
 
 ## agy (Antigravity CLI)
 
-- Không chạy được qua acpx trên máy này (adapter antigravity cần agy_acp_server.par, bản Linux không có). Gọi CLI trực tiếp:
+- Trên Linux không chạy được qua acpx (adapter antigravity cần agy_acp_server.par, bản Linux không có). Gọi CLI trực tiếp:
 
 ```sh
 cd <repo> && agy --output-format json --print-timeout 900s -p "$(cat <prompt-file>)"
