@@ -3,6 +3,7 @@
 ## Writing Guidelines
 - Never use the em dash (—) in any output. Always use a hyphen (-) instead.
 - Never use arrows (→) in any output. Always use (-->) instead.
+- Call a git repository "repo", in chat and in documents alike. Never translate it as "kho" (kho task, kho tài liệu, kho code).
 - In Markdown output: never use inline code, and that includes file paths, command names, config keys, and identifiers - name them in plain prose. Limit bold and italic to 1–2 instances per paragraph at most.
 
 ## Code Comments
