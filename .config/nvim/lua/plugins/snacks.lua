@@ -84,12 +84,29 @@ opts = {
         ui_select = true,
         sources = {
             explorer = {
+                actions = {
+                    -- Explorer windows are floats, so wincmd h from them lands back on the
+                    -- editor and vim-tmux-navigator never sees the left edge.
+                    tmux_navigate_left = function()
+                        if vim.env.TMUX then
+                            vim.fn.system({ "tmux", "select-pane", "-L" })
+                        else
+                            vim.cmd("wincmd h")
+                        end
+                    end,
+                },
                 win = {
+                    input = {
+                        keys = {
+                            ["<c-h>"] = { "tmux_navigate_left", mode = { "n", "i" } },
+                        },
+                    },
                     list = {
                         keys = {
                             -- Vietnamese input methods (e.g., ibus-bamboo using Telex) send a Backspace key event when the user types j, causing unwanted explorer_up behavior.
                             ["<BS>"] = false,
                             ["-"] = "explorer_up",
+                            ["<c-h>"] = "tmux_navigate_left",
                         },
                     },
                 },
