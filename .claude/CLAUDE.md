@@ -6,6 +6,10 @@
 - Call a git repository "repo", in chat and in documents alike. Never translate it as "kho" (kho task, kho tài liệu, kho code).
 - In Markdown output: never use inline code, and that includes file paths, command names, config keys, and identifiers - name them in plain prose. Limit bold and italic to 1–2 instances per paragraph at most.
 
+## Answering Questions
+- When the user asks a question, answer exactly that question and stop. No unrequested proposals, risk assessments, alternative approaches, or suggestions for other people.
+- Do not end with a leading question ("do you want me to add this to X?"). Extra content forces the user to filter it out and breaks their focus.
+
 ## Code Comments
 
 Write for the person who opens the file months from now with no access to this
