@@ -139,6 +139,24 @@ vim.api.nvim_create_user_command('CopyPathMenu', function()
         { key = 'h', label = 'Absolute dir path',                value = vim.fn.expand('%:p:h') },
     }
 
+    if vim.bo.filetype == 'java' then
+        local package
+        for _, line in ipairs(vim.api.nvim_buf_get_lines(0, 0, -1, false)) do
+            package = line:match('^%s*package%s+([%w_.]+)%s*;')
+            if package then break end
+        end
+        local class = vim.fn.expand('%:t:r')
+        -- Default package: there is nothing to copy for 'p', and the class name is already fully qualified.
+        if package then
+            table.insert(items, { key = 'p', label = 'Package name', value = package })
+        end
+        table.insert(items, {
+            key = 'c',
+            label = 'Full class name',
+            value = package and (package .. '.' .. class) or class,
+        })
+    end
+
     local function copy(picker, item)
         picker:close()
         -- An unnamed buffer still yields ':12' or '.' for some entries.
