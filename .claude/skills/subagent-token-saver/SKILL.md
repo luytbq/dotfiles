@@ -13,12 +13,14 @@ Most of the cost in these sessions comes from three places: subagents running a 
    - Runners, the subagents that produce artifacts, use a mid-tier model (Sonnet).
    - Per-stage reviewers also use the mid-tier model.
    - Run one final whole-run review on the strongest model after the last stage. Skipping it trades away subtle findings for cost, so drop it only if the user agrees.
+   - Teammates spawned for heavy but routine work (reproducing on a dev environment, running tests, reading code to answer a framed question) are runners too and use the mid-tier model.
    - Use the cheapest tier (Haiku) only for mechanical work such as format checks, counting, or grep-style extraction. Never use it when output quality is what is being measured, unless the user asks.
 
 2. **File-based, terse returns.**
    - Every subagent writes its result to a named file.
    - Its reply to the orchestrator is at most 5 lines: the file path, open-question count, finding counts by severity, and the IDs of serious findings.
    - The orchestrator never reads full outputs back. When it needs detail, it greps for the exact line.
+   - The same applies to teammates in an agent team: a long report sent through SendMessage gets truncated, so the teammate writes it to a file and the message carries only the path and the summary.
 
 3. **Narrow inputs.** Give each subagent only what its step needs: the step's prompt, the shared conventions, and its declared inputs. A reviewer reads only the current stage's prompts and outputs. To cross-check an earlier artifact, it opens that one file, never the whole history.
 
