@@ -1,23 +1,38 @@
-# Git Commit Rules for Claude
+# Commit and Push
 
-You must follow these instructions strictly whenever generating git commit messages.
+Commit the current changes, then push to the remote.
 
-## General Structure
-- Write the message in the imperative mood (e.g., "add", "fix", not "added", "fixes").
-- Do not period-terminate the subject line.
-- Limit the first line (subject) to 50 characters.
-- Wrap all body lines at 72 characters.
-- Separate the subject from the body with one blank line.
+## Steps
 
-## Format Specification
-Every commit must match this pattern:
+1. Run git diff --cached to see staged changes. If nothing is staged, run git diff to analyze unstaged changes and stage them.
+2. Write the commit message following the format below, then commit.
+3. Push right away, without asking:
+   - If the branch has an upstream, run git push.
+   - If not, run git push -u origin followed by the branch name.
+4. Report the commit hash, the subject line, and the branch that was pushed.
+
+If the push is rejected, stop and show the user the exact error. Do not pull, rebase, retry, or force push.
+
+## Commit Message Format
+
+```
 <type>(<scope>): <short summary>
 
 [optional body describing the 'why' and 'what', not the 'how']
 
 [optional footer(s) for breaking changes or issue links]
+```
+
+- Use the imperative mood ("add", "fix", not "added", "fixes").
+- Do not end the subject line with a period.
+- Limit the subject line to 50 characters.
+- Wrap body lines at 72 characters.
+- Separate the subject from the body with one blank line.
+- Choose the scope by feature name (short, e.g. refund, payment-notification, otp, qr-code). Never use a project name as scope. Leave it blank if the change spans multiple features or is cross-cutting.
+- Focus the body on the motivation behind the change, not a literal translation of the diff lines.
 
 ## Allowed Types
+
 - **feat**: A new feature for the user
 - **fix**: A bug fix for the user
 - **docs**: Changes to the documentation
@@ -26,10 +41,3 @@ Every commit must match this pattern:
 - **perf**: Code changes that improve performance
 - **test**: Adding missing tests or correcting existing tests
 - **chore**: Updating build tasks, package manager configs, etc.
-
-## Guidelines for Claude
-1. Run `git diff --cached` to see staged changes before writing the message.
-2. If no changes are staged, run `git diff` to analyze unstaged changes.
-3. Determine the `<scope>` based on the **feature name** (short, e.g., `refund`, `payment-notification`, `otp`, `qr-code`). NEVER use a project name as scope. Leave it blank if the change spans multiple features or is cross-cutting.
-4. Focus the body on the **motivation** behind the change, not a literal translation of the diff lines.
-
